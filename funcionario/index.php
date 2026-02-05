@@ -138,9 +138,7 @@ if (isset($_SESSION['mensaje'])) {
                         <select class="form-select" name="cargo">
                             <option>Administrador</option>
                             <option>Administrativo</option>
-                            <option>Operativo</option>
-                            <option>Consultor</option>
-                            <option>Eventual</option>
+                            <option>Secretaria</option>
                         </select>
                     </div>
 
@@ -201,9 +199,7 @@ if (isset($_SESSION['mensaje'])) {
                         <select class="form-select" id="edit_cargo" name="cargo">
                             <option>Administrador</option>
                             <option>Administrativo</option>
-                            <option>Operativo</option>
-                            <option>Consultor</option>
-                            <option>Eventual</option>
+                            <option>Secretaria</option>
                         </select>
                     </div>
 
