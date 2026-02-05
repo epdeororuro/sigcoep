@@ -117,7 +117,7 @@ $areas = array(
     <script>
         $(document).ready(function() {
             $('#funcionarios').DataTable({
-                ajax: 'getFuncionarios.php',
+                ajax: 'show.php',
                 columns: [
                     { data: 'nombre' },
                     { data: 'paterno' },

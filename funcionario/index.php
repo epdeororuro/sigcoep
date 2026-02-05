@@ -236,7 +236,7 @@ if (isset($_SESSION['mensaje'])) {
 <script>
 $(document).ready(function() {
     $('#funcionarios').DataTable({
-        ajax: 'getFuncionarios.php',
+        ajax: 'show.php',
         scrollX: true,
         autoWidth: false,
         responsive: true,
