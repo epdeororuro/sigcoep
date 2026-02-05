@@ -10,7 +10,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $password = $_POST['password'] ?? '';
 
     // Buscar usuario en DB
-    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE usuario = :usuario");
+    $stmt = $pdo->prepare("SELECT * FROM funcionario WHERE usuario = :usuario");
     $stmt->execute([':usuario' => $usuario]);
     $user = $stmt->fetch();
 
