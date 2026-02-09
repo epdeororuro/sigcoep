@@ -12,7 +12,7 @@ try {
         'fojas' => $_POST['fojas']
     ]);
 
-    // Mostrar mensaje de alerta y redirigir
+    // Mostrar mensaje de alerta y redirigir al index
     $_SESSION['mensaje'] = 'Correspondencia registrada con éxito';
     header('Location: index.php');
     exit;
