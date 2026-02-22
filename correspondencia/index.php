@@ -17,34 +17,23 @@
         body {
             background-color: #f4f6f9;
         }
-
-        /* Card estilo AdminLTE */
         .card {
             border-radius: 1rem;
         }
-
-        /* DataTable full width */
         table.dataTable {
             width: 100% !important;
         }
-
-        /* Quitar padding excesivo */
         .card-body {
             padding: 1.5rem;
         }
-
-        /* Header DataTable */
         .table thead th {
             vertical-align: middle;
             text-align: center;
         }
-        /* Evita que las celdas se aplasten */
         table.dataTable th,
         table.dataTable td {
             white-space: nowrap;
         }
-
-        /* Scroll limpio */
         .dataTables_wrapper .dataTables_scroll {
             overflow: auto;
         }
@@ -155,6 +144,34 @@
             </div>
         </div>
     </div>
+    <!-- ================= MODAL DERIVAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="derivarCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Derivar Correspondencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="derivarCorrespondenciaForm" action="derivar.php" method="post">
+                        <input type="hidden" id="derivar_id" name="id">
+                        <div class="mb-3">
+                            <label class="form-label">Derivar a:</label>
+                            <input type="text" class="form-control" id="derivar_destino" name="destino" placeholder="Ingrese el área o funcionario">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" id="derivar_observaciones" name="observaciones"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-primary" form="derivarCorrespondenciaForm">Derivar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= JS ================= -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -197,6 +214,13 @@
                     $('#editCorrespondenciaModal').modal('show');
                 }
             });
+        }
+
+        function derivarCorrespondencia(id) {
+            // Cargar el ID en el campo oculto del modal
+            $('#derivar_id').val(id);
+            // Mostrar el modal
+            $('#derivarCorrespondenciaModal').modal('show');
         }
     </script>
 </body>

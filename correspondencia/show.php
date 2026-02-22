@@ -11,7 +11,7 @@ try {
     $data = array();
     foreach ($correspondencias as $correspondencia) {
         $acciones = '';
-        if ($correspondencia['estado'] == 'En curso') {
+        if ($correspondencia['estado'] == 'Registrado - Sin Derivar') {
             $acciones = '
                 <form action="" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="'.$correspondencia['id'].'">
@@ -20,6 +20,10 @@ try {
                 <form action="destroy.php" method="post" style="display: inline;">
                     <input type="hidden" name="id" value="'.$correspondencia['id'].'">
                     <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                </form>
+                <form action="" method="post" style="display: inline;">
+                    <input type="hidden" name="id" value="'.$correspondencia['id'].'">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#derivarCorrespondenciaModal" onclick="derivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-arrow-right-circle"></i></button>
                 </form>
             ';
         } elseif ($correspondencia['estado'] == 'Anulado') {
