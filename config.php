@@ -2,7 +2,7 @@
 // config.php - Configuraciones generales del sistema SIGCOEP
 
 // Nombre del sistema
-define('SISTEMA_NOMBRE', 'SIGCOEP - Sistema de Gestión de Correspondencia EPDEOR');
+define('SISTEMA_NOMBRE', 'SIGCOEP - Sistema de Gestión de Correspondencia "EPDEOR"');
 
 // URL base de la intranet (si es local o ruta de pruebas)
 define('BASE_URL', 'http://localhost/sigcoep/');
