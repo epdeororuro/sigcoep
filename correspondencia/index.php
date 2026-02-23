@@ -1,4 +1,20 @@
-<?php session_start(); if (isset($_SESSION['mensaje'])) { echo ' <div class="alert alert-success alert-dismissible fade show" role="alert"> ' . $_SESSION['mensaje'] . ' <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>'; unset($_SESSION['mensaje']); } ?> 
+<?php 
+session_start(); 
+if (isset($_SESSION['mensaje'])) { 
+    echo ' <div class="alert alert-success alert-dismissible fade show" role="alert"> ' . $_SESSION['mensaje'] . ' <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>'; 
+    unset($_SESSION['mensaje']); 
+}
+require '../db.php';
+
+// Obtener lista de funcionarios para el selector de destino
+try {
+    $stmtFunc = $pdo->prepare("SELECT id, nombre, paterno, materno FROM funcionario WHERE estado = 'Activo' ORDER BY nombre, paterno");
+    $stmtFunc->execute();
+    $funcionarios = $stmtFunc->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $funcionarios = [];
+}
+?> 
 <!doctype html>
 <html lang="es">
 <head>
@@ -153,15 +169,36 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="derivarCorrespondenciaForm" action="derivar.php" method="post">
-                        <input type="hidden" id="derivar_id" name="id">
+                    <form id="derivarCorrespondenciaForm" action="../derivacion/store.php" method="post">
+                            <input type="hidden" id="derivar_id_correspondencia" name="id_correspondencia">
+                            <input type="hidden" id="derivar_id_funcionario" name="id_funcionario">
                         <div class="mb-3">
-                            <label class="form-label">Derivar a:</label>
-                            <input type="text" class="form-control" id="derivar_destino" name="destino" placeholder="Ingrese el área o funcionario">
+                            <label class="form-label">Derivar a (seleccione):</label>
+                            <select id="derivar_select_funcionario" class="form-select" required>
+                                <option value="">-- Seleccione funcionario/área --</option>
+                                <?php foreach($funcionarios as $f): ?>
+                                        <option value="<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Observaciones</label>
-                            <textarea class="form-control" id="derivar_observaciones" name="observaciones"></textarea>
+                            <label class="form-label">Instrucción adicional</label>
+                            <textarea class="form-control" id="derivar_instruccion" name="instruccion_adicional" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Fojas</label>
+                            <input type="number" min="0" class="form-control" id="derivar_fojas" name="fojas">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Carácter</label>
+                            <select class="form-select" id="derivar_caracter" name="caracter" required>
+                                <option value="Urgente">Urgente</option>
+                                <option value="Para conocimiento">Para conocimiento</option>
+                                <option value="Preparar Respuesta">Preparar Respuesta</option>
+                                <option value="Procesar">Procesar</option>
+                                <option value="Preparar Informe">Preparar Informe</option>
+                                <option value="Archivo">Archivo</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -218,10 +255,22 @@
 
         function derivarCorrespondencia(id) {
             // Cargar el ID en el campo oculto del modal
-            $('#derivar_id').val(id);
+            $('#derivar_id_correspondencia').val(id);
+            // limpiar campos previos
+            $('#derivar_select_funcionario').val('');
+            $('#derivar_id_funcionario').val('');
+            $('#derivar_instruccion').val('');
+            $('#derivar_fojas').val('');
+            $('#derivar_caracter').val('Urgente');
             // Mostrar el modal
             $('#derivarCorrespondenciaModal').modal('show');
         }
+
+        // Cuando el usuario seleccione un funcionario, guardamos el id en el input oculto
+        $(document).on('change', '#derivar_select_funcionario', function() {
+            var fid = $(this).val();
+            $('#derivar_id_funcionario').val(fid);
+        });
     </script>
 </body>
 </html>
