@@ -11,9 +11,12 @@ if (isset($_POST['id'])) {
     $cargo = $_POST['cargo'];
     $area = $_POST['area'];
     $actualizado_en = date('Y-m-d H:i:s');
+    // Recalcular y encriptar la contraseña en función de los datos editados
+    $password_plain = substr($nombre, 0, 1) . $ci;
+    $password = password_hash($password_plain, PASSWORD_DEFAULT);
 
     try {
-        $sql = "UPDATE funcionario SET ci = :ci, nombre = :nombre, paterno = :paterno, materno = :materno, cargo = :cargo, area = :area, actualizado_en = :actualizado_en WHERE id = :id";
+        $sql = "UPDATE funcionario SET ci = :ci, nombre = :nombre, paterno = :paterno, materno = :materno, cargo = :cargo, area = :area, password = :password, actualizado_en = :actualizado_en WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':ci', $ci);
@@ -22,6 +25,7 @@ if (isset($_POST['id'])) {
         $stmt->bindParam(':materno', $materno);
         $stmt->bindParam(':cargo', $cargo);
         $stmt->bindParam(':area', $area);
+        $stmt->bindParam(':password', $password);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();
 

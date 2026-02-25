@@ -72,9 +72,11 @@ if (isset($_SESSION['mensaje'])) {
 
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h3 class="mb-0">Lista de Funcionarios</h3>
+                        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrador'): ?>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFuncionarioModal">
                             <i class="bi bi-person-plus"></i> Nuevo Funcionario
                         </button>
+                        <?php endif; ?>
                     </div>
 
                     <div class="table-responsive">
@@ -137,6 +139,7 @@ if (isset($_SESSION['mensaje'])) {
                         <label class="form-label">Cargo</label>
                         <select class="form-select" name="cargo">
                             <option>Administrador</option>
+                            <option>Gerente General</option>
                             <option>Administrativo</option>
                             <option>Secretaria</option>
                         </select>
