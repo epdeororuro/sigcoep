@@ -96,7 +96,7 @@ if(!isset($_SESSION['usuario_id'])){
     <!-- Navbar superior -->
     <div class="navbar-custom">
         <div>Bienvenido, <?= htmlspecialchars($_SESSION['usuario_nombre']) ?> (<?= htmlspecialchars($_SESSION['usuario_cargo']) ?>)</div>
-        <div>Área: <?= htmlspecialchars($_SESSION['usuario_area']) ?></div>
+        <div>Área: <?= htmlspecialchars($_SESSION['usuario_cargo']) ?></div>
     </div>
     <!-- Contenido principal -->
     <div class="content">

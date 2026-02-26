@@ -4,17 +4,17 @@ require '../db.php';
 
 if (isset($_POST['id'])) {
     $id = $_POST['id'];
-    $cite = $_POST['cite'];
+    $hojaruta = $_POST['hojaruta'];
     $remitente = $_POST['remitente'];
     $referencia = $_POST['referencia'];
     $fojas = $_POST['fojas'];
     $actualizado_en = date('Y-m-d H:i:s');
 
     try {
-        $sql = "UPDATE correspondencia SET cite = :cite, remitente = :remitente, referencia = :referencia, fojas = :fojas, actualizado_en = :actualizado_en WHERE id = :id";
+        $sql = "UPDATE correspondencia SET hojaruta = :hojaruta, remitente = :remitente, referencia = :referencia, fojas = :fojas, actualizado_en = :actualizado_en WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':cite', $cite);
+        $stmt->bindParam(':hojaruta', $hojaruta);
         $stmt->bindParam(':remitente', $remitente);
         $stmt->bindParam(':referencia', $referencia);
         $stmt->bindParam(':fojas', $fojas);

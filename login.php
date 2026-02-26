@@ -18,8 +18,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         // Login exitoso
         $_SESSION['usuario_id'] = $user['id'];
         $_SESSION['usuario_nombre'] = $user['nombre'];
-        $_SESSION['usuario_cargo'] = $user['cargo'];
-        $_SESSION['usuario_area'] = $user['area'];
+        $_SESSION['usuario_cargo'] = $user['rol'];
 
         header('Location: dashboard.php'); // Redirige al dashboard
         exit;

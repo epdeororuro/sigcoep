@@ -10,7 +10,7 @@ if (empty($id)) {
 }
 
 // Obtener datos de la correspondencia
-$stmt = $pdo->prepare("SELECT id, cite, remitente, referencia, fojas, fecha, estado FROM correspondencia WHERE id = :id");
+$stmt = $pdo->prepare("SELECT id, hojaruta, remitente, referencia, fojas, fecha, estado FROM correspondencia WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $cor = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$cor) {
@@ -33,7 +33,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Historial de Derivaciones - <?php echo htmlspecialchars($cor['cite']); ?></title>
+    <title>Historial de Derivaciones - <?php echo htmlspecialchars($cor['hojaruta']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Timeline simple */
@@ -79,7 +79,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h4>Historial de Derivaciones</h4>
-            <small class="text-muted">Cite: <?php echo htmlspecialchars($cor['cite']); ?></small>
+            <small class="text-muted">Hoja de Ruta: <?php echo htmlspecialchars($cor['hojaruta']); ?></small>
         </div>
         <div>
             <a href="../correspondencia/index.php" class="btn btn-secondary">Volver a correspondencia</a>

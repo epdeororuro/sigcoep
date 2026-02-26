@@ -8,33 +8,40 @@ if (isset($_POST['id'])) {
     $nombre = $_POST['nombre'];
     $paterno = $_POST['paterno'];
     $materno = $_POST['materno'];
-    $cargo = $_POST['cargo'];
-    $area = $_POST['area'];
+    $rol = $_POST['rol'];
+    $id_puesto = $_POST['id_puesto'];
     $actualizado_en = date('Y-m-d H:i:s');
     // Recalcular y encriptar la contraseña en función de los datos editados
-    $password_plain = substr($nombre, 0, 1) . $ci;
+    $password_plain = $ci;
     $password = password_hash($password_plain, PASSWORD_DEFAULT);
 
     try {
-        $sql = "UPDATE funcionario SET ci = :ci, nombre = :nombre, paterno = :paterno, materno = :materno, cargo = :cargo, area = :area, password = :password, actualizado_en = :actualizado_en WHERE id = :id";
+        $sql = "UPDATE funcionario SET ci = :ci, nombre = :nombre, paterno = :paterno, materno = :materno, rol = :rol, id_puesto = :id_puesto, password = :password, actualizado_en = :actualizado_en WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':ci', $ci);
         $stmt->bindParam(':nombre', $nombre);
         $stmt->bindParam(':paterno', $paterno);
         $stmt->bindParam(':materno', $materno);
-        $stmt->bindParam(':cargo', $cargo);
-        $stmt->bindParam(':area', $area);
+        $stmt->bindParam(':rol', $rol);
+        $stmt->bindParam(':id_puesto', $id_puesto);
         $stmt->bindParam(':password', $password);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();
 
         // Mostrar mensaje de alerta y redirigir
         $_SESSION['mensaje'] = 'Funcionario actualizado con éxito';
+        $_SESSION['mensaje_tipo'] = 'success';
         header('Location: index.php');
         exit;
     } catch (PDOException $e) {
-        $_SESSION['mensaje'] = 'Error al actualizar funcionario: ' . $e->getMessage();
+        // Verificar si es un error de clave duplicada (CI ya existe)
+        if ($e->getCode() == 23000) {
+            $_SESSION['mensaje'] = 'El carnet de identidad ya está registrado en el sistema';
+        } else {
+            $_SESSION['mensaje'] = 'Error al actualizar funcionario: Por favor intente nuevamente';
+        }
+        $_SESSION['mensaje_tipo'] = 'danger';
         header('Location: index.php');
         exit;
     }

@@ -22,26 +22,30 @@ if(!isset($_SESSION['usuario_id'])){
 
     <div class="row mt-4">
         <!-- Registrar Usuarios -->
+        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrador'): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-primary shadow">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-person-plus"></i> Funcionarios</h5>
                     <p class="card-text">Registrar nuevos funcionarios.</p>
-                    <a href="registrar_funcionario.php" target="_parent" class="btn btn-light btn-sm">Ir</a>
+                        <a href="funcionario/index.php" target="iframe_content" class="btn btn-light btn-sm">Ir</a>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
         <!-- Registrar Correspondencia -->
+        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-success shadow">
                 <div class="card-body">
                     <h5 class="card-title"><i class="bi bi-folder-plus"></i> Correspondencia</h5>
                     <p class="card-text">Registrar y derivar correspondencia.</p>
-                    <a href="registrar_correspondencia.php" target="_parent" class="btn btn-light btn-sm">Ir</a>
+                        <a href="correspondencia/index.php" target="iframe_content" class="btn btn-light btn-sm">Ir</a>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 </div>
 </body>

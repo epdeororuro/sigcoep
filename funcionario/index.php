@@ -1,12 +1,19 @@
 <?php
 session_start();
+require '../db.php';
+// cargar lista de puestos para los selects
+$puestos = $pdo->query("SELECT id, descripcion FROM puesto ORDER BY descripcion")->fetchAll(PDO::FETCH_ASSOC);
+
 if (isset($_SESSION['mensaje'])) {
+    $tipo = isset($_SESSION['mensaje_tipo']) ? $_SESSION['mensaje_tipo'] : 'success';
+    $clase_alert = $tipo === 'danger' ? 'alert-danger' : 'alert-success';
     echo '
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert ' . $clase_alert . ' alert-dismissible fade show" role="alert">
         ' . $_SESSION['mensaje'] . '
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>';
     unset($_SESSION['mensaje']);
+    unset($_SESSION['mensaje_tipo']);
 }
 ?>
 <!doctype html>
@@ -88,8 +95,7 @@ if (isset($_SESSION['mensaje'])) {
                                     <th>Nombre</th>
                                     <th>Apellido Paterno</th>
                                     <th>Apellido Materno</th>
-                                    <th>Cargo</th>
-                                    <th>Área</th>
+                                    <th>Puesto</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -117,7 +123,7 @@ if (isset($_SESSION['mensaje'])) {
 
                     <div class="mb-3">
                         <label class="form-label">Carnet Identidad</label>
-                        <input type="text" class="form-control" name="ci">
+                        <input type="number" class="form-control" name="ci" min="0" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
                     </div>
 
                     <div class="mb-3">
@@ -136,22 +142,21 @@ if (isset($_SESSION['mensaje'])) {
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Cargo</label>
-                        <select class="form-select" name="cargo">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" name="rol">
                             <option>Administrador</option>
-                            <option>Gerente General</option>
+                            <option>Gerente</option>
                             <option>Administrativo</option>
                             <option>Secretaria</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Área</label>
-                        <select class="form-select" name="area">
-                            <option>Gerencia</option>
-                            <option>JDAF</option>
-                            <option>JDOHTO</option>
-                            <option>JDOTBO</option>
+                        <label class="form-label">Puesto</label>
+                        <select class="form-select" name="id_puesto">
+                            <?php foreach ($puestos as $p): ?>
+                                <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['descripcion']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -179,7 +184,7 @@ if (isset($_SESSION['mensaje'])) {
 
                     <div class="mb-3">
                         <label class="form-label">Carnet Identidad</label>
-                        <input type="text" class="form-control" id="edit_ci" name="ci">
+                        <input type="number" class="form-control" id="edit_ci" name="ci" min="0" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
                     </div>
 
                     <div class="mb-3">
@@ -198,21 +203,21 @@ if (isset($_SESSION['mensaje'])) {
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Cargo</label>
-                        <select class="form-select" id="edit_cargo" name="cargo">
+                        <label class="form-label">Rol</label>
+                        <select class="form-select" id="edit_rol" name="rol">
                             <option>Administrador</option>
+                            <option>Gerente</option>
                             <option>Administrativo</option>
                             <option>Secretaria</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Área</label>
-                        <select class="form-select" id="edit_area" name="area">
-                            <option>Gerencia</option>
-                            <option>JDAF</option>
-                            <option>JDOHTO</option>
-                            <option>JDOTBO</option>
+                        <label class="form-label">Puesto</label>
+                        <select class="form-select" id="edit_id_puesto" name="id_puesto">
+                            <?php foreach ($puestos as $p): ?>
+                                <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['descripcion']) ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
 
@@ -248,8 +253,7 @@ $(document).ready(function() {
             { data: 'nombre' },
             { data: 'paterno' },
             { data: 'materno' },
-            { data: 'cargo' },
-            { data: 'area' },
+            { data: 'puesto' },
             { data: 'estado' },
             { data: 'acciones' }
         ]
@@ -268,8 +272,8 @@ function editarFuncionario(id) {
             $('#edit_nombre').val(data.nombre);
             $('#edit_paterno').val(data.paterno);
             $('#edit_materno').val(data.materno);
-            $('#edit_cargo').val(data.cargo);
-            $('#edit_area').val(data.area);
+            $('#edit_rol').val(data.rol);
+            $('#edit_id_puesto').val(data.id_puesto);
             $('#editFuncionarioModal').modal('show');
         }
     });

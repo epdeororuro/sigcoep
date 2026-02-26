@@ -3,7 +3,7 @@ session_start();
 require '../db.php';
 
 try {
-    $sql = "SELECT c.id, c.cite, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
+    $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
                    (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
             FROM correspondencia c
             ORDER BY c.fecha DESC";
@@ -55,7 +55,7 @@ try {
             ';
         }
         $data[] = array(
-            'cite' => $correspondencia['cite'],
+            'hojaruta' => $correspondencia['hojaruta'],
             'remitente' => $correspondencia['remitente'],
             'referencia' => $correspondencia['referencia'],
             'fojas' => $correspondencia['fojas'],

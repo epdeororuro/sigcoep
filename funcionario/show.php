@@ -4,7 +4,10 @@ session_start();
 require '../db.php';
 
 try {
-    $sql = "SELECT id, ci, nombre, paterno, materno, cargo, area, estado FROM funcionario WHERE cargo!='Administrador'";
+    $sql = "SELECT f.id, f.ci, f.nombre, f.paterno, f.materno, f.rol, p.descripcion AS puesto, f.estado
+            FROM funcionario f
+            JOIN puesto p ON f.id_puesto = p.id
+            WHERE f.rol != 'Administrador'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $funcionarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -39,8 +42,7 @@ try {
             'nombre' => $funcionario['nombre'],
             'paterno' => $funcionario['paterno'],
             'materno' => $funcionario['materno'],
-            'cargo' => $funcionario['cargo'],
-            'area' => $funcionario['area'],
+            'puesto' => $funcionario['puesto'],
             'estado' => $funcionario['estado'],
             'acciones' => $acciones
         );

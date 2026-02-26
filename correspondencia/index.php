@@ -74,7 +74,7 @@ try {
                             <table id="correspondencia" class="table table-striped table-bordered align-middle w-100">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th>Cite</th>
+                                        <th>Hoja Ruta</th>
                                         <th>Remitente</th>
                                         <th>Referencia</th>
                                         <th>Fojas</th>
@@ -102,8 +102,8 @@ try {
                 <div class="modal-body">
                     <form id="createCorrespondenciaForm" action="store.php" method="post">
                         <div class="mb-3">
-                            <label class="form-label">Cite</label>
-                            <input type="text" class="form-control" name="cite">
+                            <label class="form-label">Hoja de Ruta</label>
+                            <input type="text" class="form-control" name="hojaruta">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Remitente</label>
@@ -138,8 +138,8 @@ try {
                     <form id="editCorrespondenciaForm" action="update.php" method="post">
                         <input type="hidden" id="edit_id" name="id">
                         <div class="mb-3">
-                            <label class="form-label">Cite</label>
-                            <input type="text" class="form-control" id="edit_cite" name="cite">
+                            <label class="form-label">hojaruta</label>
+                            <input type="text" class="form-control" id="edit_hojaruta" name="hojaruta">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Remitente</label>
@@ -227,7 +227,7 @@ try {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
                 },
                 columns: [
-                    { data: 'cite' },
+                    { data: 'hojaruta' },
                     { data: 'remitente' },
                     { data: 'referencia' },
                     { data: 'fojas' },
@@ -246,7 +246,7 @@ try {
                 dataType: 'json',
                 success: function(data) {
                     $('#edit_id').val(data.id);
-                    $('#edit_cite').val(data.cite);
+                    $('#edit_hojaruta').val(data.hojaruta);
                     $('#edit_remitente').val(data.remitente);
                     $('#edit_referencia').val(data.referencia);
                     $('#edit_fojas').val(data.fojas);
