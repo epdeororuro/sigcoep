@@ -72,13 +72,31 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: none;
             border: 1px solid #e9ecef;
         }
+        .time-marker {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;    
+            gap: 4px;               
+        }
+        .circle {
+            width: 50px;
+            height: 60px;
+            border-radius: 50%;    
+            background-color: #007bff; 
+            color: #fff;           
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h4>Historial de Derivaciones</h4>
+            <h4>Historial de Derivaciones - Línea de Vida</h4>
             <small class="text-muted">Hoja de Ruta: <?php echo htmlspecialchars($cor['hojaruta']); ?></small>
         </div>
         <div>
@@ -94,7 +112,9 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 <?php else: ?>
                     <?php foreach ($derivaciones as $d): ?>
                         <div class="timeline-item">
-                            <div class="time-marker"><?php echo date('d', strtotime($d['fecha_derivacion'])); ?></div>
+                            <div class="time-marker">
+                                <div class="circle"><?php echo date('d-M', strtotime($d['fecha_derivacion'])); ?></div>
+                            </div>
                             <div class="card p-2">
                                 <div class="card-body p-2">
                                     <strong><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></strong>
@@ -110,7 +130,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <div class="col-lg-6">
-            <h5>Detalle (lista)</h5>
+            <h5>Detalle de Derivacion</h5>
             <table class="table table-striped">
                 <thead>
                 <tr>
