@@ -24,8 +24,8 @@ try {
     }
     $fojas = $corr['fojas'];
 
-    // Buscar funcionario activo con id_puesto = 2 (Gerencia General)
-    $stmt = $pdo->prepare("SELECT id FROM funcionario WHERE id_puesto = 2 AND estado = 'Activo' LIMIT 1");
+    // Buscar funcionario activo con id_puesto = 1 (Gerencia General)
+    $stmt = $pdo->prepare("SELECT id FROM funcionario WHERE id_puesto = 1 AND estado = 'Activo' LIMIT 1");
     $stmt->execute();
     $func = $stmt->fetch(PDO::FETCH_ASSOC);
 

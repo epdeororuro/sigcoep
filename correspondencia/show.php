@@ -3,12 +3,32 @@ session_start();
 require '../db.php';
 
 try {
-    $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
-                   (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
-            FROM correspondencia c
-            ORDER BY c.fecha DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    // determinar usuario actual y su puesto
+    $usuario_id = $_SESSION['usuario_id'] ?? null;
+    $usuario_id_puesto = $_SESSION['usuario_id_puesto'] ?? null;
+
+    if ($usuario_id_puesto == 4) {
+        // Secretaria Ejecutiva ve todo
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
+                       (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
+                FROM correspondencia c
+                ORDER BY c.fecha DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    } else {
+        // solo correspondencias derivadas al usuario
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
+                       (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
+                FROM correspondencia c
+                WHERE EXISTS (
+                    SELECT 1 FROM derivacion d2
+                    WHERE d2.id_correspondencia = c.id
+                      AND d2.id_funcionario = :uid
+                )
+                ORDER BY c.fecha DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':uid' => $usuario_id]);
+    }
     $correspondencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $data = array();
@@ -24,7 +44,7 @@ try {
             <form action="destroy.php" method="post" style="display: inline; margin-left:4px;">
             <input type="hidden" name="id" value="'.$correspondencia['id'].'">
             <button type="submit" class="btn btn-danger btn-sm" title="Eliminar"><i class="bi bi-trash"></i></button></form>
-            <form action="iniciar.php" method="post" style="display: inline; margin-left:4px;">
+            <form action="create.php" method="post" style="display: inline; margin-left:4px;">
             <input type="hidden" name="id" value="'.$correspondencia['id'].'">
             <button type="submit" class="btn btn-primary btn-sm" title="Iniciar"><i class="bi bi-play-circle"></i></button>
             </form>';

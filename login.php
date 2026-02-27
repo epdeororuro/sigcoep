@@ -19,6 +19,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $_SESSION['usuario_id'] = $user['id'];
         $_SESSION['usuario_nombre'] = $user['nombre'];
         $_SESSION['usuario_cargo'] = $user['rol'];
+        // guardar puesto para controles especiales (4 = Secretaria Ejecutiva)
+        $_SESSION['usuario_id_puesto'] = $user['id_puesto'];
 
         header('Location: dashboard.php'); // Redirige al dashboard
         exit;

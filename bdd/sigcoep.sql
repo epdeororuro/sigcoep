@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaciÃ³n: 26-02-2026 a las 21:08:59
+-- Tiempo de generaciÃ³n: 27-02-2026 a las 20:22:35
 -- VersiÃ³n del servidor: 10.4.32-MariaDB
 -- VersiÃ³n de PHP: 8.2.12
 
@@ -39,6 +39,14 @@ CREATE TABLE `correspondencia` (
   `eliminado_en` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `correspondencia`
+--
+
+INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
+(3, '162/2026', 'Ing. Reynaldo Jesus Flores Jaillita', 'Entrega de Productos GrÃ¡ficos Oficinas Administrativas', 3, '2026-02-26 21:05:33', 'Derivado', '2026-02-27 19:17:01', NULL),
+(4, '163/2026', 'Comando Departamental de Oruro - FELCN', 'RevisiÃ³n de camaras de vigilancia.', 1, '2026-02-27 19:14:11', 'Iniciado', '2026-02-27 19:14:17', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -55,6 +63,17 @@ CREATE TABLE `derivacion` (
   `caracter` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `derivacion`
+--
+
+INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `instruccion_adicional`, `fojas`, `caracter`) VALUES
+(2, 3, 2, '2026-02-26 22:24:22', 'Para su atenciÃ³n', 3, 'Para conocimiento'),
+(3, 3, 6, '2026-02-26 22:26:02', 'Para su implementaciÃ³n del material grafico informativa en las oficinas correspondientes, posterior archivo de la nota', 3, 'Para conocimiento'),
+(4, 3, 14, '2026-02-26 22:30:21', 'Para su distribuciÃ³n bajo lista y firmas y posterior control de colocado y visualizaciÃ³n del Ã¡rea organizacional', 3, 'Procesar'),
+(5, 4, 3, '2026-02-27 19:14:17', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
+(6, 3, 3, '2026-02-27 19:17:01', 'Para su atenciÃ³n y coordinaciÃ³n con Area de Sistemas', 1, 'Urgente');
+
 -- --------------------------------------------------------
 
 --
@@ -69,9 +88,9 @@ CREATE TABLE `funcionario` (
   `materno` varchar(60) NOT NULL,
   `usuario` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `rol` varchar(25) NOT NULL,
+  `rol` varchar(25) DEFAULT NULL,
   `id_puesto` int(11) NOT NULL,
-  `estado` varchar(12) NOT NULL DEFAULT 'Activo',
+  `estado` varchar(12) NOT NULL,
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
   `actualizado_en` timestamp NOT NULL DEFAULT current_timestamp(),
   `eliminado_en` timestamp NOT NULL DEFAULT current_timestamp()
@@ -82,7 +101,24 @@ CREATE TABLE `funcionario` (
 --
 
 INSERT INTO `funcionario` (`id`, `ci`, `nombre`, `paterno`, `materno`, `usuario`, `password`, `rol`, `id_puesto`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
-(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', 'Administrador', 1, 'Activo', '2026-02-26 18:56:07', '2026-02-26 18:56:07', '2026-02-26 18:56:07');
+(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', 'Administrador', 1, 'Activo', '2026-02-26 18:56:07', '2026-02-26 18:56:07', '2026-02-26 18:56:07'),
+(2, 2, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$uQsDWVpZIdAo9jVEHB2sKeeFQ2gxGC290Zjwn52nqbVlu9icEDuHa', 'Gerente', 1, 'Activo', '2026-02-26 20:38:37', '2026-02-28 00:15:20', '2026-02-26 20:38:37'),
+(3, 2, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$Oeg4TKELy.g1O4kqOFxUueTsoJ3olfbybQFKRIRNLVMTs4jSj1bmq', 'Administrativo', 2, 'Activo', '2026-02-26 20:39:16', '2026-02-26 20:39:16', '2026-02-26 20:39:16'),
+(4, 3, 'Carmen Marisol', 'Rufino', 'Segovia', 'crufino', '$2y$10$ghzc1cBlL8SJMnkCtrbST.68uVN7YL022gYpjXR8NzHReNJ4kyWBO', 'Administrativo', 3, 'Activo', '2026-02-26 20:40:56', '2026-02-26 20:40:56', '2026-02-26 20:40:56'),
+(5, 4, 'Maricruz Sara', 'Mamani', 'Nieto', 'mmamani', '$2y$10$VUnrf.kHPNQqY560692WZu/C.egBgjsgUBxCHr2mN8niIlC2fnk6C', 'Secretaria', 4, 'Activo', '2026-02-26 20:41:32', '2026-02-27 01:55:11', '2026-02-26 20:41:32'),
+(6, 5, 'Belinda', 'Perez', 'Ayma', 'bperez', '$2y$10$vpT863tXlFBaxu6QqkbBRuUvmVPWHYhg6S/2Y.3qvOscI5hQgv0Tq', 'Administrativo', 5, 'Activo', '2026-02-26 20:41:55', '2026-02-26 20:41:55', '2026-02-26 20:41:55'),
+(7, 6, 'Erwin Jorge', 'Gonzales', 'Rioja', 'egonzales', '$2y$10$mK0dXSaXW3jN5QNI0PYVl.zRksRh5rblowDgMrJKWcMOj.dWOxlbq', 'Administrativo', 7, 'Activo', '2026-02-26 20:42:23', '2026-02-26 20:42:23', '2026-02-26 20:42:23'),
+(8, 7, 'Carlos G. ', 'Rodriguez', 'Rocha', 'crodriguez', '$2y$10$3ak7hO4TYOHbEU4x8mL5o.ij5PIG3uuVLlcmPbZ5ENKwiyd.vdQs2', 'Administrativo', 6, 'Activo', '2026-02-26 20:42:46', '2026-02-26 20:42:46', '2026-02-26 20:42:46'),
+(9, 8, 'David', 'Ticona', 'Cabrera', 'dticona', '$2y$10$Z1DQSNnA85NyImbsfdj2NOWnwoUPA5Ldm0Ptot1YyaMYu91ko7WaK', 'Administrativo', 16, 'Activo', '2026-02-26 20:44:20', '2026-02-26 20:44:20', '2026-02-26 20:44:20'),
+(10, 9, 'Jeanneth Angelica', 'Chambi', 'Chinche', 'jchambi', '$2y$10$Xmm3G4fcPsI5/BSsnENjuOblpYLHfy1Xg31NemLPo1IvclO3PRowG', 'Administrativo', 8, 'Activo', '2026-02-26 20:44:34', '2026-02-26 20:44:34', '2026-02-26 20:44:34'),
+(11, 10, 'Guadalupe', 'Gutierrez', 'Mamani', 'ggutierrez', '$2y$10$iZO8AosadOY83UP54dpu.useU.nIljFU9p1N44zhcgZvy8x5L.Mwu', 'Administrativo', 10, 'Activo', '2026-02-26 20:45:23', '2026-02-26 20:45:23', '2026-02-26 20:45:23'),
+(12, 11, 'Marina', 'Alegre', '-', 'malegre', '$2y$10$LDVRbHpu5FaDLkrcTYswfeejRhGk8PxWHuQ8sexiGeQVfjFfORN.2', 'Administrativo', 13, 'Activo', '2026-02-26 20:45:57', '2026-02-26 20:45:57', '2026-02-26 20:45:57'),
+(13, 12, 'Maria', 'Colque', 'Rivera', 'mcolque', '$2y$10$3h/fkkiEjkcNywuJr0ltFemTpEaYAp.Y2qLbm1xehqmtkBWEAMn0e', 'Administrativo', 9, 'Activo', '2026-02-26 20:47:04', '2026-02-26 20:47:04', '2026-02-26 20:47:04'),
+(14, 7403044, 'Reynaldo Jesus', 'Flores', 'Jaillita', 'rflores', '$2y$10$tGXRqOwXUGP7XYSS5a/yUepmSsuGeRDqd4w3NJ4rrM77LyMuRESPC', 'Administrativo', 15, 'Activo', '2026-02-26 20:47:26', '2026-02-26 20:47:26', '2026-02-26 20:47:26'),
+(15, 14, 'Milton Jose', 'Torrez', 'Alegre', 'mtorrez', '$2y$10$QGfyme45IF.G8w873H7cTeIBzE4gWWH2MiBg3FQcb7XKi6XNh7lQ2', 'Administrativo', 11, 'Activo', '2026-02-26 20:47:57', '2026-02-26 20:47:57', '2026-02-26 20:47:57'),
+(16, 15, 'Marina Ana', 'Alejandro', 'Ayala', 'malejandro', '$2y$10$CEbLpulfeju6Dn5/p0y6nO8dNDaLoij06o/y801BI8Ntjk6YKwe9K', 'Administrativo', 12, 'Activo', '2026-02-26 20:48:17', '2026-02-26 20:48:17', '2026-02-26 20:48:17'),
+(17, 16, 'Scarleth', '-', '-', 's-', '$2y$10$eZhHnZgyRE7tvD9WTr1GN.tDLb4ZuU3mM3wpEGMbBXieccf2Kzv1a', 'Administrativo', 17, 'Activo', '2026-02-26 20:49:01', '2026-02-26 20:49:01', '2026-02-26 20:49:01'),
+(18, 17, 'Jorge', 'Quillaguaman', '-', 'jquillaguaman', '$2y$10$2DVs9Kc42iAeqkZKkw9ai.2mk73dj1mb4vCKd7lsLoHw3YFEFR8R.', 'Administrativo', 18, 'Activo', '2026-02-26 20:49:23', '2026-02-26 20:49:23', '2026-02-26 20:49:23');
 
 -- --------------------------------------------------------
 
@@ -160,19 +196,19 @@ ALTER TABLE `puesto`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
 --
 ALTER TABLE `funcionario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `puesto`
