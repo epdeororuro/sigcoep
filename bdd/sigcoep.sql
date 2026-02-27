@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaciÃ³n: 27-02-2026 a las 20:22:35
+-- Tiempo de generaciÃ³n: 27-02-2026 a las 21:47:37
 -- VersiÃ³n del servidor: 10.4.32-MariaDB
 -- VersiÃ³n de PHP: 8.2.12
 
@@ -44,8 +44,8 @@ CREATE TABLE `correspondencia` (
 --
 
 INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
-(3, '162/2026', 'Ing. Reynaldo Jesus Flores Jaillita', 'Entrega de Productos GrÃ¡ficos Oficinas Administrativas', 3, '2026-02-26 21:05:33', 'Derivado', '2026-02-27 19:17:01', NULL),
-(4, '163/2026', 'Comando Departamental de Oruro - FELCN', 'RevisiÃ³n de camaras de vigilancia.', 1, '2026-02-27 19:14:11', 'Iniciado', '2026-02-27 19:14:17', NULL);
+(1, '01/2025', 'Nelia Alejo', 'Solicitud dde Revision de camaras', 1, '2026-02-27 20:37:45', 'Derivado', '2026-02-27 20:45:59', NULL),
+(2, '02/2025', 'Ing. David Ticona Cabrera', 'mantenimiento de CPU', 1, '2026-02-27 20:45:25', 'Derivado', '2026-02-27 20:46:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -68,11 +68,10 @@ CREATE TABLE `derivacion` (
 --
 
 INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `instruccion_adicional`, `fojas`, `caracter`) VALUES
-(2, 3, 2, '2026-02-26 22:24:22', 'Para su atenciÃ³n', 3, 'Para conocimiento'),
-(3, 3, 6, '2026-02-26 22:26:02', 'Para su implementaciÃ³n del material grafico informativa en las oficinas correspondientes, posterior archivo de la nota', 3, 'Para conocimiento'),
-(4, 3, 14, '2026-02-26 22:30:21', 'Para su distribuciÃ³n bajo lista y firmas y posterior control de colocado y visualizaciÃ³n del Ã¡rea organizacional', 3, 'Procesar'),
-(5, 4, 3, '2026-02-27 19:14:17', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
-(6, 3, 3, '2026-02-27 19:17:01', 'Para su atenciÃ³n y coordinaciÃ³n con Area de Sistemas', 1, 'Urgente');
+(1, 1, 2, '2026-02-27 20:38:48', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
+(2, 2, 2, '2026-02-27 20:45:27', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
+(3, 1, 6, '2026-02-27 20:45:59', 'Para su atencion', 1, 'Urgente'),
+(4, 2, 14, '2026-02-27 20:46:17', 'Para su consideracion', 2, 'Para conocimiento');
 
 -- --------------------------------------------------------
 
@@ -101,9 +100,9 @@ CREATE TABLE `funcionario` (
 --
 
 INSERT INTO `funcionario` (`id`, `ci`, `nombre`, `paterno`, `materno`, `usuario`, `password`, `rol`, `id_puesto`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
-(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', 'Administrador', 1, 'Activo', '2026-02-26 18:56:07', '2026-02-26 18:56:07', '2026-02-26 18:56:07'),
-(2, 2, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$uQsDWVpZIdAo9jVEHB2sKeeFQ2gxGC290Zjwn52nqbVlu9icEDuHa', 'Gerente', 1, 'Activo', '2026-02-26 20:38:37', '2026-02-28 00:15:20', '2026-02-26 20:38:37'),
-(3, 2, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$Oeg4TKELy.g1O4kqOFxUueTsoJ3olfbybQFKRIRNLVMTs4jSj1bmq', 'Administrativo', 2, 'Activo', '2026-02-26 20:39:16', '2026-02-26 20:39:16', '2026-02-26 20:39:16'),
+(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', 'Administrador', 19, 'Activo', '2026-02-26 18:56:07', '2026-02-26 18:56:07', '2026-02-26 18:56:07'),
+(2, 7343846, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$H05dXZb8DvWcIMMmkkG4ZurvPN4aSTa7fvTgZl6zFPebxwN86jo4G', 'Gerente', 1, 'Activo', '2026-02-26 20:38:37', '2026-02-28 01:36:32', '2026-02-26 20:38:37'),
+(3, 7200300, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$XyCaXqajRZ2YS19R5iRrye2eXe3N5WLiseeXjheI1x3cRc243hn62', 'Administrativo', 2, 'Activo', '2026-02-26 20:39:16', '2026-02-28 01:36:49', '2026-02-26 20:39:16'),
 (4, 3, 'Carmen Marisol', 'Rufino', 'Segovia', 'crufino', '$2y$10$ghzc1cBlL8SJMnkCtrbST.68uVN7YL022gYpjXR8NzHReNJ4kyWBO', 'Administrativo', 3, 'Activo', '2026-02-26 20:40:56', '2026-02-26 20:40:56', '2026-02-26 20:40:56'),
 (5, 4, 'Maricruz Sara', 'Mamani', 'Nieto', 'mmamani', '$2y$10$VUnrf.kHPNQqY560692WZu/C.egBgjsgUBxCHr2mN8niIlC2fnk6C', 'Secretaria', 4, 'Activo', '2026-02-26 20:41:32', '2026-02-27 01:55:11', '2026-02-26 20:41:32'),
 (6, 5, 'Belinda', 'Perez', 'Ayma', 'bperez', '$2y$10$vpT863tXlFBaxu6QqkbBRuUvmVPWHYhg6S/2Y.3qvOscI5hQgv0Tq', 'Administrativo', 5, 'Activo', '2026-02-26 20:41:55', '2026-02-26 20:41:55', '2026-02-26 20:41:55'),
@@ -154,7 +153,8 @@ INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 (15, 'Profesional I de Sistemas InformÃ¡ticos y Redes', 'SISTEMAS'),
 (16, 'Encargado Ãrea de Mantenimiento y ReparaciÃ³n', 'AREA MANTENIMIENTO'),
 (17, 'Recepcionista 1', 'RECEPCION HOTEL'),
-(18, 'Recaudador de Valores 1', 'AUXILIAR JDTO');
+(18, 'Recaudador de Valores 1', 'AUXILIAR JDTO'),
+(19, 'Administrador del Sistema', 'ADM');
 
 --
 -- Ãndices para tablas volcadas
@@ -196,13 +196,13 @@ ALTER TABLE `puesto`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
@@ -214,7 +214,7 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de la tabla `puesto`
 --
 ALTER TABLE `puesto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Restricciones para tablas volcadas
