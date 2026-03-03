@@ -89,12 +89,20 @@ if ($page === 1) {
 <head>
     <meta charset="utf-8">
     <title>Reporte Hoja de Ruta - página <?= $page ?></title>
+    <!-- Bootstrap CSS for button styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-..." crossorigin="anonymous">
+    <!-- FontAwesome for print icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @page { size: 21.59cm 27.94cm; margin: 1cm; }
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .page { width: 19.59cm; height: 25.94cm; position: relative; padding: 0.5cm 1cm; box-sizing: border-box; }
         .header { display: flex; justify-content: space-between; align-items: center; height: 2.5cm; }
         .header img { max-height: 60px; }
+        /* make the middle logo a bit wider */
+        @media print { #printBtn { display:none; } }
+        /* position print button using bootstrap utility spacing */
+        #printBtn { position:fixed; top:10px; right:10px; z-index:1000; }
         .referencia { font-family: 'Arial Black', Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 8px; margin-top: 0.05cm; height:0.8cm; }
         .referencia td { vertical-align: center; padding: 1px 2px; }
         .small-box { margin-top:0.05cm; height:0.6cm; }
@@ -102,24 +110,26 @@ if ($page === 1) {
         .small-box td { padding:2px; font-family: Cambria, serif; font-weight:bold; font-size:8px; vertical-align:center; }
         .box { border: 1px solid #000; padding: 6px; margin-top: 0.25cm; font-family: Cambria, serif; font-weight: bold; font-size: 9px; height: 6.2cm; position: relative; box-sizing: border-box; }
         .box-left-inner { display:flex; gap:6px; width:100%; }
-        .box-left-content { flex:0 0 45%; padding-right:6px; box-sizing:border-box; }
-        .box-left-checkboxes { flex:0 0 25%; font-size:7px; display:flex; flex-direction:column; }
+        .box-left-content { flex:0 0 44%; padding-right:6px; box-sizing:border-box; }
+        .box-left-checkboxes { flex:0 0 24%; font-size:7px; display:flex; flex-direction:column; }
         .box-left-checkboxes label { display:block; margin-bottom:3px; white-space:nowrap; }
-        .box-right { flex:0 0 30%; box-sizing: border-box; padding-left:0.4cm; }
+        .box-left-recibo { flex:0 0 28%; }
         .box-title { font-weight: bold; text-transform: uppercase; margin-bottom: 4px; font-size: 12px; }
-        .box-line { border-bottom: 1px solid #000; height: 1em; margin-bottom: 0.2rem; }
-        .recibo { width:100%; height:5.2cm; border:1px solid #000; font-size:9px; text-align:center; padding-top:0.3cm; box-sizing:border-box; }
+        .recibo { width:100%; height:4.6cm; border:1px solid #000; font-size:9px; text-align:center; padding-top:0.3cm; box-sizing:border-box; }
         .footer { position: absolute; bottom: 0.5cm; left: 1cm; right: 1cm; font-size: 8px; text-align: center; }
         .footer div { line-height: 1.1; }
-        .signature { position:relative; margin-top:4px; text-align:center; font-size:9px; padding:2px; }
+        .signature { position:absolute; bottom:4px; left:0; width:100%; text-align:center; font-size:9px; padding:2px; }
     </style>
 </head>
 <body>
+<button id="printBtn" onclick="window.print()" class="btn btn-primary btn-sm" title="Imprimir hoja">
+        <i class="fa fa-print" aria-hidden="true"></i> Imprimir
+    </button>
 <div class="page">
     <div class="header">
-        <img src="../assets/img/logo_1.png" alt="logo1">
-        <img src="../assets/img/logo_2.png" alt="logo2">
-        <img src="../assets/img/logo_3.png" alt="logo3">
+        <img src="../assets/img/logo_1.png" alt="EPDEOR LOGO" style="max-height: 80px; max-width: 320px;">
+        <img src="../assets/img/logo_2.png" alt="EPDEOR" style="max-height: 100px; max-width: 320px;">
+        <img src="../assets/img/logo_3.png" alt="G.A.D.OR.">
     </div>
 
     <!-- datos referenciales -->
@@ -158,26 +168,26 @@ if ($page === 1) {
             <div class="box-left">
                 <div class="box-left-inner">
                     <div class="box-left-content">
-                        <div class="box-title"><?php echo ($destIndex == 1 ? '1 DESTINATARIO' : $destIndex.' DESTINATARIO'); ?></div>
-                        <div class="box-line"><?= destino($destIndex, $destinos) ?></div>
-                        <div><strong>Lugar:</strong></div>
+                        <div class="box-title"><?php echo ($destIndex == 1 ? '1 DESTINATARIO' : $destIndex.' DESTINATARIO'); ?>:</div>
+                        <div><?= destino($destIndex, $destinos) ?></div>
+                        <div><strong>LUGAR:</strong></div>
                         <div style="margin-top:6px;"><strong>INSTRUCCIÓN ADICIONAL:</strong></div>
                         <div style="height:3.2cm; border:1px solid #000; margin-top:4px;"></div>
                     </div>
                     <div class="box-left-checkboxes">
-                        <label><input type="checkbox"> Urgente</label>
-                        <label><input type="checkbox"> Para conocimiento</label>
-                        <label><input type="checkbox"> Preparar respuesta</label>
-                        <label><input type="checkbox"> Procesar</label>
-                        <label><input type="checkbox"> Preparar informe</label>
-                        <label><input type="checkbox"> Archivo</label>
+                        <label><input type="checkbox" disabled> Urgente</label>
+                        <label><input type="checkbox" disabled> Para conocimiento</label>
+                        <label><input type="checkbox" disabled> Preparar respuesta</label>
+                        <label><input type="checkbox" disabled> Procesar</label>
+                        <label><input type="checkbox" disabled> Preparar informe</label>
+                        <label><input type="checkbox" disabled> Archivo</label>
+                    </div>
+                    <div class="box-left-recibo">
+                        <div style="font-size:8px; margin-bottom:4px;"><strong>Fojas:</strong><br><strong>Anexos:</strong></div>
+                        <div class="recibo">RECIBIDO/SELLO/FIRMA</div>
                     </div>
                 </div>
             </div>
-                <div class="box-right">
-                    <div style="font-size:8px; margin-bottom:4px;"><strong>Fojas:</strong> <?= $fojas ?> <br><strong>Anexos:</strong></div>
-                    <div class="recibo">RECIBIDO/SELLO/FIRMA</div>
-                </div>
             </div>
             <div class="signature">
                 <div>FECHA (DD-MM-AA) &nbsp;&nbsp;&nbsp; HORA (HH.MM) &nbsp;&nbsp;&nbsp; FIRMA/NOMBRE/CARGO</div>
@@ -187,6 +197,7 @@ if ($page === 1) {
 
     <!-- pie de página con datos de contacto -->
     <div class="footer">
+        <hr style="border:none; border-top:3px solid #000000; margin:0.2cm 0;">
         <div>Dirección: Rajka Bacovick entre Aroma y Villarroel – Edificio Empresa Pública Departamental Hotel Terminal-Terminal de Buses de Oruro “EPDEOR”</div>
         <div>Teléfonos: (591-2) 5276389 – 5279535 *Hotel Terminal de Oruro (591-2) 5276227</div>
         <div>Correo: epdeororuro@gmail.com</div>
