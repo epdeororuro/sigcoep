@@ -81,6 +81,11 @@ try {
             </form>';
         }
 
+        // si no está en estado Registrado añadimos botón de impresión
+        if ($correspondencia['estado'] != 'Registrado') {
+            $acciones .= '<button type="button" class="btn btn-secondary btn-sm ms-1" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
+        }
+
         $data[] = array(
             'hojaruta' => $correspondencia['hojaruta'],
             'remitente' => $correspondencia['remitente'],

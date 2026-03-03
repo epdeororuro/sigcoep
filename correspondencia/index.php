@@ -211,6 +211,30 @@ try {
             </div>
         </div>
     </div>
+    <!-- ================= MODAL IMPRESIÓN DE PÁGINA ================= -->
+    <div class="modal fade" id="printPageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imprimir página de reporte</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="printPageForm" action="reporte.php" method="post" target="_blank">
+                        <input type="hidden" id="print_correspondencia_id" name="id">
+                        <div class="mb-3">
+                            <label class="form-label">Número de página (1-10)</label>
+                            <input type="number" min="1" max="10" class="form-control" id="print_page_number" name="page" value="1" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-primary" form="printPageForm">Abrir reporte</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= JS ================= -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -273,6 +297,13 @@ try {
             var fid = $(this).val();
             $('#derivar_id_funcionario').val(fid);
         });
+
+        // función para abrir el modal de impresión y fijar el id
+        function solicitarPagina(id) {
+            $('#print_correspondencia_id').val(id);
+            $('#print_page_number').val(1);
+            $('#printPageModal').modal('show');
+        }
     </script>
 </body>
 </html>

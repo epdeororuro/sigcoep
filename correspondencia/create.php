@@ -54,9 +54,12 @@ try {
     $stmt = $pdo->prepare("UPDATE correspondencia SET estado = 'Iniciado', actualizado_en = NOW() WHERE id = :id");
     $stmt->execute([':id' => $id_correspondencia]);
 
-    $_SESSION['mensaje'] = 'Correspondencia iniciada y derivada a Gerencia General';
-    $_SESSION['mensaje_tipo'] = 'success';
-    header('Location: index.php');
+    // en lugar de regresar a la lista, enviamos un formulario POST que abrirá la página de reporte
+    echo '<form id="printForm" action="reporte.php" method="post">
+            <input type="hidden" name="id" value="'.$id_correspondencia.'">
+            <input type="hidden" name="page" value="1">
+          </form>
+          <script>document.getElementById("printForm").submit();</script>';
     exit;
 
 } catch (PDOException $e) {
