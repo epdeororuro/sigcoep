@@ -169,7 +169,7 @@ if ($page === 1) {
                 <div class="box-left-inner">
                     <div class="box-left-content">
                         <div class="box-title"><?php echo ($destIndex == 1 ? '1 DESTINATARIO' : $destIndex.' DESTINATARIO'); ?>:</div>
-                        <div><?= destino($destIndex, $destinos) ?></div>
+                        <div></div>
                         <div><strong>LUGAR:</strong></div>
                         <div style="margin-top:6px;"><strong>INSTRUCCIÓN ADICIONAL:</strong></div>
                         <div style="height:3.2cm; border:1px solid #000; margin-top:4px;"></div>
