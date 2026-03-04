@@ -34,36 +34,29 @@ if (isset($_SESSION['mensaje'])) {
         body {
             background-color: #f4f6f9;
         }
-
-        /* Card estilo AdminLTE */
         .card {
             border-radius: 1rem;
         }
-
-        /* DataTable full width */
         table.dataTable {
             width: 100% !important;
         }
-
-        /* Quitar padding excesivo */
         .card-body {
             padding: 1.5rem;
         }
-
-        /* Header DataTable */
         .table thead th {
             vertical-align: middle;
             text-align: center;
         }
-        /* Evita que las celdas se aplasten */
         table.dataTable th,
         table.dataTable td {
             white-space: nowrap;
         }
 
-        /* Scroll limpio */
         .dataTables_wrapper .dataTables_scroll {
             overflow: auto;
+        }
+        .table-responsive {
+            font-size: 0.7rem;
         }
     </style>
 </head>
