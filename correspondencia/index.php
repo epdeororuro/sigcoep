@@ -86,7 +86,7 @@ try {
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-0">Lista de Correspondencia</h3>
-                            <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador', 'gerente'])): ?>
+                            <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador'])): ?>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
                                 <i class="bi bi-envelope-plus"></i> Nueva Correspondencia
                             </button>

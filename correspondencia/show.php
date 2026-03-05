@@ -116,7 +116,7 @@ try {
             'remitente' => $correspondencia['remitente'],
             'referencia' => $correspondencia['referencia'],
             'fojas' => $correspondencia['fojas'],
-            'fecha' => $correspondencia['fecha'],
+            'fecha' => date('d-m-Y H:i:s', strtotime($correspondencia['fecha'])),
             'estado' => $estado_display,
             'acciones' => $acciones
         );

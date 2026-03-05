@@ -118,7 +118,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                             <div class="card p-2">
                                 <div class="card-body p-2">
                                     <strong><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></strong>
-                                    <div class="text-muted small"><?php echo htmlspecialchars($d['fecha_derivacion']); ?></div>
+                                    <div class="text-muted small"><?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></div>
                                     <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></p>
                                     <div class="small text-muted mt-1">Fojas: <?php echo htmlspecialchars($d['fojas']); ?> — Carácter: <?php echo htmlspecialchars($d['caracter']); ?></div>
                                 </div>
@@ -146,7 +146,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($derivaciones as $d): ?>
                         <tr>
                             <td><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></td>
-                            <td><?php echo htmlspecialchars($d['fecha_derivacion']); ?></td>
+                            <td><?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></td>
                             <td><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars($d['fojas']); ?></td>
                             <td><?php echo htmlspecialchars($d['caracter']); ?></td>

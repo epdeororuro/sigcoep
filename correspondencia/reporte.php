@@ -34,9 +34,8 @@ $remitente = htmlspecialchars($c['remitente']);
 $referencia = htmlspecialchars($c['referencia']);
 $fojas = htmlspecialchars($c['fojas']);
 $fecha_ts = $c['fecha'];
-$fecha_expl = explode(' ', $fecha_ts);
-$fecha_date = $fecha_expl[0] ?? '';
-$fecha_time = $fecha_expl[1] ?? '';
+$fecha_date = date('d-m-Y', strtotime($fecha_ts));
+$fecha_time = date('H:i', strtotime($fecha_ts));
 
 // preparar listado de destinatarios según derivaciones
 $stmt = $pdo->prepare(
@@ -98,12 +97,11 @@ if ($page === 1) {
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
         .page { width: 19.59cm; height: 25.94cm; position: relative; padding: 0.5cm 1cm; box-sizing: border-box; }
         .header { display: flex; justify-content: space-between; align-items: center; height: 2.5cm; }
-        .header img { max-height: 60px; }
         /* make the middle logo a bit wider */
         @media print { #printBtn { display:none; } }
         /* position print button using bootstrap utility spacing */
         #printBtn { position:fixed; top:10px; right:10px; z-index:1000; }
-        .referencia { font-family: 'Arial Black', Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 8px; margin-top: 0.05cm; height:0.8cm; }
+        .referencia {  border:1px solid #000; font-family: 'Arial Black', Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 10px; margin-top: 0.05cm; height:0.8cm; }
         .referencia td { vertical-align: center; padding: 1px 2px; }
         .small-box { margin-top:0.05cm; height:0.6cm; }
         .small-box table { width:100%; height:100%; border-collapse:collapse; border:1px solid #000; }
@@ -129,9 +127,8 @@ if ($page === 1) {
     <div class="header">
         <img src="../assets/img/logo_1.png" alt="EPDEOR LOGO" style="max-height: 80px; max-width: 320px;">
         <img src="../assets/img/logo_2.png" alt="EPDEOR" style="max-height: 100px; max-width: 320px;">
-        <img src="../assets/img/logo_3.png" alt="G.A.D.OR.">
+        <img src="../assets/img/logo_3.png" alt="G.A.D.OR." style="max-height: 70px; max-width: 320px;">
     </div>
-    <hr style="border:none; border-top:3px solid #000000; margin:0.2cm 0;">
     <!-- datos referenciales -->
     <table class="referencia" width="100%">
         <tr>
@@ -172,7 +169,7 @@ if ($page === 1) {
                         <div></div>
                         <div><strong>LUGAR:</strong></div>
                         <div style="margin-top:6px;"><strong>INSTRUCCIÓN ADICIONAL:</strong></div>
-                        <div style="height:3.2cm; border:1px solid #000; margin-top:4px;"></div>
+                        <div style="height:3.2cm; margin-top:4px;"></div>
                     </div>
                     <div class="box-left-checkboxes">
                         <label><input type="checkbox" disabled> Urgente</label>
@@ -194,10 +191,8 @@ if ($page === 1) {
             </div>
         </div>
     <?php endforeach; ?>
-
     <!-- pie de página con datos de contacto -->
     <div class="footer">
-        <hr style="border:none; border-top:3px solid #000000; margin:0.2cm 0;">
         <div>Dirección: Rajka Bacovick entre Aroma y Villarroel – Edificio Empresa Pública Departamental Hotel Terminal-Terminal de Buses de Oruro “EPDEOR”</div>
         <div>Teléfonos: (591-2) 5276389 – 5279535 *Hotel Terminal de Oruro (591-2) 5276227</div>
         <div>Correo: epdeororuro@gmail.com</div>
