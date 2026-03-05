@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaciÃ³n: 05-03-2026 a las 16:52:44
--- VersiÃ³n del servidor: 10.4.32-MariaDB
--- VersiÃ³n de PHP: 8.2.12
+-- Tiempo de generación: 05-03-2026 a las 19:01:37
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,6 +32,7 @@ CREATE TABLE `correspondencia` (
   `hojaruta` varchar(255) NOT NULL,
   `remitente_id` int(11) DEFAULT NULL,
   `remitente_externo` varchar(255) DEFAULT NULL,
+  `idfuncionario_enturno` int(11) DEFAULT NULL,
   `tipo_remitente` enum('interno','externo') NOT NULL DEFAULT 'externo',
   `remitente` varchar(255) NOT NULL,
   `referencia` text NOT NULL,
@@ -46,11 +47,13 @@ CREATE TABLE `correspondencia` (
 -- Volcado de datos para la tabla `correspondencia`
 --
 
-INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
-(1, '01/2025', NULL, NULL, 'externo', 'Nelia Alejo', 'Solicitud dde Revision de camaras', 1, '2026-02-27 20:37:45', 'Derivado', '2026-02-27 20:45:59', NULL),
-(2, '02/2025', NULL, NULL, 'externo', 'Ing. David Ticona Cabrera', 'mantenimiento de CPU', 1, '2026-02-27 20:45:25', 'Derivado', '2026-02-27 20:46:17', NULL),
-(3, '03/2025', NULL, NULL, 'externo', 'Tec. Sup. Maricruz', 'Solicitud de Mantenimiento de CPU', 1, '2026-03-03 17:31:03', 'Iniciado', '2026-03-03 17:32:30', NULL),
-(4, '04/2025', NULL, NULL, 'externo', 'Maricruz Sara Mamani Nieto', 'Mantenemiento de CPU', 1, '2026-03-03 17:59:59', 'Iniciado', '2026-03-03 18:15:21', NULL);
+INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
+(1, '01/2025', NULL, NULL, NULL, 'externo', 'Nelia Alejo', 'Solicitud dde Revision de camaras', 1, '2026-02-27 20:37:45', 'Derivado', '2026-02-27 20:45:59', NULL),
+(2, '02/2025', 9, NULL, NULL, 'externo', 'David Ticona Cabrera', 'mantenimiento de CPU', 1, '2026-02-27 20:45:25', 'Derivado', '2026-02-27 20:46:17', NULL),
+(3, '03/2025', 5, NULL, NULL, 'externo', 'Maricruz Sara Mamani Nieto', 'Solicitud de Mantenimiento de CPU', 1, '2026-03-03 17:31:03', 'Iniciado', '2026-03-03 17:32:30', NULL),
+(4, '04/2025', 5, NULL, NULL, 'externo', 'Maricruz Sara Mamani Nieto', 'Mantenemiento de CPU', 1, '2026-03-03 17:59:59', 'Iniciado', '2026-03-03 18:15:21', NULL),
+(5, '05/2025', 12, NULL, NULL, 'interno', 'Marina Alegre -', 'Informe Mensual Area de Cobranzas', 3, '2026-03-05 16:02:00', 'Derivado', '2026-03-05 17:56:35', NULL),
+(6, '06/2025', 12, NULL, NULL, 'interno', 'Marina Alegre -', 'Cobranzas Reportes', 4, '2026-03-05 16:28:16', 'Registrado', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -73,12 +76,14 @@ CREATE TABLE `derivacion` (
 --
 
 INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `instruccion_adicional`, `fojas`, `caracter`) VALUES
-(1, 1, 2, '2026-02-27 20:38:48', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
-(2, 2, 2, '2026-02-27 20:45:27', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
+(1, 1, 2, '2026-02-27 20:38:48', 'Para su atención', 1, 'Para conocimiento'),
+(2, 2, 2, '2026-02-27 20:45:27', 'Para su atención', 1, 'Para conocimiento'),
 (3, 1, 6, '2026-02-27 20:45:59', 'Para su atencion', 1, 'Urgente'),
 (4, 2, 14, '2026-02-27 20:46:17', 'Para su consideracion', 2, 'Para conocimiento'),
-(5, 3, 2, '2026-03-03 17:32:30', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
-(6, 4, 2, '2026-03-03 18:15:21', 'Para su atenciÃ³n', 1, 'Para conocimiento');
+(5, 3, 2, '2026-03-03 17:32:30', 'Para su atención', 1, 'Para conocimiento'),
+(6, 4, 2, '2026-03-03 18:15:21', 'Para su atención', 1, 'Para conocimiento'),
+(7, 5, 2, '2026-03-05 16:02:04', 'Para su atención', 3, 'Para conocimiento'),
+(8, 5, 6, '2026-03-05 17:56:35', 'Para su atención', 1, 'Urgente');
 
 -- --------------------------------------------------------
 
@@ -144,27 +149,27 @@ CREATE TABLE `puesto` (
 
 INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 (1, 'Gerencia General', 'GERENCIA GENERAL'),
-(2, 'AsesorÃ­a Legal', 'ASESORIA LEGAL'),
+(2, 'Asesoría Legal', 'ASESORIA LEGAL'),
 (3, 'Auditoria Interna', 'UNIDAD DE AUDITORIA INT.'),
 (4, 'Secretaria Ejecutiva', 'SEC. EJE.'),
-(5, 'Jefatura Dpto. de AdministraciÃ³n y Finanzas', 'JDAF'),
+(5, 'Jefatura Dpto. de Administración y Finanzas', 'JDAF'),
 (6, 'Jefatura Dpto. de Operaciones Hotel Terminal', 'JDOHT'),
 (7, 'Jefatura Dpto. de Operaciones Terminal', 'JDOT'),
 (8, 'Encargado de Contabilidad', 'AREA CONTABILIDAD'),
 (9, 'Profesional I de Recursos Humanos y Normas', 'RR.HH.'),
 (10, 'Profesional I de Activos Fijos/Almacenes y Archivos', 'ACT.FIJ.-ALM-ARC'),
-(11, 'Profesional I de Contrataciones y ProvisiÃ³n de Bs. y Ss.', 'CONTRATACIONES'),
+(11, 'Profesional I de Contrataciones y Provisión de Bs. y Ss.', 'CONTRATACIONES'),
 (12, 'Profesional I de Tesoreria', 'TESORERIA'),
 (13, 'Profesional I de Cobranzas', 'COBRANZAS'),
-(14, 'Profesional I de PlanificaciÃ³n y Presupuestos', 'PRESUPUESTOS'),
-(15, 'Profesional I de Sistemas InformÃ¡ticos y Redes', 'SISTEMAS'),
-(16, 'Encargado Ãrea de Mantenimiento y ReparaciÃ³n', 'AREA MANTENIMIENTO'),
+(14, 'Profesional I de Planificación y Presupuestos', 'PRESUPUESTOS'),
+(15, 'Profesional I de Sistemas Informáticos y Redes', 'SISTEMAS'),
+(16, 'Encargado Área de Mantenimiento y Reparación', 'AREA MANTENIMIENTO'),
 (17, 'Recepcionista 1', 'RECEPCION HOTEL'),
 (18, 'Recaudador de Valores 1', 'AUXILIAR JDTO'),
 (19, 'Administrador del Sistema', 'ADM');
 
 --
--- Ãndices para tablas volcadas
+-- Índices para tablas volcadas
 --
 
 --
@@ -172,7 +177,8 @@ INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 --
 ALTER TABLE `correspondencia`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_remitente_funcionario` (`remitente_id`);
+  ADD KEY `fk_remitente_funcionario` (`remitente_id`),
+  ADD KEY `fk_funcionario_enturno` (`idfuncionario_enturno`);
 
 --
 -- Indices de la tabla `derivacion`
@@ -204,13 +210,13 @@ ALTER TABLE `puesto`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
@@ -232,6 +238,7 @@ ALTER TABLE `puesto`
 -- Filtros para la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
+  ADD CONSTRAINT `fk_funcionario_enturno` FOREIGN KEY (`idfuncionario_enturno`) REFERENCES `funcionario` (`id`),
   ADD CONSTRAINT `fk_remitente_funcionario` FOREIGN KEY (`remitente_id`) REFERENCES `funcionario` (`id`);
 
 --

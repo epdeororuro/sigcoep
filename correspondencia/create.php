@@ -51,8 +51,11 @@ try {
     ]);
 
     // Actualizar estado de correspondencia a Iniciado
-    $stmt = $pdo->prepare("UPDATE correspondencia SET estado = 'Iniciado', actualizado_en = NOW() WHERE id = :id");
-    $stmt->execute([':id' => $id_correspondencia]);
+    $stmt = $pdo->prepare("UPDATE correspondencia SET estado = 'Iniciado', idfuncionario_enturno = :id_func, actualizado_en = NOW() WHERE id = :id");
+    $stmt->execute([
+        ':id' => $id_correspondencia,
+        ':id_func' => $id_funcionario
+    ]);
 
     // en lugar de regresar a la lista, enviamos un formulario POST que abrirá la página de reporte
     echo '<form id="printForm" action="reporte.php" method="post">

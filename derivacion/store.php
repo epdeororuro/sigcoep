@@ -42,9 +42,12 @@ try {
     ]);
 
     // Actualizar estado de la correspondencia
-    $sqlUpd = "UPDATE correspondencia SET estado = 'Derivado', actualizado_en = NOW() WHERE id = :id";
+    $sqlUpd = "UPDATE correspondencia SET estado = 'Derivado', idfuncionario_enturno = :id_func, actualizado_en = NOW() WHERE id = :id";
     $stmtUpd = $pdo->prepare($sqlUpd);
-    $stmtUpd->execute([':id' => $id_correspondencia]);
+    $stmtUpd->execute([
+        ':id' => $id_correspondencia,
+        ':id_func' => $id_funcionario
+    ]);
 
     $_SESSION['mensaje'] = 'Correspondencia derivada con éxito';
     header('Location: ../correspondencia/index.php');
