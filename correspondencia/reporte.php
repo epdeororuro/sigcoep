@@ -87,7 +87,8 @@ if ($page === 1) {
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Reporte Hoja de Ruta - página <?= $page ?></title>
+    <title>Reporte Hoja de ruta - página <?= $page ?></title>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <!-- Bootstrap CSS for button styling -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-..." crossorigin="anonymous">
     <!-- FontAwesome for print icon -->

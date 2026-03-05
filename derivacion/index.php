@@ -34,7 +34,11 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Historial de Derivaciones - <?php echo htmlspecialchars($cor['hojaruta']); ?></title>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         /* Timeline simple */
         .timeline {
@@ -97,10 +101,12 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h4>Historial de Derivaciones - Línea de Vida</h4>
-            <small class="text-muted">Hoja de Ruta: <?php echo htmlspecialchars($cor['hojaruta']); ?></small>
+            <small class="text-muted">Hoja de ruta: <?php echo htmlspecialchars($cor['hojaruta']); ?></small>
         </div>
         <div>
-            <a href="../correspondencia/index.php" class="btn btn-secondary">Volver a correspondencia</a>
+            <a href="../correspondencia/index.php" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Volver a correspondencia
+            </a>
         </div>
     </div>
 

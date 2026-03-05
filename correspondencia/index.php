@@ -20,7 +20,8 @@ try {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lista de Funcionarios</title>
+    <title>Lista de Correspondencia</title>
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -54,8 +55,27 @@ try {
         .dataTables_wrapper .dataTables_scroll {
             overflow: auto;
         }
-        .table-responsive {
-            font-size: 0.7rem;
+
+        /* Bordes para DataTables */
+        .table-striped.table-bordered {
+            border: 1px solid #ced4da !important;
+        }
+        .table-bordered th, .table-bordered td {
+            border: 1px solid #ced4da !important;
+        }
+        .table thead th {
+            border-bottom: 2px solid #343a40 !important;
+        }
+
+        /* Reducir tamaño de fuente de manera estricta a la tabla para evitar que crezca tras una recarga de Ajax */
+        #correspondencia th,
+        #correspondencia td {
+            font-size: 0.75rem;
+            padding: 0.4rem !important;
+        }
+
+        #correspondencia thead th {
+            padding: 0.5rem !important;
         }
 
         /* Animación para el punto rojo */
@@ -102,7 +122,7 @@ try {
                             <table id="correspondencia" class="table table-striped table-bordered align-middle w-100">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th>Hoja Ruta</th>
+                                        <th>Hoja de ruta</th>
                                         <th>Remitente</th>
                                         <th>Referencia</th>
                                         <th>Fojas</th>
@@ -307,11 +327,15 @@ try {
                         d.filtro_admin = $('input[name="filtroAdmin"]:checked').val() || '';
                     }
                 },
-                scrollX: true,
                 autoWidth: false,
                 responsive: true,
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                },
+                initComplete: function(settings, json) {
+                    setTimeout(function() {
+                        table.columns.adjust().responsive.recalc();
+                    }, 100);
                 },
                 columns: [
                     { data: 'hojaruta' },
