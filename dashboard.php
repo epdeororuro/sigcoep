@@ -113,6 +113,13 @@ if(!isset($_SESSION['usuario_id'])){
                         <i class="bi bi-pencil-square me-2"></i> Modificar mi usuario
                     </a>
                 </li>
+                <?php if(strtolower($_SESSION['usuario_cargo']) === 'administrador'): ?>
+                <li>
+                    <a class="dropdown-item text-success" href="backup.php">
+                        <i class="bi bi-database-down me-2"></i> Respaldar Base de Datos
+                    </a>
+                </li>
+                <?php endif; ?>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <a class="dropdown-item text-danger" href="logout.php">
