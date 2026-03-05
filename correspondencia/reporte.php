@@ -131,7 +131,7 @@ if ($page === 1) {
         <img src="../assets/img/logo_2.png" alt="EPDEOR" style="max-height: 100px; max-width: 320px;">
         <img src="../assets/img/logo_3.png" alt="G.A.D.OR.">
     </div>
-
+    <hr style="border:none; border-top:3px solid #000000; margin:0.2cm 0;">
     <!-- datos referenciales -->
     <table class="referencia" width="100%">
         <tr>

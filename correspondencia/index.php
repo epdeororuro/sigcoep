@@ -78,7 +78,7 @@ try {
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-0">Lista de Correspondencia</h3>
-                            <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador'])): ?>
+                            <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador', 'gerente'])): ?>
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
                                 <i class="bi bi-envelope-plus"></i> Nueva Correspondencia
                             </button>
@@ -117,19 +117,48 @@ try {
                     <form id="createCorrespondenciaForm" action="store.php" method="post">
                         <div class="mb-3">
                             <label class="form-label">Hoja de Ruta</label>
-                            <input type="text" class="form-control" name="hojaruta">
+                            <input type="text" class="form-control" name="hojaruta" required>
                         </div>
+                        
+                        <!-- Tipo de Remitente -->
                         <div class="mb-3">
-                            <label class="form-label">Remitente</label>
-                            <input type="text" class="form-control" name="remitente">
+                            <label class="form-label">Tipo de Remitente</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_interno" value="interno" required>
+                                <label class="form-check-label" for="remitente_interno">Interno (Funcionario)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_externo" value="externo" required>
+                                <label class="form-check-label" for="remitente_externo">Externo</label>
+                            </div>
                         </div>
+                        
+                        <!-- Remitente Interno (Select) -->
+                        <div class="mb-3" id="div_remitente_interno" style="display: none;">
+                            <label class="form-label">Seleccione Funcionario</label>
+                            <select class="form-select" id="select_remitente_interno" name="remitente_id">
+                                <option value="">-- Seleccione un funcionario --</option>
+                                <?php foreach($funcionarios as $f): ?>
+                                    <option value="<?= htmlspecialchars($f['id']) ?>">
+                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <!-- Remitente Externo (Input) -->
+                        <div class="mb-3" id="div_remitente_externo" style="display: none;">
+                            <label class="form-label">Nombre del Remitente Externo</label>
+                            <input type="text" class="form-control" id="input_remitente_externo" name="remitente_externo">
+                        </div>
+                        
                         <div class="mb-3">
                             <label class="form-label">Referencia</label>
-                            <textarea class="form-control" name="referencia"></textarea>
+                            <textarea class="form-control" name="referencia" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas</label>
-                            <input type="text" class="form-control" name="fojas">
+                            <input type="number" class="form-control" name="fojas" min="1" required>
                         </div>
                     </form>
                 </div>
@@ -318,6 +347,31 @@ try {
             $('#print_page_number').val(1);
             $('#printPageModal').modal('show');
         }
+
+        // Manejo de radiobuttons para tipo de remitente
+        $(document).on('change', 'input[name="tipo_remitente"]', function() {
+            var tipoRemitente = $(this).val();
+            if (tipoRemitente === 'interno') {
+                $('#div_remitente_interno').show();
+                $('#div_remitente_externo').hide();
+                $('#select_remitente_interno').attr('required', 'required');
+                $('#input_remitente_externo').removeAttr('required');
+            } else if (tipoRemitente === 'externo') {
+                $('#div_remitente_interno').hide();
+                $('#div_remitente_externo').show();
+                $('#input_remitente_externo').attr('required', 'required');
+                $('#select_remitente_interno').removeAttr('required');
+            }
+        });
+
+        // Limpiar el formulario cuando se abre el modal
+        $(document).on('show.bs.modal', '#createCorrespondenciaModal', function() {
+            $('#createCorrespondenciaForm')[0].reset();
+            $('#div_remitente_interno').hide();
+            $('#div_remitente_externo').hide();
+            $('#select_remitente_interno').removeAttr('required');
+            $('#input_remitente_externo').removeAttr('required');
+        });
     </script>
 </body>
 </html>

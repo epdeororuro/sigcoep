@@ -3,20 +3,37 @@ session_start();
 require '../db.php';
 
 try {
-    // determinar usuario actual y su puesto
+    // determinar usuario actual y su rol
     $usuario_id = $_SESSION['usuario_id'] ?? null;
-    $usuario_id_puesto = $_SESSION['usuario_id_puesto'] ?? null;
+    $usuario_cargo = $_SESSION['usuario_cargo'] ?? null;
 
-    if ($usuario_id_puesto == 4) {
-        // Secretaria Ejecutiva ve todo
+    // Roles que pueden ver todas las correspondencias
+    $roles_ver_todas = ['Administrador', 'Secretaria', 'Gerente'];
+
+    // Verificar si el usuario puede ver todas las correspondencias
+    $puede_ver_todas = in_array($usuario_cargo, $roles_ver_todas);
+
+    if ($puede_ver_todas) {
+        // Gerente, Secretaria y Administrador ven todas las correspondencias
         $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
                        (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
                 FROM correspondencia c
+                WHERE c.eliminado_en IS NULL
                 ORDER BY c.fecha DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute();
+    } else if ($usuario_cargo === 'Administrativo') {
+        // Administrativo solo ve correspondencias donde es remitente interno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
+                       (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
+                FROM correspondencia c
+                WHERE c.remitente_id = :uid
+                  AND c.eliminado_en IS NULL
+                ORDER BY c.fecha DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':uid' => $usuario_id]);
     } else {
-        // solo correspondencias derivadas al usuario
+        // Otros roles (por compatibilidad): solo correspondencias derivadas al usuario
         $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado,
                        (SELECT COUNT(1) FROM derivacion d WHERE d.id_correspondencia = c.id) AS deriv_count
                 FROM correspondencia c
@@ -25,10 +42,12 @@ try {
                     WHERE d2.id_correspondencia = c.id
                       AND d2.id_funcionario = :uid
                 )
+                  AND c.eliminado_en IS NULL
                 ORDER BY c.fecha DESC";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':uid' => $usuario_id]);
     }
+
     $correspondencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $data = array();
@@ -36,7 +55,7 @@ try {
         $acciones = '';
 
         // Estado Registrado: permitir Editar, Eliminar e Iniciar
-        if ($correspondencia['estado'] == 'Registrado') {
+        if ($correspondencia['estado'] == 'Registrado' && $usuario_cargo !== 'Administrativo') {
             $acciones = '<form action="" method="post" style="display: inline;">
             <input type="hidden" name="id" value="'.$correspondencia['id'].'">
             <button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button>
@@ -61,7 +80,7 @@ try {
             </form>';
 
         // Estado Iniciado: permitir solo Derivar (abrir modal existente)
-        } elseif ($correspondencia['estado'] == 'Iniciado') {
+        } elseif ($correspondencia['estado'] == 'Iniciado'&& $usuario_cargo !== 'Administrativo') {
             $acciones = '
             <form action="" method="post" style="display: inline;">
             <input type="hidden" name="id" value="'.$correspondencia['id'].'">
@@ -81,8 +100,8 @@ try {
             </form>';
         }
 
-        // si no está en estado Registrado añadimos botón de impresión
-        if ($correspondencia['estado'] != 'Registrado') {
+        // si no está en estado Registrado añadimos botón de impresión (oculto para administrativos)
+        if ($correspondencia['estado'] != 'Registrado' && $usuario_cargo !== 'Administrativo') {
             $acciones .= '<button type="button" class="btn btn-secondary btn-sm ms-1" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
         }
 

@@ -91,6 +91,7 @@ if(!isset($_SESSION['usuario_id'])){
             <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>
         <?php } ?>
         <a href="<?= BASE_URL ?>correspondencia/index.php" target="iframe_content"><i class="bi bi-folder"></i> Correspondencia</a>
+        <a href="<?= BASE_URL ?>derivacion/index.php" target="iframe_content"><i class="bi bi-file-earmark-arrow-down"></i> Derivados a mi</a>
         <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
     </div>
     <!-- Navbar superior -->

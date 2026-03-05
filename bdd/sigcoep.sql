@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generaciÃ³n: 27-02-2026 a las 21:47:37
+-- Tiempo de generaciÃ³n: 05-03-2026 a las 16:52:44
 -- VersiÃ³n del servidor: 10.4.32-MariaDB
 -- VersiÃ³n de PHP: 8.2.12
 
@@ -30,6 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `correspondencia` (
   `id` int(11) NOT NULL,
   `hojaruta` varchar(255) NOT NULL,
+  `remitente_id` int(11) DEFAULT NULL,
+  `remitente_externo` varchar(255) DEFAULT NULL,
+  `tipo_remitente` enum('interno','externo') NOT NULL DEFAULT 'externo',
   `remitente` varchar(255) NOT NULL,
   `referencia` text NOT NULL,
   `fojas` int(11) NOT NULL,
@@ -43,9 +46,11 @@ CREATE TABLE `correspondencia` (
 -- Volcado de datos para la tabla `correspondencia`
 --
 
-INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
-(1, '01/2025', 'Nelia Alejo', 'Solicitud dde Revision de camaras', 1, '2026-02-27 20:37:45', 'Derivado', '2026-02-27 20:45:59', NULL),
-(2, '02/2025', 'Ing. David Ticona Cabrera', 'mantenimiento de CPU', 1, '2026-02-27 20:45:25', 'Derivado', '2026-02-27 20:46:17', NULL);
+INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
+(1, '01/2025', NULL, NULL, 'externo', 'Nelia Alejo', 'Solicitud dde Revision de camaras', 1, '2026-02-27 20:37:45', 'Derivado', '2026-02-27 20:45:59', NULL),
+(2, '02/2025', NULL, NULL, 'externo', 'Ing. David Ticona Cabrera', 'mantenimiento de CPU', 1, '2026-02-27 20:45:25', 'Derivado', '2026-02-27 20:46:17', NULL),
+(3, '03/2025', NULL, NULL, 'externo', 'Tec. Sup. Maricruz', 'Solicitud de Mantenimiento de CPU', 1, '2026-03-03 17:31:03', 'Iniciado', '2026-03-03 17:32:30', NULL),
+(4, '04/2025', NULL, NULL, 'externo', 'Maricruz Sara Mamani Nieto', 'Mantenemiento de CPU', 1, '2026-03-03 17:59:59', 'Iniciado', '2026-03-03 18:15:21', NULL);
 
 -- --------------------------------------------------------
 
@@ -71,7 +76,9 @@ INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_d
 (1, 1, 2, '2026-02-27 20:38:48', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
 (2, 2, 2, '2026-02-27 20:45:27', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
 (3, 1, 6, '2026-02-27 20:45:59', 'Para su atencion', 1, 'Urgente'),
-(4, 2, 14, '2026-02-27 20:46:17', 'Para su consideracion', 2, 'Para conocimiento');
+(4, 2, 14, '2026-02-27 20:46:17', 'Para su consideracion', 2, 'Para conocimiento'),
+(5, 3, 2, '2026-03-03 17:32:30', 'Para su atenciÃ³n', 1, 'Para conocimiento'),
+(6, 4, 2, '2026-03-03 18:15:21', 'Para su atenciÃ³n', 1, 'Para conocimiento');
 
 -- --------------------------------------------------------
 
@@ -164,7 +171,8 @@ INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 -- Indices de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_remitente_funcionario` (`remitente_id`);
 
 --
 -- Indices de la tabla `derivacion`
@@ -196,13 +204,13 @@ ALTER TABLE `puesto`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
@@ -219,6 +227,12 @@ ALTER TABLE `puesto`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `correspondencia`
+--
+ALTER TABLE `correspondencia`
+  ADD CONSTRAINT `fk_remitente_funcionario` FOREIGN KEY (`remitente_id`) REFERENCES `funcionario` (`id`);
 
 --
 -- Filtros para la tabla `derivacion`
