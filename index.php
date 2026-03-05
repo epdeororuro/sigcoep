@@ -35,7 +35,10 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
       <div class="col-md-5 col-lg-4">
         <div class="card shadow">
           <div class="card-body p-4">
-            <h3 class="card-title text-center mb-4"><?= SISTEMA_NOMBRE ?></h3>
+            <div class="text-center mb-4">
+              <img src="assets/img/logo_1.png" alt="<?= SISTEMA_NOMBRE ?>" class="img-fluid mb-3" style="max-height: 120px;">
+              <h4 class="card-title"><?= SISTEMA_NOMBRE ?></h4>
+            </div>
 
             <?php if($error == 1): ?>
               <div class="alert alert-danger alert-dismissible fade show" role="alert">

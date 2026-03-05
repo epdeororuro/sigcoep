@@ -94,9 +94,32 @@ if(!isset($_SESSION['usuario_id'])){
         <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
     </div>
     <!-- Navbar superior -->
-    <div class="navbar-custom">
-        <div>Bienvenido, <?= htmlspecialchars($_SESSION['usuario_nombre']) ?> (<?= htmlspecialchars($_SESSION['usuario_cargo']) ?>)</div>
-        <div>Área: <?= htmlspecialchars($_SESSION['usuario_cargo']) ?></div>
+    <div class="navbar-custom d-flex justify-content-between align-items-center px-4">
+        <div>
+            <span class="fw-bold">Área:</span> <?= htmlspecialchars($_SESSION['usuario_cargo']) ?>
+        </div>
+        
+        <!-- Dropdown Usuario -->
+        <div class="dropdown">
+            <button class="btn btn-dark dropdown-toggle border-0 shadow-none text-white d-flex align-items-center gap-2" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-person-circle fs-5"></i>
+                <span><?= htmlspecialchars($_SESSION['usuario_nombre']) ?></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
+                <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
+                <li>
+                    <a class="dropdown-item" href="perfil/index.php" target="iframe_content">
+                        <i class="bi bi-pencil-square me-2"></i> Modificar mi usuario
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="logout.php">
+                        <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
     <!-- Contenido principal -->
     <div class="content">

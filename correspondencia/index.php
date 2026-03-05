@@ -50,19 +50,9 @@ try {
         table.dataTable td {
             white-space: nowrap;
         }
+
         .dataTables_wrapper .dataTables_scroll {
             overflow: auto;
-        }
-
-        /* Reducir tamaño de fuente de la tabla */
-        #correspondencia th,
-        #correspondencia td {
-            font-size: 0.75rem;
-            padding: 0.4rem !important;
-        }
-
-        #correspondencia thead th {
-            padding: 0.5rem !important;
         }
         .table-responsive {
             font-size: 0.7rem;
@@ -110,7 +100,7 @@ try {
 
                         <div class="table-responsive">
                             <table id="correspondencia" class="table table-striped table-bordered align-middle w-100">
-                                <thead>
+                                <thead class="table-primary">
                                     <tr>
                                         <th>Hoja Ruta</th>
                                         <th>Remitente</th>
