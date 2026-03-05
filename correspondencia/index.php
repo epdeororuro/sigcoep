@@ -67,6 +67,14 @@ try {
         .table-responsive {
             font-size: 0.7rem;
         }
+
+        /* Animación para el punto rojo */
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
     </style>
 </head>
 
@@ -84,6 +92,22 @@ try {
                             </button>
                             <?php endif; ?>
                         </div>
+
+                        <!-- Filtro para Rol Administrativo -->
+                        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrativo'): ?>
+                        <div class="mb-3">
+                            <label class="fw-bold me-3">Vista de correspondencias:</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_derivados" value="derivados" checked>
+                                <label class="form-check-label" for="filtro_derivados">Derivados a mi / En mi poder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_iniciados" value="iniciados">
+                                <label class="form-check-label" for="filtro_iniciados">Iniciados por mi</label>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
                         <div class="table-responsive">
                             <table id="correspondencia" class="table table-striped table-bordered align-middle w-100">
                                 <thead>
@@ -285,8 +309,14 @@ try {
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#correspondencia').DataTable({
-                ajax: 'show.php',
+            var table = $('#correspondencia').DataTable({
+                ajax: {
+                    url: 'show.php',
+                    type: 'POST',
+                    data: function(d) {
+                        d.filtro_admin = $('input[name="filtroAdmin"]:checked').val() || '';
+                    }
+                },
                 scrollX: true,
                 autoWidth: false,
                 responsive: true,
@@ -302,6 +332,11 @@ try {
                     { data: 'estado' },
                     { data: 'acciones' }
                 ]
+            });
+
+            // Recargar tabla cuando cambia el filtro
+            $('.filtro-admin').on('change', function() {
+                table.ajax.reload();
             });
         });
 
