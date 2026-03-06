@@ -22,7 +22,7 @@ if(!isset($_SESSION['usuario_id'])){
 
     <div class="row mt-4">
         <!-- Registrar Usuarios -->
-        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrador'): ?>
+        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrador' ): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-primary shadow">
                 <div class="card-body">
@@ -33,9 +33,8 @@ if(!isset($_SESSION['usuario_id'])){
             </div>
         </div>
         <?php endif; ?>
-
         <!-- Registrar Correspondencia -->
-        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo'])): ?>
+        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-success shadow">
                 <div class="card-body">

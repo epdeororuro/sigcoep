@@ -150,7 +150,7 @@ try {
                 <div class="modal-body">
                     <form id="createCorrespondenciaForm" action="store.php" method="post">
                         <div class="mb-3">
-                            <label class="form-label">Hoja de Ruta</label>
+                            <label class="form-label">Hoja de ruta</label>
                             <input type="text" class="form-control" name="hojaruta" required>
                         </div>
                         
@@ -159,11 +159,11 @@ try {
                             <label class="form-label">Tipo de Remitente</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_interno" value="interno" required>
-                                <label class="form-check-label" for="remitente_interno">Interno (Funcionario)</label>
+                                <label class="form-check-label" for="remitente_interno">Interno <i><small>(Funcionario de EPDEOR)</small></i></label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_externo" value="externo" required>
-                                <label class="form-check-label" for="remitente_externo">Externo</label>
+                                <label class="form-check-label" for="remitente_externo">Externo <i><small>(Persona/Entidad)</small></i></label>
                             </div>
                         </div>
                         
@@ -192,7 +192,7 @@ try {
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas</label>
-                            <input type="number" class="form-control" name="fojas" min="1" required>
+                            <textarea class="form-control" id="fojas" name="fojas" required></textarea>
                         </div>
                     </form>
                 </div>
@@ -312,6 +312,27 @@ try {
             </div>
         </div>
     </div>
+    <!-- ================= MODAL ELIMINAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="deleteCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea eliminar esta correspondencia?</p>
+                    <form id="deleteCorrespondenciaForm" action="destroy.php" method="post">
+                        <input type="hidden" id="delete_correspondencia_id" name="id">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" form="deleteCorrespondenciaForm">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= JS ================= -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -395,6 +416,12 @@ try {
             $('#print_correspondencia_id').val(id);
             $('#print_page_number').val(1);
             $('#printPageModal').modal('show');
+        }
+
+        // función para confirmar la eliminación
+        function confirmarEliminacion(id) {
+            $('#delete_correspondencia_id').val(id);
+            $('#deleteCorrespondenciaModal').modal('show');
         }
 
         // Manejo de radiobuttons para tipo de remitente

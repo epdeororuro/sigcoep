@@ -104,8 +104,8 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             <small class="text-muted">Hoja de ruta: <?php echo htmlspecialchars($cor['hojaruta']); ?></small>
         </div>
         <div>
-            <a href="../correspondencia/index.php" class="btn btn-secondary">
-                <i class="bi bi-arrow-left-circle"></i> Volver a correspondencia
+            <a href="../correspondencia/index.php" class="btn btn-danger">
+                <i class="bi bi-arrow-left-circle"></i> Volver a lista de correspondencia
             </a>
         </div>
     </div>
