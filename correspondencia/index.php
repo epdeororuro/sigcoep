@@ -14,6 +14,17 @@ try {
 } catch (Exception $e) {
     $funcionarios = [];
 }
+
+// Calcular siguiente número de hoja de ruta basado en el total de registros
+try {
+    $stmtCount = $pdo->query("SELECT COUNT(*) FROM correspondencia");
+    $totalCorrespondencia = (int) $stmtCount->fetchColumn();
+} catch (Exception $e) {
+    $totalCorrespondencia = 0;
+}
+$siguienteNumeroHojaRuta = $totalCorrespondencia + 1;
+$anioActualHojaRuta = date('Y');
+$siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
 ?> 
 <!doctype html>
 <html lang="es">
@@ -151,7 +162,7 @@ try {
                     <form id="createCorrespondenciaForm" action="store.php" method="post">
                         <div class="mb-3">
                             <label class="form-label">Hoja de ruta</label>
-                            <input type="text" class="form-control" name="hojaruta" required>
+                            <input type="text" class="form-control" name="hojaruta" value="<?= htmlspecialchars($siguienteHojaRuta) ?>" readonly>
                         </div>
                         
                         <!-- Tipo de Remitente -->

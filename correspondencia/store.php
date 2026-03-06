@@ -4,15 +4,11 @@ require '../db.php';
 
 try {
     // Obtener datos del formulario
-    $hojaruta = $_POST['hojaruta'] ?? '';
     $tipo_remitente = $_POST['tipo_remitente'] ?? 'externo';
     $referencia = $_POST['referencia'] ?? '';
     $fojas = intval($_POST['fojas'] ?? 1);
 
     // Validaciones básicas
-    if (empty($hojaruta)) {
-        throw new Exception('Hoja de ruta es requerida');
-    }
     if (empty($referencia)) {
         throw new Exception('Referencia es requerida');
     }
@@ -54,6 +50,12 @@ try {
     } else {
         throw new Exception('Tipo de remitente inválido');
     }
+
+    // Generar automáticamente la hoja de ruta: total de registros + 1 / año actual
+    $stmtCount = $pdo->query("SELECT COUNT(*) FROM correspondencia");
+    $totalCorrespondencia = (int) $stmtCount->fetchColumn();
+    $numeroHojaRuta = $totalCorrespondencia + 1;
+    $hojaruta = $numeroHojaRuta . '/' . date('Y');
 
     // Insertar la correspondencia
     $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, fecha, estado, actualizado_en, eliminado_en) 
