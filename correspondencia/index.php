@@ -231,7 +231,31 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Remitente</label>
-                            <input type="text" class="form-control" id="edit_remitente" name="remitente">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edit_tipo_remitente" id="edit_remitente_interno" value="interno">
+                                <label class="form-check-label" for="edit_remitente_interno">Interno <i><small>(Funcionario de EPDEOR)</small></i></label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edit_tipo_remitente" id="edit_remitente_externo_radio" value="externo">
+                                <label class="form-check-label" for="edit_remitente_externo_radio">Externo <i><small>(Persona/Entidad)</small></i></label>
+                            </div>
+                        </div>
+                        <!-- Remitente Interno (Select) -->
+                        <div class="mb-3" id="edit_div_remitente_interno" style="display: none;">
+                            <label class="form-label">Seleccione Funcionario</label>
+                            <select class="form-select" id="edit_select_remitente_interno" name="edit_remitente_id">
+                                <option value="">-- Seleccione un funcionario --</option>
+                                <?php foreach($funcionarios as $f): ?>
+                                    <option value="<?= htmlspecialchars($f['id']) ?>">
+                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <!-- Remitente Externo (Input) -->
+                        <div class="mb-3" id="edit_div_remitente_externo" style="display: none;">
+                            <label class="form-label">Nombre del Remitente Externo</label>
+                            <input type="text" class="form-control" id="edit_input_remitente_externo" name="edit_remitente_externo">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Referencia</label>
@@ -395,9 +419,24 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 success: function(data) {
                     $('#edit_id').val(data.id);
                     $('#edit_hojaruta').val(data.hojaruta);
-                    $('#edit_remitente').val(data.remitente);
                     $('#edit_referencia').val(data.referencia);
                     $('#edit_fojas').val(data.fojas);
+
+                    // Configurar tipo de remitente y selector/entrada correspondiente
+                    if (data.tipo_remitente === 'interno') {
+                        $('#edit_remitente_interno').prop('checked', true);
+                        $('#edit_div_remitente_interno').show();
+                        $('#edit_div_remitente_externo').hide();
+                        $('#edit_select_remitente_interno').val(data.remitente_id);
+                        $('#edit_input_remitente_externo').val('');
+                    } else {
+                        $('#edit_remitente_externo_radio').prop('checked', true);
+                        $('#edit_div_remitente_interno').hide();
+                        $('#edit_div_remitente_externo').show();
+                        $('#edit_select_remitente_interno').val('');
+                        $('#edit_input_remitente_externo').val(data.remitente_externo || data.remitente);
+                    }
+
                     $('#editCorrespondenciaModal').modal('show');
                 }
             });
@@ -448,6 +487,18 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 $('#div_remitente_externo').show();
                 $('#input_remitente_externo').attr('required', 'required');
                 $('#select_remitente_interno').removeAttr('required');
+            }
+        });
+
+        // Manejo de radiobuttons para tipo de remitente en el modal de edición
+        $(document).on('change', 'input[name="edit_tipo_remitente"]', function() {
+            var tipoRemitente = $(this).val();
+            if (tipoRemitente === 'interno') {
+                $('#edit_div_remitente_interno').show();
+                $('#edit_div_remitente_externo').hide();
+            } else if (tipoRemitente === 'externo') {
+                $('#edit_div_remitente_interno').hide();
+                $('#edit_div_remitente_externo').show();
             }
         });
 
