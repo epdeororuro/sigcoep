@@ -47,11 +47,11 @@ if (isset($_SESSION['mensaje'])) {
                     <h4 class="mb-0"><i class="bi bi-person-gear"></i> Modificar mi Usuario</h4>
                 </div>
                 <div class="card-body p-4">
-                    <form action="update.php" method="post">
+                    <form action="update_user.php" method="post">
                         <div class="mb-4">
                             <label class="form-label fw-bold">Nuevo Nombre de Usuario</label>
                             <input type="text" class="form-control" name="nuevo_usuario" placeholder="Ej: admin123" required>
-                            <small class="text-muted">Este será el usuario con el que ingresarás al sistema. Tu contraseña por defecto seguirá siendo tu C.I.</small>
+                            <small class="text-muted">Este será el usuario con el que ingresarás al sistema.</small>
                         </div>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar Cambios</button>

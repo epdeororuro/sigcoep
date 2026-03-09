@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-03-2026 a las 19:21:13
+-- Tiempo de generación: 09-03-2026 a las 20:05:22
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,6 +38,7 @@ CREATE TABLE `correspondencia` (
   `referencia` text NOT NULL,
   `fojas` varchar(255) NOT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  `foto` varchar(255) NOT NULL,
   `estado` varchar(255) NOT NULL,
   `actualizado_en` timestamp NULL DEFAULT NULL,
   `eliminado_en` timestamp NULL DEFAULT NULL
@@ -47,14 +48,15 @@ CREATE TABLE `correspondencia` (
 -- Volcado de datos para la tabla `correspondencia`
 --
 
-INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `fecha`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
-(1, '001/2026', 14, NULL, 11, 'interno', 'Reynaldo Jesus Flores Jaillita', 'Solicitud de vaciado de Biometrico', '1', '2026-03-05 18:05:29', 'Derivado', '2026-03-05 20:54:44', NULL),
-(2, '002/2026', 15, NULL, 6, 'interno', 'Milton Jose Torrez Alegre', 'Contrataciones pagos', '2', '2026-03-05 18:33:11', 'Derivado', '2026-03-05 19:19:48', NULL),
-(3, '256/2026', 13, NULL, NULL, 'interno', 'Maria Lizeth Colque Rivera', 'Solicitud de Pago a la Gestora Publica de Seguridad Social de Largo Plazo Enero 2026', '10', '2026-03-06 15:30:59', 'Anulado', '2026-03-06 20:32:04', '2026-03-06 20:32:11'),
-(4, '256/2026', 13, NULL, 6, 'interno', 'Maria Lizeth Colque Rivera', 'Solicitud de Pago a la Gestora Publica de Seguridad Social de Largo Plazo mes de Enero 2026', '6', '2026-03-06 15:33:22', 'Derivado', '2026-03-06 15:48:19', NULL),
-(5, '07/2026', 5, NULL, 5, 'interno', 'Maricruz Sara Mamani Nieto', 'Solicitud Inicio de Proceso de Servicio de Fotocopia 2026', '6', '2026-03-06 15:52:45', 'Derivado', '2026-03-06 15:53:56', NULL),
-(6, '', NULL, 'Delia Acero', NULL, 'externo', '', 'Reservado', '', '2026-03-06 17:36:41', 'Registrado', '2026-03-06 23:12:31', NULL),
-(7, '289/2026', 10, NULL, NULL, 'interno', 'Jeanneth Angelica Chambi Chinche', '-\r\n', '1', '2026-03-06 17:47:43', 'Registrado', NULL, NULL);
+INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `fecha`, `foto`, `estado`, `actualizado_en`, `eliminado_en`) VALUES
+(1, '001/2026', 14, NULL, 11, 'interno', 'Reynaldo Jesus Flores Jaillita', 'Solicitud de vaciado de Biometrico', '1', '2026-03-05 18:05:29', '', 'Derivado', '2026-03-05 20:54:44', NULL),
+(2, '002/2026', 3, NULL, 6, 'interno', 'Mirian Rada Lopez', 'Contrataciones pagos', '2', '2026-03-05 18:33:11', '', 'Derivado', '2026-03-07 00:21:22', NULL),
+(3, '256/2026', 13, NULL, NULL, 'interno', 'Maria Lizeth Colque Rivera', 'Solicitud de Pago a la Gestora Publica de Seguridad Social de Largo Plazo Enero 2026', '10', '2026-03-06 15:30:59', '', 'Anulado', '2026-03-06 20:32:04', '2026-03-06 20:32:11'),
+(4, '256/2026', 13, NULL, 6, 'interno', 'Maria Lizeth Colque Rivera', 'Solicitud de Pago a la Gestora Publica de Seguridad Social de Largo Plazo mes de Enero 2026', '6', '2026-03-06 15:33:22', '', 'Derivado', '2026-03-06 15:48:19', NULL),
+(5, '07/2026', 5, NULL, 5, 'interno', 'Maricruz Sara Mamani Nieto', 'Solicitud Inicio de Proceso de Servicio de Fotocopia 2026', '6', '2026-03-06 15:52:45', '', 'Derivado', '2026-03-06 15:53:56', NULL),
+(6, '', NULL, 'Delia Acero', NULL, 'externo', '', 'Reservado', '', '2026-03-06 17:36:41', '', 'Registrado', '2026-03-06 23:12:31', NULL),
+(7, '289/2026', 10, NULL, NULL, 'interno', 'Jeanneth Angelica Chambi Chinche', '-\r\n', '1', '2026-03-06 17:47:43', '', 'Registrado', NULL, NULL),
+(8, '8/2026', 9, NULL, NULL, 'interno', 'David Ticona Cabrera', 'cualuier', '1', '2026-03-09 16:22:43', 'corr_69aef3d3e58409.93243873.png', 'Registrado', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -109,6 +111,7 @@ CREATE TABLE `funcionario` (
   `materno` varchar(60) NOT NULL,
   `usuario` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `contrasenia` varchar(255) NOT NULL,
   `rol` varchar(25) DEFAULT NULL,
   `id_puesto` int(11) NOT NULL,
   `estado` varchar(12) NOT NULL,
@@ -121,26 +124,26 @@ CREATE TABLE `funcionario` (
 -- Volcado de datos para la tabla `funcionario`
 --
 
-INSERT INTO `funcionario` (`id`, `ci`, `nombre`, `paterno`, `materno`, `usuario`, `password`, `rol`, `id_puesto`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
-(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', 'Administrador', 19, 'Activo', '2026-02-26 18:56:07', '2026-03-06 01:25:07', '2026-02-26 18:56:07'),
-(2, 7343846, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$H05dXZb8DvWcIMMmkkG4ZurvPN4aSTa7fvTgZl6zFPebxwN86jo4G', 'Gerente', 1, 'Activo', '2026-02-26 20:38:37', '2026-02-28 01:36:32', '2026-02-26 20:38:37'),
-(3, 7200300, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$XyCaXqajRZ2YS19R5iRrye2eXe3N5WLiseeXjheI1x3cRc243hn62', 'Administrativo', 2, 'Activo', '2026-02-26 20:39:16', '2026-02-28 01:36:49', '2026-02-26 20:39:16'),
-(4, 3544712, 'Carmen Marisol', 'Rufino', 'Segovia', 'crufino', '$2y$10$bdDF93ECe1JCt8PPymzuZelsoa.T6R5aKt5j2KTIiGoTKroJWOjlu', 'Administrativo', 3, 'Activo', '2026-02-26 20:40:56', '2026-03-06 01:29:08', '2026-02-26 20:40:56'),
-(5, 5778923, 'Maricruz Sara', 'Mamani', 'Nieto', 'mmamani', '$2y$10$r3SozgqCBlrg.tmMu/J/Ue4ioeccXMPs2zUph8ErZzCnyUDmDE35G', 'Administrativo', 4, 'Activo', '2026-02-26 20:41:32', '2026-03-06 23:11:27', '2026-02-26 20:41:32'),
-(6, 4058090, 'Belinda', 'Perez', 'Ayma', 'bperez', '$2y$10$pI2mgOqOa8CNOlhknSBoEujEAPl2Ydun7GOUJ0u4n8/bzWZzpc0eW', 'Administrativo', 5, 'Activo', '2026-02-26 20:41:55', '2026-03-06 01:56:41', '2026-02-26 20:41:55'),
-(7, 7260666, 'Erwin Jorge', 'Gonzales', 'Rioja', 'egonzales', '$2y$10$vOp3UWdnIdm7wVCRXcHnIekGysrhSdFa0MmOxL3o5l861svrk/y5.', 'Administrativo', 7, 'Activo', '2026-02-26 20:42:23', '2026-03-06 01:57:04', '2026-02-26 20:42:23'),
-(8, 5732101, 'Carlos G. ', 'Rodriguez', 'Rocha', 'crodriguez', '$2y$10$f1waFtdvwLtu.75fCvikZ..PZed/tMBTXdzpzRBcD.CJuG7mU1iLW', 'Administrativo', 6, 'Activo', '2026-02-26 20:42:46', '2026-03-06 01:40:54', '2026-02-26 20:42:46'),
-(9, 7423343, 'David', 'Ticona', 'Cabrera', 'dticona', '$2y$10$l2u8Jzfvesd3XyvmUH61u.SMT6ftzanbjGc/igjbHTw8TnUjeeWMe', 'Administrativo', 16, 'Activo', '2026-02-26 20:44:20', '2026-03-06 01:57:32', '2026-02-26 20:44:20'),
-(10, 7270861, 'Jeanneth Angelica', 'Chambi', 'Chinche', 'jchambi', '$2y$10$RQHIsO/Exx.HS0.BPZX5MOx6RnP5VscEMBAK2DUQYVBxlSRkcGj0q', 'Administrativo', 8, 'Activo', '2026-02-26 20:44:34', '2026-03-06 01:29:39', '2026-02-26 20:44:34'),
-(11, 13857686, 'Guadalupe', 'Gutierrez', 'Mamani', 'ggutierrez', '$2y$10$JE8eYoGXgF5Fax9FOuxL..LV3c/iDuDI.niwUTrfoUIwdkTUOVXN.', 'Administrativo', 10, 'Activo', '2026-02-26 20:45:23', '2026-03-06 01:44:46', '2026-03-05 20:55:33'),
-(12, 5755448, 'Marina', 'Alegre', 'Mamani', 'malegre', '$2y$10$vX7ZrTcnhqkARc2VA766luM8AXxb/fGyubNLnUyWPyVaVOttZiskS', 'Administrativo', 13, 'Activo', '2026-02-26 20:45:57', '2026-03-06 01:58:00', '2026-02-26 20:45:57'),
-(13, 7307898, 'Maria Lizeth', 'Colque', 'Rivera', 'mcolque', '$2y$10$/LxJmuqcS34qDcJedXRCe.nAlU5wARdrWAKRvAHRnV89zJmdpTzR6', 'Administrativo', 9, 'Activo', '2026-02-26 20:47:04', '2026-03-06 01:58:26', '2026-02-26 20:47:04'),
-(14, 7403044, 'Reynaldo Jesus', 'Flores', 'Jaillita', 'rflores', '$2y$10$tGXRqOwXUGP7XYSS5a/yUepmSsuGeRDqd4w3NJ4rrM77LyMuRESPC', 'Administrativo', 15, 'Activo', '2026-02-26 20:47:26', '2026-02-26 20:47:26', '2026-02-26 20:47:26'),
-(15, 7292221, 'Milton Jose', 'Torrez', 'Alegre', 'mtorrez', '$2y$10$hDv4SpqzrnQqPhE4sGahJu0N30GQG48AcAyrIwRlNEqaee8/b0G.S', 'Administrativo', 11, 'Activo', '2026-02-26 20:47:57', '2026-03-06 01:36:54', '2026-02-26 20:47:57'),
-(16, 7376273, 'Marina Ana', 'Alejandro', 'Ayala', 'malejandro', '$2y$10$jmEogWqLr1LPVNvsxVWKAu3703YKbHBu10dao3fdBd1098TnWhhBG', 'Administrativo', 12, 'Activo', '2026-02-26 20:48:17', '2026-03-06 01:30:51', '2026-02-26 20:48:17'),
-(17, 4069420, 'Scarleth Shirley', 'Encinas', 'Colque ', 's-', '$2y$10$pm401iIhuE448FnFw7AYYebspudJBLOD8E8pG2qAokPvYSF6KDaci', 'Administrativo', 17, 'Activo', '2026-02-26 20:49:01', '2026-03-06 01:45:52', '2026-02-26 20:49:01'),
-(18, 4060082, 'Jorge', 'Quillaguaman', '-', 'jquillaguaman', '$2y$10$/gvCssPtY82XuQRSHJRW3.IISXeoJEVub51PCNwQ5zNV38iJ/4miC', 'Administrativo', 18, 'Activo', '2026-02-26 20:49:23', '2026-03-06 01:44:20', '2026-02-26 20:49:23'),
-(19, 123456, 'Ventanilla/Recepción', 'Unica', 'EPDEOR', 'vunica', '$2y$10$dGoIwThTAXGuQaegsSGaAelM5H04dLyRg3LihjPL.BLecvOx6qdeS', 'Secretaria', 19, 'Activo', '2026-03-06 18:10:05', '2026-03-06 18:10:05', '2026-03-06 18:10:05');
+INSERT INTO `funcionario` (`id`, `ci`, `nombre`, `paterno`, `materno`, `usuario`, `password`, `contrasenia`, `rol`, `id_puesto`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
+(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', '', 'Administrador', 19, 'Activo', '2026-02-26 18:56:07', '2026-03-06 01:25:07', '2026-02-26 18:56:07'),
+(2, 7343846, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$H05dXZb8DvWcIMMmkkG4ZurvPN4aSTa7fvTgZl6zFPebxwN86jo4G', '', 'Gerente', 1, 'Activo', '2026-02-26 20:38:37', '2026-02-28 01:36:32', '2026-02-26 20:38:37'),
+(3, 7200300, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$XyCaXqajRZ2YS19R5iRrye2eXe3N5WLiseeXjheI1x3cRc243hn62', '', 'Administrativo', 2, 'Activo', '2026-02-26 20:39:16', '2026-02-28 01:36:49', '2026-02-26 20:39:16'),
+(4, 3544712, 'Carmen Marisol', 'Rufino', 'Segovia', 'crufino', '$2y$10$bdDF93ECe1JCt8PPymzuZelsoa.T6R5aKt5j2KTIiGoTKroJWOjlu', '', 'Administrativo', 3, 'Activo', '2026-02-26 20:40:56', '2026-03-06 01:29:08', '2026-02-26 20:40:56'),
+(5, 5778923, 'Maricruz Sara', 'Mamani', 'Nieto', 'mmamani', '$2y$10$r3SozgqCBlrg.tmMu/J/Ue4ioeccXMPs2zUph8ErZzCnyUDmDE35G', '', 'Administrativo', 4, 'Activo', '2026-02-26 20:41:32', '2026-03-06 23:11:27', '2026-02-26 20:41:32'),
+(6, 4058090, 'Belinda', 'Perez', 'Ayma', 'bperez', '$2y$10$pI2mgOqOa8CNOlhknSBoEujEAPl2Ydun7GOUJ0u4n8/bzWZzpc0eW', '', 'Administrativo', 5, 'Activo', '2026-02-26 20:41:55', '2026-03-06 01:56:41', '2026-02-26 20:41:55'),
+(7, 7260666, 'Erwin Jorge', 'Gonzales', 'Rioja', 'egonzales', '$2y$10$vOp3UWdnIdm7wVCRXcHnIekGysrhSdFa0MmOxL3o5l861svrk/y5.', '', 'Administrativo', 7, 'Activo', '2026-02-26 20:42:23', '2026-03-06 01:57:04', '2026-02-26 20:42:23'),
+(8, 5732101, 'Carlos G. ', 'Rodriguez', 'Rocha', 'crodriguez', '$2y$10$f1waFtdvwLtu.75fCvikZ..PZed/tMBTXdzpzRBcD.CJuG7mU1iLW', '', 'Administrativo', 6, 'Activo', '2026-02-26 20:42:46', '2026-03-06 01:40:54', '2026-02-26 20:42:46'),
+(9, 7423343, 'David', 'Ticona', 'Cabrera', 'dticona', '$2y$10$l2u8Jzfvesd3XyvmUH61u.SMT6ftzanbjGc/igjbHTw8TnUjeeWMe', '', 'Administrativo', 16, 'Activo', '2026-02-26 20:44:20', '2026-03-06 01:57:32', '2026-02-26 20:44:20'),
+(10, 7270861, 'Jeanneth Angelica', 'Chambi', 'Chinche', 'jchambi', '$2y$10$RQHIsO/Exx.HS0.BPZX5MOx6RnP5VscEMBAK2DUQYVBxlSRkcGj0q', '', 'Administrativo', 8, 'Activo', '2026-02-26 20:44:34', '2026-03-06 01:29:39', '2026-02-26 20:44:34'),
+(11, 13857686, 'Guadalupe', 'Gutierrez', 'Mamani', 'ggutierrez', '$2y$10$JE8eYoGXgF5Fax9FOuxL..LV3c/iDuDI.niwUTrfoUIwdkTUOVXN.', '', 'Administrativo', 10, 'Activo', '2026-02-26 20:45:23', '2026-03-06 01:44:46', '2026-03-05 20:55:33'),
+(12, 5755448, 'Marina', 'Alegre', 'Mamani', 'malegre', '$2y$10$vX7ZrTcnhqkARc2VA766luM8AXxb/fGyubNLnUyWPyVaVOttZiskS', '', 'Administrativo', 13, 'Activo', '2026-02-26 20:45:57', '2026-03-06 01:58:00', '2026-02-26 20:45:57'),
+(13, 7307898, 'Maria Lizeth', 'Colque', 'Rivera', 'mcolque', '$2y$10$/LxJmuqcS34qDcJedXRCe.nAlU5wARdrWAKRvAHRnV89zJmdpTzR6', '', 'Administrativo', 9, 'Activo', '2026-02-26 20:47:04', '2026-03-06 01:58:26', '2026-02-26 20:47:04'),
+(14, 7403044, 'Reynaldo Jesus', 'Flores', 'Jaillita', 'rflores', '$2y$10$tGXRqOwXUGP7XYSS5a/yUepmSsuGeRDqd4w3NJ4rrM77LyMuRESPC', '', 'Administrativo', 15, 'Activo', '2026-02-26 20:47:26', '2026-02-26 20:47:26', '2026-02-26 20:47:26'),
+(15, 7292221, 'Milton Jose', 'Torrez', 'Alegre', 'mtorrez', '$2y$10$hDv4SpqzrnQqPhE4sGahJu0N30GQG48AcAyrIwRlNEqaee8/b0G.S', '', 'Administrativo', 11, 'Activo', '2026-02-26 20:47:57', '2026-03-06 01:36:54', '2026-02-26 20:47:57'),
+(16, 7376273, 'Marina Ana', 'Alejandro', 'Ayala', 'malejandro', '$2y$10$jmEogWqLr1LPVNvsxVWKAu3703YKbHBu10dao3fdBd1098TnWhhBG', '', 'Administrativo', 12, 'Activo', '2026-02-26 20:48:17', '2026-03-06 01:30:51', '2026-02-26 20:48:17'),
+(17, 4069420, 'Scarleth Shirley', 'Encinas', 'Colque ', 's-', '$2y$10$pm401iIhuE448FnFw7AYYebspudJBLOD8E8pG2qAokPvYSF6KDaci', '', 'Administrativo', 17, 'Activo', '2026-02-26 20:49:01', '2026-03-06 01:45:52', '2026-02-26 20:49:01'),
+(18, 4060082, 'Jorge', 'Quillaguaman', '-', 'jquillaguaman', '$2y$10$/gvCssPtY82XuQRSHJRW3.IISXeoJEVub51PCNwQ5zNV38iJ/4miC', '', 'Administrativo', 18, 'Activo', '2026-02-26 20:49:23', '2026-03-06 01:44:20', '2026-02-26 20:49:23'),
+(19, 123456, 'Ventanilla/Recepción', 'Unica', 'EPDEOR', 'vunica', '$2y$10$dGoIwThTAXGuQaegsSGaAelM5H04dLyRg3LihjPL.BLecvOx6qdeS', '', 'Secretaria', 19, 'Activo', '2026-03-06 18:10:05', '2026-03-06 18:10:05', '2026-03-06 18:10:05');
 
 -- --------------------------------------------------------
 
@@ -177,7 +180,9 @@ INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 (16, 'Encargado Área de Mantenimiento y Reparación', 'AREA MANTENIMIENTO'),
 (17, 'Recepcionista 1', 'RECEPCION HOTEL'),
 (18, 'Recaudador de Valores 1', 'AUXILIAR JDTO'),
-(19, 'Administrador del Sistema', 'ADM');
+(19, 'Administrador del Sistema', 'ADM'),
+(20, 'RESPONSABLE DE PROCESO DE CONTRATACION MENOR', 'RPA'),
+(21, 'RESPONSABLE DE PROCESO DE CONTRATACION MAYOR', 'RPC');
 
 --
 -- Índices para tablas volcadas
@@ -221,7 +226,7 @@ ALTER TABLE `puesto`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
@@ -239,7 +244,7 @@ ALTER TABLE `funcionario`
 -- AUTO_INCREMENT de la tabla `puesto`
 --
 ALTER TABLE `puesto`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Restricciones para tablas volcadas

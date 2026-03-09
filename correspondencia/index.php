@@ -96,6 +96,27 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
         .blink {
             animation: blinker 1s linear infinite;
         }
+
+        /* Estilo más visible para los radios de filtro administrativo */
+        .filtro-admin + .form-check-label {
+            border: 1px solid #adb5bd;
+            border-radius: 999px;
+            padding: 0.2rem 0.75rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: all 0.15s ease-in-out;
+        }
+        .filtro-admin:checked + .form-check-label {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: #fff;
+            font-weight: 600;
+        }
+        .filtro-admin:not(:checked) + .form-check-label:hover {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 
@@ -121,6 +142,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_derivados" value="derivados" checked>
                                 <label class="form-check-label" for="filtro_derivados">Derivados a mi / En mi poder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_aceptados" value="aceptados">
+                                <label class="form-check-label" for="filtro_aceptados">Aceptados</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_iniciados" value="iniciados">
@@ -404,7 +429,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 </div>
                 <div class="modal-body">
                     <p>¿Confirma que desea marcar esta correspondencia como <strong>Aceptada</strong>?</p>
-                    <form id="aceptarCorrespondenciaForm" action="aceptar.php" method="post">
+                    <form id="aceptarCorrespondenciaForm" action="accept.php" method="post">
                         <input type="hidden" id="aceptar_correspondencia_id" name="id">
                     </form>
                 </div>

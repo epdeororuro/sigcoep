@@ -30,15 +30,27 @@ try {
     } else if ($usuario_cargo === 'Administrativo') {
         if ($filtro_admin === 'iniciados') {
             // Correspondencias iniciadas por el Administrativo (donde él fue remitente original)
+            // No incluir las que ya están en estado Aceptado
             $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                     FROM correspondencia c
                     WHERE c.remitente_id = :uid
+                      AND c.estado <> 'Aceptado'
+                      AND c.eliminado_en IS NULL
+                    ORDER BY c.fecha DESC";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':uid' => $usuario_id]);
+        } elseif ($filtro_admin === 'aceptados') {
+            // Correspondencias actualmente aceptadas y en poder del usuario
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+                    FROM correspondencia c
+                    WHERE c.idfuncionario_enturno = :uid
+                      AND c.estado = 'Aceptado'
                       AND c.eliminado_en IS NULL
                     ORDER BY c.fecha DESC";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':uid' => $usuario_id]);
         } else {
-            // Por defecto: Correspondencias derivadas a él en algún momento
+            // Por defecto: Correspondencias derivadas a él en algún momento (solo estado Derivado)
             $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                     FROM correspondencia c
                     WHERE EXISTS (
@@ -46,6 +58,7 @@ try {
                         WHERE d2.id_correspondencia = c.id
                           AND d2.id_funcionario = :uid
                     )
+                      AND c.estado = 'Derivado'
                       AND c.eliminado_en IS NULL
                     ORDER BY c.fecha DESC";
             $stmt = $pdo->prepare($sql);
@@ -86,7 +99,7 @@ try {
         }
 
         // --- SISTEMA DE BOTONES POR ROL ---
-        $btn_aceptar = '<button type="button" class="btn btn-success btn-sm" style="margin-left:4px;" title="Aceptar/Rechazar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
+        $btn_aceptar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Aceptar/Rechazar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
 
         $btn_editar = '<form action="" method="post" style="display: inline;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button></form>';
         $btn_eliminar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Eliminar" onclick="confirmarEliminacion('.$correspondencia['id'].')"><i class="bi bi-trash"></i></button>';

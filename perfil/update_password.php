@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':id' => $usuario_id
         ]);
 
-        $_SESSION['mensaje'] = 'Contraseña actualizada correctamente.';
+        $_SESSION['mensaje'] = 'Contraseña actualizada correctamente. Los cambios se aplicarán en su próximo inicio de sesión.';
         $_SESSION['mensaje_tipo'] = 'success';
         header('Location: password.php');
         exit;

@@ -109,7 +109,7 @@ if(!isset($_SESSION['usuario_id'])){
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userDropdown">
                 <li><h6 class="dropdown-header">Mi Cuenta</h6></li>
                 <li>
-                    <a class="dropdown-item" href="perfil/index.php" target="iframe_content">
+                    <a class="dropdown-item" href="perfil/user.php" target="iframe_content">
                         <i class="bi bi-pencil-square me-2"></i> Modificar mi usuario
                     </a>
                 </li>

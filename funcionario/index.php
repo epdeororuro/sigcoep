@@ -136,12 +136,9 @@ if (isset($_SESSION['mensaje'])) {
             </div>
             <div class="modal-body">
                 <div class="mb-2">
-                    <label class="form-label">Contraseña (texto plano)</label>
+                    <label class="form-label">Contraseña</label>
                     <input type="text" class="form-control" id="contrasenia_actual" readonly>
                 </div>
-                <small class="text-muted">
-                    Visible solo para el rol <strong>Administrador</strong>.
-                </small>
             </div>
         </div>
     </div>
@@ -323,7 +320,7 @@ function editarFuncionario(id) {
 function verContrasenia(id) {
     $.ajax({
         type: 'POST',
-        url: 'ver_contrasenia.php',
+        url: 'show_password.php',
         data: {id: id},
         dataType: 'json',
         success: function (data) {
