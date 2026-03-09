@@ -111,7 +111,7 @@ if (isset($_SESSION['mensaje'])) {
                                     <th>Nombre</th>
                                     <th>Apellido Paterno</th>
                                     <th>Apellido Materno</th>
-                                    <th>Puesto</th>
+                                    <th>Cargo</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -122,6 +122,27 @@ if (isset($_SESSION['mensaje'])) {
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL VER CONTRASEÑA ================= -->
+<div class="modal fade" id="verContraseniaModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-eye"></i> Contraseña actual</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <label class="form-label">Contraseña (texto plano)</label>
+                    <input type="text" class="form-control" id="contrasenia_actual" readonly>
+                </div>
+                <small class="text-muted">
+                    Visible solo para el rol <strong>Administrador</strong>.
+                </small>
+            </div>
         </div>
     </div>
 </div>
@@ -295,6 +316,22 @@ function editarFuncionario(id) {
             $('#edit_rol').val(data.rol);
             $('#edit_id_puesto').val(data.id_puesto);
             $('#editFuncionarioModal').modal('show');
+        }
+    });
+}
+
+function verContrasenia(id) {
+    $.ajax({
+        type: 'POST',
+        url: 'ver_contrasenia.php',
+        data: {id: id},
+        dataType: 'json',
+        success: function (data) {
+            if (data && data.contrasenia !== undefined) {
+                $('#contrasenia_actual').val(data.contrasenia);
+                var modal = new bootstrap.Modal(document.getElementById('verContraseniaModal'));
+                modal.show();
+            }
         }
     });
 }

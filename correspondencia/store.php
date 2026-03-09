@@ -57,9 +57,35 @@ try {
     $numeroHojaRuta = $totalCorrespondencia + 1;
     $hojaruta = $numeroHojaRuta . '/' . date('Y');
 
+    // Manejo de carga de foto (opcional)
+    $fotoNombre = '';
+    $uploadDir = __DIR__ . '/../assets/fotos_correspondencia/';
+
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $tmpName = $_FILES['foto']['tmp_name'];
+        $origName = basename($_FILES['foto']['name']);
+        $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        if (!in_array($ext, $allowed)) {
+            throw new Exception('Formato de foto no permitido. Use JPG, PNG, GIF o WEBP');
+        }
+
+        $fotoNombre = uniqid('corr_', true) . '.' . $ext;
+        $destino = $uploadDir . $fotoNombre;
+
+        if (!move_uploaded_file($tmpName, $destino)) {
+            throw new Exception('No se pudo guardar la foto en el servidor');
+        }
+    }
+
     // Insertar la correspondencia
-    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, fecha, estado, actualizado_en, eliminado_en) 
-            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, NOW(), 'Registrado', NULL, NULL)";
+    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, fecha, foto, estado, actualizado_en, eliminado_en) 
+            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, NOW(), :foto, 'Registrado', NULL, NULL)";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -69,7 +95,8 @@ try {
         ':tipo_remitente' => $tipo_remitente,
         ':remitente' => $remitente,
         ':referencia' => $referencia,
-        ':fojas' => $fojas
+        ':fojas' => $fojas,
+        ':foto' => $fotoNombre
     ]);
 
     $_SESSION['mensaje'] = 'Correspondencia registrada con éxito';

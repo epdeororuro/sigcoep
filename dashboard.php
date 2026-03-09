@@ -113,6 +113,11 @@ if(!isset($_SESSION['usuario_id'])){
                         <i class="bi bi-pencil-square me-2"></i> Modificar mi usuario
                     </a>
                 </li>
+                <li>
+                    <a class="dropdown-item" href="perfil/password.php" target="iframe_content">
+                        <i class="bi bi-key me-2"></i> Modificar contraseña
+                    </a>
+                </li>
                 <?php if(strtolower($_SESSION['usuario_cargo']) === 'administrador'): ?>
                 <li>
                     <a class="dropdown-item text-success" href="backup.php">

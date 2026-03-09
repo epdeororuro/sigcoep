@@ -137,6 +137,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                         <th>Remitente</th>
                                         <th>Referencia</th>
                                         <th>Fojas</th>
+                                        <th>Foto</th>
                                         <th>Fecha/Hora</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
@@ -159,7 +160,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="createCorrespondenciaForm" action="store.php" method="post">
+                    <form id="createCorrespondenciaForm" action="store.php" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label class="form-label">Hoja de ruta</label>
                             <input type="text" class="form-control" name="hojaruta" value="<?= htmlspecialchars($siguienteHojaRuta) ?>" readonly>
@@ -205,6 +206,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <label class="form-label">Fojas</label>
                             <textarea class="form-control" id="fojas" name="fojas" required></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Foto (opcional)</label>
+                            <input type="file" class="form-control" name="foto" accept="image/*">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -223,8 +228,9 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editCorrespondenciaForm" action="update.php" method="post">
+                    <form id="editCorrespondenciaForm" action="update.php" method="post" enctype="multipart/form-data">
                         <input type="hidden" id="edit_id" name="id">
+                        <input type="hidden" id="edit_foto_actual" name="foto_actual">
                         <div class="mb-3">
                             <label class="form-label">hojaruta</label>
                             <input type="text" class="form-control" id="edit_hojaruta" name="hojaruta">
@@ -265,11 +271,31 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <label class="form-label">Fojas</label>
                             <textarea class="form-control" id="edit_fojas" name="fojas"></textarea>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Foto actual</label>
+                            <div id="edit_foto_preview" class="mb-2"></div>
+                            <label class="form-label">Cambiar foto (opcional)</label>
+                            <input type="file" class="form-control" name="foto_nueva" accept="image/*">
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button class="btn btn-primary" form="editCorrespondenciaForm">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= MODAL VER FOTO ================= -->
+    <div class="modal fade" id="fotoModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Foto de la correspondencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="fotoModalImg" src="" alt="Foto de la correspondencia" class="img-fluid">
                 </div>
             </div>
         </div>
@@ -398,6 +424,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     { data: 'remitente' },
                     { data: 'referencia' },
                     { data: 'fojas' },
+                    { data: 'foto', orderable: false, searchable: false },
                     { data: 'fecha' },
                     { data: 'estado' },
                     { data: 'acciones' }
@@ -421,6 +448,14 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     $('#edit_hojaruta').val(data.hojaruta);
                     $('#edit_referencia').val(data.referencia);
                     $('#edit_fojas').val(data.fojas);
+                    $('#edit_foto_actual').val(data.foto || '');
+
+                    if (data.foto) {
+                        var urlFoto = '../assets/fotos_correspondencia/' + data.foto;
+                        $('#edit_foto_preview').html('<img src="' + urlFoto + '" alt="Foto actual" class="img-fluid rounded border">');
+                    } else {
+                        $('#edit_foto_preview').html('<span class="text-muted">Sin foto registrada</span>');
+                    }
 
                     // Configurar tipo de remitente y selector/entrada correspondiente
                     if (data.tipo_remitente === 'interno') {
@@ -460,6 +495,13 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             var fid = $(this).val();
             $('#derivar_id_funcionario').val(fid);
         });
+
+        // Ver foto en modal grande
+        function verFoto(url) {
+            $('#fotoModalImg').attr('src', url);
+            var modal = new bootstrap.Modal(document.getElementById('fotoModal'));
+            modal.show();
+        }
 
         // función para abrir el modal de impresión y fijar el id
         function solicitarPagina(id) {

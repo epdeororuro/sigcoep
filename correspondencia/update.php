@@ -9,6 +9,43 @@ if (isset($_POST['id'])) {
     $fojas = intval($_POST['fojas'] ?? 1);
     $actualizado_en = date('Y-m-d H:i:s');
 
+    // Foto actual y posible nueva foto
+    $foto_actual = $_POST['foto_actual'] ?? '';
+    $fotoNombre = $foto_actual;
+    $uploadDir = __DIR__ . '/../assets/fotos_correspondencia/';
+
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    if (isset($_FILES['foto_nueva']) && $_FILES['foto_nueva']['error'] === UPLOAD_ERR_OK) {
+        $tmpName = $_FILES['foto_nueva']['tmp_name'];
+        $origName = basename($_FILES['foto_nueva']['name']);
+        $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        if (!in_array($ext, $allowed)) {
+            throw new Exception('Formato de foto no permitido. Use JPG, PNG, GIF o WEBP');
+        }
+
+        $nuevoNombre = uniqid('corr_', true) . '.' . $ext;
+        $destino = $uploadDir . $nuevoNombre;
+
+        if (!move_uploaded_file($tmpName, $destino)) {
+            throw new Exception('No se pudo guardar la foto en el servidor');
+        }
+
+        // Eliminar foto anterior si existe
+        if (!empty($foto_actual)) {
+            $rutaAnterior = $uploadDir . $foto_actual;
+            if (is_file($rutaAnterior)) {
+                @unlink($rutaAnterior);
+            }
+        }
+
+        $fotoNombre = $nuevoNombre;
+    }
+
     // Tipo de remitente y datos asociados desde el formulario de edición
     $tipo_remitente = $_POST['edit_tipo_remitente'] ?? 'externo';
     $remitente_id = null;
@@ -60,6 +97,7 @@ if (isset($_POST['id'])) {
                     remitente = :remitente,
                     referencia = :referencia,
                     fojas = :fojas,
+                    foto = :foto,
                     actualizado_en = :actualizado_en 
                 WHERE id = :id";
 
@@ -72,6 +110,7 @@ if (isset($_POST['id'])) {
         $stmt->bindParam(':remitente', $remitente);
         $stmt->bindParam(':referencia', $referencia);
         $stmt->bindParam(':fojas', $fojas, PDO::PARAM_INT);
+        $stmt->bindParam(':foto', $fotoNombre);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();
 

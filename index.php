@@ -21,6 +21,8 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <style>
     body {
       background-color: #f8f9fa;
@@ -64,9 +66,60 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
         </div>
       </div>
     </div>
+
+    <!-- Sección de consulta pública de hojas de ruta -->
+    <div class="row justify-content-center mt-4">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Consulta de hojas de ruta</h5>
+            <p class="text-muted mb-3">
+              Busque por número de hoja de ruta, referencia o funcionario para ver con quién se encuentra actualmente la correspondencia.
+            </p>
+            <div class="table-responsive">
+              <table id="tablaHojasRuta" class="table table-striped table-bordered align-middle w-100">
+                <thead class="table-primary">
+                  <tr>
+                    <th>Hoja de ruta</th>
+                    <th>Referencia</th>
+                    <th>En curso con</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Bootstrap 5 JS -->
+  <!-- jQuery y DataTables JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#tablaHojasRuta').DataTable({
+        ajax: {
+          url: 'correspondencia/show_public.php',
+          type: 'POST'
+        },
+        autoWidth: false,
+        responsive: true,
+        language: {
+          url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        },
+        columns: [
+          { data: 'hojaruta' },
+          { data: 'referencia' },
+          { data: 'en_curso_con' },
+          { data: 'estado' },
+        ]
+      });
+    });
+  </script>
 </body>
 </html>

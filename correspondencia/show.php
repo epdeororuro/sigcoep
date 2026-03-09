@@ -12,7 +12,7 @@ try {
 
     if (in_array($usuario_cargo, ['Administrador', 'Secretaria'])) {
         // Administrador y Secretaria ven todas las correspondencias
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                 FROM correspondencia c
                 WHERE c.eliminado_en IS NULL
                 ORDER BY c.fecha DESC";
@@ -20,7 +20,7 @@ try {
         $stmt->execute();
     } else if ($usuario_cargo === 'Gerente') {
         // Gerente ve todas desde estado Iniciado en adelante
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                 FROM correspondencia c
                 WHERE c.estado != 'Registrado'
                   AND c.eliminado_en IS NULL
@@ -30,7 +30,7 @@ try {
     } else if ($usuario_cargo === 'Administrativo') {
         if ($filtro_admin === 'iniciados') {
             // Correspondencias iniciadas por el Administrativo (donde él fue remitente original)
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado, c.idfuncionario_enturno
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                     FROM correspondencia c
                     WHERE c.remitente_id = :uid
                       AND c.eliminado_en IS NULL
@@ -39,7 +39,7 @@ try {
             $stmt->execute([':uid' => $usuario_id]);
         } else {
             // Por defecto: Correspondencias derivadas a él en algún momento
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado, c.idfuncionario_enturno
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                     FROM correspondencia c
                     WHERE EXISTS (
                         SELECT 1 FROM derivacion d2
@@ -53,7 +53,7 @@ try {
         }
     } else {
         // Otros roles (fallback general): derivadas
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
                 FROM correspondencia c
                 WHERE EXISTS (
                     SELECT 1 FROM derivacion d2
@@ -72,6 +72,13 @@ try {
     foreach ($correspondencias as $correspondencia) {
         $acciones = '';
         $estado_display = $correspondencia['estado'];
+
+        // Foto (thumbnail clickeable si existe)
+        $fotoHtml = '';
+        if (!empty($correspondencia['foto'])) {
+            $urlFoto = '../assets/fotos_correspondencia/' . $correspondencia['foto'];
+            $fotoHtml = '<a href="#" onclick="verFoto(\'' . $urlFoto . '\'); return false;"><img src="' . $urlFoto . '" alt="Foto" style="height:40px;" class="rounded border"></a>';
+        }
 
         // Añadir indicador (punto rojo) si el documento está en poder de este funcionario
         if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
@@ -119,6 +126,7 @@ try {
             'remitente' => $correspondencia['remitente'],
             'referencia' => $correspondencia['referencia'],
             'fojas' => $correspondencia['fojas'],
+            'foto' => $fotoHtml,
             'fecha' => date('d-m-Y H:i:s', strtotime($correspondencia['fecha'])),
             'estado' => $estado_display,
             'acciones' => $acciones
