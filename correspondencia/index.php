@@ -394,6 +394,27 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             </div>
         </div>
     </div>
+    <!-- ================= MODAL ACEPTAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="aceptarCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aceptar correspondencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Confirma que desea marcar esta correspondencia como <strong>Aceptada</strong>?</p>
+                    <form id="aceptarCorrespondenciaForm" action="aceptar.php" method="post">
+                        <input type="hidden" id="aceptar_correspondencia_id" name="id">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" form="aceptarCorrespondenciaForm">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= JS ================= -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -514,6 +535,12 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
         function confirmarEliminacion(id) {
             $('#delete_correspondencia_id').val(id);
             $('#deleteCorrespondenciaModal').modal('show');
+        }
+
+        // Abrir modal para aceptar correspondencia
+        function abrirAceptarCorrespondencia(id) {
+            $('#aceptar_correspondencia_id').val(id);
+            $('#aceptarCorrespondenciaModal').modal('show');
         }
 
         // Manejo de radiobuttons para tipo de remitente
