@@ -23,6 +23,8 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
   <style>
     body {
       background-color: #f8f9fa;
@@ -57,7 +59,12 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
               </div>
               <div class="mb-3">
                 <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                <div class="input-group">
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required>
+                  <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="#password">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
               </div>
               <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
             </form>
@@ -118,6 +125,29 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
           { data: 'en_curso_con' },
           { data: 'estado' },
         ]
+      });
+    });
+
+    // Toggle de visibilidad de contraseñas (ojito siempre disponible)
+    document.querySelectorAll('.toggle-password-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var targetSelector = btn.getAttribute('data-target');
+        var input = document.querySelector(targetSelector);
+        if (!input) return;
+        var icon = btn.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          if (icon) {
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+          }
+        } else {
+          input.type = 'password';
+          if (icon) {
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+          }
+        }
       });
     });
   </script>

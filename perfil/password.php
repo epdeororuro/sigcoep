@@ -38,15 +38,22 @@ if (!isset($_SESSION['usuario_id'])) {
                     <form action="update_password.php" method="post">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nueva contraseña</label>
-                            <input type="password" class="form-control" name="nueva_contrasena" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="nueva_contrasena" name="nueva_contrasena" required>
+                                <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="#nueva_contrasena">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Confirmar nueva contraseña</label>
-                            <input type="password" class="form-control" name="confirmar_contrasena" required>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="confirmar_contrasena" name="confirmar_contrasena" required>
+                                <button class="btn btn-outline-secondary toggle-password-btn" type="button" data-target="#confirmar_contrasena">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
                         </div>
-                        <small class="text-muted d-block mb-3">
-                            La nueva contraseña se guardará cifrada para el inicio de sesión, y también en texto plano en el campo interno <code>contrasenia</code> solo para uso del administrador del sistema.
-                        </small>
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Guardar Cambios
@@ -60,6 +67,30 @@ if (!isset($_SESSION['usuario_id'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Toggle de visibilidad de contraseñas (ojito siempre disponible)
+    document.querySelectorAll('.toggle-password-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var targetSelector = btn.getAttribute('data-target');
+            var input = document.querySelector(targetSelector);
+            if (!input) return;
+            var icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                }
+            } else {
+                input.type = 'password';
+                if (icon) {
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
 
