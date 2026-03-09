@@ -28,6 +28,19 @@ if (!isset($_SESSION['usuario_id'])) {
 </head>
 <body>
 <div class="container mt-5">
+    <?php
+    if (isset($_SESSION['mensaje'])) {
+        $tipo = isset($_SESSION['mensaje_tipo']) ? $_SESSION['mensaje_tipo'] : 'success';
+        $clase_alert = $tipo === 'danger' ? 'alert-danger' : 'alert-success';
+        echo '
+        <div class="alert ' . $clase_alert . ' alert-dismissible fade show" role="alert">
+            ' . $_SESSION['mensaje'] . '
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>';
+        unset($_SESSION['mensaje']);
+        unset($_SESSION['mensaje_tipo']);
+    }
+    ?>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow">
