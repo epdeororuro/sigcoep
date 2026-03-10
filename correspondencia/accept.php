@@ -30,6 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $id]);
 
         if ($stmt->rowCount() > 0) {
+            // Actualizar fecha_entrega_derivacion en la última derivación
+            $stmt2 = $pdo->prepare("UPDATE derivacion SET fecha_entrega_derivacion = NOW() WHERE id_correspondencia = :id AND id_funcionario = :uid ORDER BY fecha_derivacion DESC LIMIT 1");
+            $stmt2->execute([':id' => $id, ':uid' => $usuario_id]);
+            
             $_SESSION['mensaje'] = 'Correspondencia aceptada correctamente.';
             $_SESSION['mensaje_tipo'] = 'success';
         } else {

@@ -12,7 +12,7 @@ try {
 
     if (in_array($usuario_cargo, ['Administrador', 'Secretaria'])) {
         // Administrador y Secretaria ven todas las correspondencias
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                 FROM correspondencia c
                 WHERE c.eliminado_en IS NULL
                 ORDER BY c.fecha DESC";
@@ -20,7 +20,7 @@ try {
         $stmt->execute();
     } else if ($usuario_cargo === 'Gerente') {
         // Gerente ve todas desde estado Iniciado en adelante
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                 FROM correspondencia c
                 WHERE c.estado != 'Registrado'
                   AND c.eliminado_en IS NULL
@@ -31,7 +31,7 @@ try {
         if ($filtro_admin === 'iniciados') {
             // Correspondencias iniciadas por el Administrativo (donde él fue remitente original)
             // No incluir las que ya están en estado Aceptado
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                     FROM correspondencia c
                     WHERE c.remitente_id = :uid
                       AND c.estado <> 'Aceptado'
@@ -41,7 +41,7 @@ try {
             $stmt->execute([':uid' => $usuario_id]);
         } elseif ($filtro_admin === 'aceptados') {
             // Correspondencias actualmente aceptadas y en poder del usuario
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                     FROM correspondencia c
                     WHERE c.idfuncionario_enturno = :uid
                       AND c.estado = 'Aceptado'
@@ -51,7 +51,7 @@ try {
             $stmt->execute([':uid' => $usuario_id]);
         } else {
             // Por defecto: Correspondencias derivadas a él en algún momento (solo estado Derivado)
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                     FROM correspondencia c
                     WHERE EXISTS (
                         SELECT 1 FROM derivacion d2
@@ -66,7 +66,7 @@ try {
         }
     } else {
         // Otros roles (fallback general): derivadas
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno
+        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
                 FROM correspondencia c
                 WHERE EXISTS (
                     SELECT 1 FROM derivacion d2
@@ -180,6 +180,7 @@ try {
             'remitente' => $correspondencia['remitente'],
             'referencia' => $correspondencia['referencia'],
             'fojas' => $correspondencia['fojas'],
+            'anexo' => $correspondencia['anexo'],
             'foto' => $fotoHtml,
             'fecha' => date('d-m-Y H:i:s', strtotime($correspondencia['fecha'])),
             'estado' => $estado_display,

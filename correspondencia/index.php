@@ -162,6 +162,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                         <th>Remitente</th>
                                         <th>Referencia</th>
                                         <th>Fojas</th>
+                                        <th>Anexo</th>
                                         <th>Foto</th>
                                         <th>Fecha/Hora</th>
                                         <th>Estado</th>
@@ -232,6 +233,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <textarea class="form-control" id="fojas" name="fojas" required></textarea>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Anexo</label>
+                            <textarea class="form-control" id="anexo" name="anexo"></textarea>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Foto (opcional)</label>
                             <input type="file" class="form-control" name="foto" accept="image/*">
                         </div>
@@ -257,7 +262,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <input type="hidden" id="edit_id" name="id">
                         <input type="hidden" id="edit_foto_actual" name="foto_actual">
                         <div class="mb-3">
-                            <label class="form-label">hojaruta</label>
+                            <label class="form-label">Hoja de ruta</label>
                             <input type="text" class="form-control" id="edit_hojaruta" name="hojaruta">
                         </div>
                         <div class="mb-3">
@@ -295,6 +300,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <div class="mb-3">
                             <label class="form-label">Fojas</label>
                             <textarea class="form-control" id="edit_fojas" name="fojas"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Anexo</label>
+                            <textarea class="form-control" id="edit_anexo" name="edit_anexo"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto actual</label>
@@ -470,6 +479,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     { data: 'remitente' },
                     { data: 'referencia' },
                     { data: 'fojas' },
+                    { data: 'anexo' },
                     { data: 'foto', orderable: false, searchable: false },
                     { data: 'fecha' },
                     { data: 'estado' },
