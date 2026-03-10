@@ -65,7 +65,7 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            background: #0d6efd;
+            background: #ffffff;
             color: #fff;
             display: flex;
             align-items: center;
@@ -82,11 +82,22 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
             align-items: center;    
             gap: 4px;               
         }
-        .circle {
+        .circle_blue {
             width: 50px;
             height: 60px;
             border-radius: 50%;    
             background-color: #007bff; 
+            color: #fff;           
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .circle_green {
+            width: 50px;
+            height: 60px;
+            border-radius: 50%;    
+            background-color: #28a745; 
             color: #fff;           
             display: flex;
             align-items: center;
@@ -119,12 +130,14 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($derivaciones as $d): ?>
                         <div class="timeline-item">
                             <div class="time-marker">
-                                <div class="circle"><?php echo date('d-M', strtotime($d['fecha_derivacion'])); ?></div>
+                                <div class="circle_blue"><?php echo date('d-M', strtotime($d['fecha_derivacion'])); ?></div>
+                                <div class="circle_green"><?php echo date('d-M', strtotime($d['fecha_entrega_derivacion'])); ?></div>
                             </div>
                             <div class="card p-2">
                                 <div class="card-body p-2">
                                     <strong><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></strong>
-                                    <div class="text-muted small"><?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></div>
+                                    <div class="text-info small">Fecha Derivación: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></div>
+                                    <div class="text-success small">Fecha Entrega: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?></div>
                                     <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></p>
                                     <div class="small text-muted mt-1">Fojas: <?php echo htmlspecialchars($d['fojas']); ?> — Carácter: <?php echo htmlspecialchars($d['caracter']); ?></div>
                                 </div>
@@ -141,10 +154,11 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 <thead>
                 <tr>
                     <th>Funcionario</th>
-                    <th>Fecha</th>
+                    <th>Fecha Derivación</th>
+                    <th>Fecha Recepción</th>
                     <th>Instrucción</th>
                     <th>Fojas</th>
-                    <th>Carácter</th>
+                    <th>Anexo</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -152,14 +166,25 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($derivaciones as $d): ?>
                         <tr>
                             <td><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></td>
-                            <td><?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></td>
+                            <td><?php echo date('d-M-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></td>
+                            <td>
+                                <?php if (!empty($d['fecha_entrega_derivacion'])): ?>
+                                    <div class="d-flex flex-column align-items-center">
+                                        <span>
+                                            <?php echo date('d-M-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?>
+                                        </span>
+                                    </div>
+                                <?php else: ?>
+                                    <span class="text-muted">No entregado</span>
+                                <?php endif; ?>
+                            </td>
                             <td><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars($d['fojas']); ?></td>
-                            <td><?php echo htmlspecialchars($d['caracter']); ?></td>
+                            <td><?php echo htmlspecialchars($d['anexo']); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="5">Sin registros</td></tr>
+                    <tr><td colspan="6">Sin registros</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>
