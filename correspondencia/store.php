@@ -7,7 +7,7 @@ try {
     $tipo_remitente = $_POST['tipo_remitente'] ?? 'externo';
     $referencia = $_POST['referencia'] ?? '';
     $fojas = intval($_POST['fojas'] ?? 1);
-
+    $anexo = $_POST['anexo'] ?? '';
     // Validaciones básicas
     if (empty($referencia)) {
         throw new Exception('Referencia es requerida');
@@ -84,8 +84,8 @@ try {
     }
 
     // Insertar la correspondencia
-    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, fecha, foto, estado, actualizado_en, eliminado_en) 
-            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, NOW(), :foto, 'Registrado', NULL, NULL)";
+    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha, foto, estado, actualizado_en, eliminado_en) 
+            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, :anexo, NOW(), :foto, 'Registrado', NULL, NULL)";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -96,6 +96,7 @@ try {
         ':remitente' => $remitente,
         ':referencia' => $referencia,
         ':fojas' => $fojas,
+        ':anexo' => $anexo,
         ':foto' => $fotoNombre
     ]);
 

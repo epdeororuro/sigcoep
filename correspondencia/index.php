@@ -237,8 +237,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <textarea class="form-control" id="anexo" name="anexo"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Foto (opcional)</label>
-                            <input type="file" class="form-control" name="foto" accept="image/*">
+                            <label class="form-label">Foto obligatorio</label>
+                            <input type="file" class="form-control" name="foto" accept="image/*" required>
                         </div>
                     </form>
                 </div>
