@@ -30,6 +30,9 @@ if (isset($_SESSION['mensaje'])) {
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
 
     <style>
         body {
@@ -51,6 +54,8 @@ if (isset($_SESSION['mensaje'])) {
         table.dataTable th,
         table.dataTable td {
             white-space: nowrap;
+            text-align: center;
+            vertical-align: middle;
         }
 
         .dataTables_wrapper .dataTables_scroll {
@@ -103,8 +108,8 @@ if (isset($_SESSION['mensaje'])) {
                     </div>
 
                     <div class="table-responsive">
-                        <table id="funcionarios" class="table table-striped table-bordered align-middle w-100">
-                            <thead class="table-primary">
+                        <table id="funcionarios" class="table table-striped table-bordered align-middle text-center w-100">
+                            <thead class="table-primary text-center">
                                 <tr>
                                     <th>N°</th>
                                     <th>C.I.</th>
@@ -270,6 +275,8 @@ if (isset($_SESSION['mensaje'])) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function() {
@@ -296,6 +303,17 @@ $(document).ready(function() {
             { data: 'acciones' }
         ]
     });
+
+    // Inicializar Select2 en los modales
+    $('.modal').on('shown.bs.modal', function () {
+        $(this).find('select').each(function() {
+            $(this).select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $(this).parent(),
+                width: '100%'
+            });
+        });
+    });
 });
 
 function editarFuncionario(id) {
@@ -312,6 +330,11 @@ function editarFuncionario(id) {
             $('#edit_materno').val(data.materno);
             $('#edit_rol').val(data.rol);
             $('#edit_id_puesto').val(data.id_puesto);
+            
+            if ($('#edit_rol').hasClass("select2-hidden-accessible")) {
+                $('#edit_rol').trigger('change.select2');
+                $('#edit_id_puesto').trigger('change.select2');
+            }
             $('#editFuncionarioModal').modal('show');
         }
     });

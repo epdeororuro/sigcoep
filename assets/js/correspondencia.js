@@ -30,6 +30,15 @@ $(document).ready(function() {
         ]
     });
 
+    // Actualizar contadores en base a los datos que retorna el servidor
+    table.on('xhr.dt', function ( e, settings, json, xhr ) {
+        if (json && json.counts) {
+            for (const [key, value] of Object.entries(json.counts)) {
+                $('.count-badge[data-count="' + key + '"]').text(value);
+            }
+        }
+    });
+
     // Evento para cambiar de pestaña y recargar la tabla
     $('.filtro-tab').on('click', function(e) {
         e.preventDefault();
@@ -76,6 +85,11 @@ function editarCorrespondencia(id) {
                 $('#edit_select_remitente_interno').val('');
                 $('#edit_input_remitente_externo').val(data.remitente_externo || data.remitente);
             }
+            
+            // Actualizar vista del select si ya tiene select2
+            if ($('#edit_select_remitente_interno').hasClass("select2-hidden-accessible")) {
+                $('#edit_select_remitente_interno').trigger('change.select2');
+            }
 
             $('#editCorrespondenciaModal').modal('show');
         }
@@ -91,6 +105,12 @@ function derivarCorrespondencia(id) {
     $('#derivar_instruccion').val('');
     $('#derivar_fojas').val('');
     $('#derivar_caracter').val('Urgente');
+    
+    if ($('#derivar_select_funcionario').hasClass("select2-hidden-accessible")) {
+        $('#derivar_select_funcionario').trigger('change.select2');
+        $('#derivar_caracter').trigger('change.select2');
+    }
+    
     // Mostrar el modal
     $('#derivarCorrespondenciaModal').modal('show');
 }
@@ -162,4 +182,8 @@ $(document).on('show.bs.modal', '#createCorrespondenciaModal', function() {
     $('#div_remitente_externo').hide();
     $('#select_remitente_interno').removeAttr('required');
     $('#input_remitente_externo').removeAttr('required');
+    
+    if ($('#select_remitente_interno').hasClass("select2-hidden-accessible")) {
+        $('#select_remitente_interno').val('').trigger('change.select2');
+    }
 });

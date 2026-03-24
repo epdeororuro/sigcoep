@@ -97,9 +97,14 @@ if ($page === 1) {
     <link rel="stylesheet" href="../assets/css/reporte.css">
 </head>
 <body>
-<button id="printBtn" onclick="window.print()" class="btn btn-primary btn-sm" title="Imprimir hoja">
+<div id="printBtn" class="btn-group shadow">
+    <a href="index.php" class="btn btn-secondary btn-sm" title="Volver a Correspondencia">
+        <i class="fa fa-arrow-left" aria-hidden="true"></i> Volver
+    </a>
+    <button onclick="window.print()" class="btn btn-primary btn-sm" title="Imprimir hoja">
         <i class="fa fa-print" aria-hidden="true"></i> Imprimir
     </button>
+</div>
 <div class="page">
     <div class="header">
         <img src="../assets/img/logo_1.png" alt="EPDEOR LOGO" style="max-height: 80px; max-width: 320px;">

@@ -10,7 +10,7 @@ if (empty($id)) {
 }
 
 // Obtener datos de la correspondencia
-$stmt = $pdo->prepare("SELECT id, hojaruta, remitente, referencia, fojas, fecha, estado FROM correspondencia WHERE id = :id");
+$stmt = $pdo->prepare("SELECT id, hojaruta, remitente, referencia, fojas, anexo, fecha, estado FROM correspondencia WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $cor = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$cor) {
@@ -27,6 +27,20 @@ $sql = "SELECT d.*, f.nombre, f.paterno, f.materno
 $stmt2 = $pdo->prepare($sql);
 $stmt2->execute([':id' => $id]);
 $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+// Calcular total aproximado de fojas y anexos
+$total_fojas = intval($cor['fojas'] ?? 0);
+$anexos_acumulados = [];
+if (!empty(trim($cor['anexo'] ?? ''))) {
+    $anexos_acumulados[] = trim($cor['anexo']);
+}
+foreach ($derivaciones as $d) {
+    $total_fojas += intval($d['fojas'] ?? 0);
+    if (!empty(trim($d['anexo'] ?? ''))) {
+        $anexos_acumulados[] = trim($d['anexo']);
+    }
+}
+$texto_anexos = implode(', ', $anexos_acumulados);
 ?>
 <!doctype html>
 <html lang="es">
@@ -127,17 +141,21 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (empty($derivaciones)): ?>
                     <div class="alert alert-info">No hay derivaciones registradas para esta correspondencia.</div>
                 <?php else: ?>
-                    <?php foreach ($derivaciones as $d): ?>
+                    <?php foreach ($derivaciones as $index => $d): ?>
                         <div class="timeline-item">
                             <div class="time-marker">
                                 <div class="circle_blue"><?php echo date('d-M', strtotime($d['fecha_derivacion'])); ?></div>
-                                <div class="circle_green"><?php echo date('d-M', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                <?php if ($index > 0): ?>
+                                    <div class="circle_green"><?php echo date('d-M', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                <?php endif; ?>
                             </div>
                             <div class="card p-2">
                                 <div class="card-body p-2">
                                     <strong><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></strong>
                                     <div class="text-info small">Fecha Derivación: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></div>
-                                    <div class="text-success small">Fecha Entrega: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                    <?php if ($index > 0): ?>
+                                        <div class="text-success small">Fecha Entrega: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                    <?php endif; ?>
                                     <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></p>
                                     <div class="small text-muted mt-1">Fojas: <?php echo htmlspecialchars($d['fojas']); ?> — Carácter: <?php echo htmlspecialchars($d['caracter']); ?></div>
                                 </div>
@@ -150,8 +168,16 @@ $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
         <div class="col-lg-6">
             <h5>Detalle de Derivacion</h5>
-            <table class="table table-striped">
-                <thead>
+            <div class="alert alert-secondary py-2 mt-2 mb-3">
+                <div class="small">
+                    <i class="bi bi-files"></i> <strong>Aproximadamente:</strong> <?= $total_fojas ?> foja(s) en total.
+                    <?php if (!empty($texto_anexos)): ?>
+                        <br><i class="bi bi-paperclip"></i> <strong>Anexos acumulados:</strong> <?= htmlspecialchars($texto_anexos) ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <table class="table table-striped text-center align-middle">
+                <thead class="text-center">
                 <tr>
                     <th>Funcionario</th>
                     <th>Fecha Derivación</th>

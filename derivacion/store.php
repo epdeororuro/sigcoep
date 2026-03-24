@@ -11,10 +11,28 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Recoger datos
 $id_correspondencia = $_POST['id_correspondencia'] ?? null;
-$id_funcionario = $_POST['id_funcionario'] ?? null;
 $instruccion = trim($_POST['instruccion_adicional'] ?? '');
-$fojas = isset($_POST['fojas']) ? intval($_POST['fojas']) : 0;
+$fojas = (isset($_POST['fojas']) && trim($_POST['fojas']) !== '') ? intval($_POST['fojas']) : 0;
 $caracter = trim($_POST['caracter'] ?? '');
+
+$destino_raw = $_POST['id_funcionario'] ?? null;
+$id_funcionario = null;
+
+// Procesar si es una comisión o un funcionario directo
+if ($destino_raw && strpos($destino_raw, 'c_') === 0) {
+    $id_comision = (int) str_replace('c_', '', $destino_raw);
+    $stmtC = $pdo->prepare("SELECT nombre, responsable_id FROM comision WHERE id = :id");
+    $stmtC->execute([':id' => $id_comision]);
+    $com = $stmtC->fetch(PDO::FETCH_ASSOC);
+    if ($com) {
+        $id_funcionario = $com['responsable_id'];
+        $instruccion = "[Comisión: " . $com['nombre'] . "]\n" . $instruccion;
+    }
+} elseif (strpos($destino_raw, 'f_') === 0) {
+    $id_funcionario = (int) str_replace('f_', '', $destino_raw);
+} else {
+    $id_funcionario = intval($destino_raw); // Fallback de compatibilidad
+}
 
 if (empty($id_correspondencia) || empty($id_funcionario)) {
     $_SESSION['mensaje'] = 'Faltan datos obligatorios para derivar.';

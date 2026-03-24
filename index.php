@@ -25,9 +25,11 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+  <!-- Theme Mode JS -->
+  <script src="assets/js/theme.js"></script>
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: var(--bs-tertiary-bg);
     }
     .card {
       border-radius: 1rem;
@@ -35,6 +37,13 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
   </style>
 </head>
 <body>
+  <!-- Toggle Theme Button -->
+  <div class="position-absolute top-0 end-0 p-3">
+      <button class="btn btn-outline-secondary border-0" id="btnThemeToggle" title="Alternar Modo Oscuro">
+          <i class="bi bi-moon-stars" id="iconTheme"></i>
+      </button>
+  </div>
+
   <div class="container">
     <div class="row justify-content-center mt-5">
       <div class="col-md-5 col-lg-4">
@@ -81,11 +90,11 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
           <div class="card-body">
             <h5 class="card-title mb-3">Consulta de hojas de ruta</h5>
             <p class="text-muted mb-3">
-              Busque por número de hoja de ruta, referencia o funcionario para ver con quién se encuentra actualmente la correspondencia.
+              Busque por número de hoja de ruta o referencia para ver con quién se encuentra actualmente la correspondencia.
             </p>
             <div class="table-responsive">
-              <table id="tablaHojasRuta" class="table table-striped table-bordered align-middle w-100">
-                <thead class="table-primary">
+              <table id="tablaHojasRuta" class="table table-striped table-bordered align-middle text-center w-100">
+                <thead class="table-primary text-center">
                   <tr>
                     <th>Hoja de ruta</th>
                     <th>Referencia</th>
@@ -149,6 +158,19 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
           }
         }
       });
+    });
+
+    // Toggle Modo Oscuro Login
+    document.getElementById('btnThemeToggle').addEventListener('click', () => {
+        let currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.getElementById('iconTheme').className = newTheme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars';
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+        let theme = localStorage.getItem('theme') || 'light';
+        document.getElementById('iconTheme').className = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars';
     });
   </script>
 </body>

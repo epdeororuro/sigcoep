@@ -10,7 +10,15 @@ try {
     // Filtro desde la URL (o POST), para soportar menú y pestañas
     $filtro = $_REQUEST['filtro'] ?? null;
  
-    $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo FROM correspondencia c";
+    $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo, 
+                 COALESCE(
+                     (SELECT MAX(fecha_entrega_derivacion) FROM derivacion WHERE id_correspondencia = c.id AND id_funcionario = c.idfuncionario_enturno), 
+                     c.actualizado_en, 
+                     c.fecha
+                 ) as fecha_referencia,
+                 f.nombre, f.paterno, f.materno 
+                 FROM correspondencia c
+                 LEFT JOIN funcionario f ON c.idfuncionario_enturno = f.id";
     $where_clauses = ["c.eliminado_en IS NULL"];
     $params = [];
  
@@ -32,24 +40,34 @@ try {
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
-        // Secretaria ve solo correspondencias con estado 'Registrado'
-        $where_clauses[] = "c.estado = 'Registrado'";
-    } else if ($usuario_cargo === 'Gerente') {
-        // Gerente ve solo correspondencias con estado 'Iniciado'
-        $where_clauses[] = "c.estado = 'Iniciado'";
-    } else if ($usuario_cargo === 'Administrativo') {
-        // El rol Administrativo usa pestañas para diferentes bandejas
+        // Secretaria ve todas las correspondencias sin importar el estado
+        // No se añade filtro de estado a la consulta base
+    } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
+        // Los roles Gerente y Administrativo comparten casi las mismas bandejas
         $filtro = $filtro ?? 'entrantes'; // Filtro por defecto: Bandeja de Entrada
  
-        if ($filtro === 'iniciados') {
-            // Bandeja de Salida: Correspondencias iniciadas por el usuario
+        if ($filtro === 'iniciados' && $usuario_cargo === 'Administrativo') {
+            // Bandeja de Iniciados: Correspondencias creadas por el usuario
             $where_clauses[] = "c.remitente_id = :uid";
             $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'para_iniciar' && $usuario_cargo === 'Gerente') {
+            // Bandeja para Iniciar: Registros nuevos derivados de ventanilla única
+            $where_clauses[] = "c.estado = 'Iniciado'";
         } elseif ($filtro === 'pendientes') {
             // Bandeja de Pendientes: Aceptados y en poder del usuario
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Aceptado'";
             $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'despachados') {
+            // Bandeja de Despachados: Correspondencias que pasaron por el usuario y derivó
+            $where_clauses[] = "EXISTS (
+                SELECT 1 FROM derivacion d2
+                WHERE d2.id_correspondencia = c.id
+                  AND d2.id_funcionario = :uid1
+            )";
+            $where_clauses[] = "c.idfuncionario_enturno != :uid2";
+            $params[':uid1'] = $usuario_id;
+            $params[':uid2'] = $usuario_id;
         } else {
             // Por defecto 'entrantes': Bandeja de Entrada, derivados al usuario
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
@@ -72,10 +90,45 @@ try {
  
     $correspondencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
  
+    // Calcular contadores para pestañas
+    $counts = [];
+    if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
+        $stmt_c1 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Derivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_c1->execute([':uid' => $usuario_id]);
+        $counts['entrantes'] = $stmt_c1->fetchColumn();
+
+        $stmt_c2 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Aceptado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_c2->execute([':uid' => $usuario_id]);
+        $counts['pendientes'] = $stmt_c2->fetchColumn();
+
+        $stmt_c3 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid1) AND c.idfuncionario_enturno != :uid2 AND c.eliminado_en IS NULL");
+        $stmt_c3->execute([':uid1' => $usuario_id, ':uid2' => $usuario_id]);
+        $counts['despachados'] = $stmt_c3->fetchColumn();
+
+        if ($usuario_cargo === 'Administrativo') {
+            $stmt_c4 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE remitente_id = :uid AND eliminado_en IS NULL");
+            $stmt_c4->execute([':uid' => $usuario_id]);
+            $counts['iniciados'] = $stmt_c4->fetchColumn();
+        }
+        if ($usuario_cargo === 'Gerente') {
+            $stmt_g1 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Iniciado' AND eliminado_en IS NULL");
+            $stmt_g1->execute();
+            $counts['para_iniciar'] = $stmt_g1->fetchColumn();
+        }
+    } elseif ($usuario_cargo === 'Administrador') {
+        $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
+        $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
+        
+        $counts['todos'] = array_sum($estado_counts);
+        $counts['registrado'] = $estado_counts['Registrado'] ?? 0;
+        $counts['iniciado'] = $estado_counts['Iniciado'] ?? 0;
+        $counts['derivado'] = $estado_counts['Derivado'] ?? 0;
+        $counts['aceptado'] = $estado_counts['Aceptado'] ?? 0;
+    }
+ 
     $data = array();
     foreach ($correspondencias as $correspondencia) {
         $acciones = '';
-        $estado_display = $correspondencia['estado'];
 
         // Foto (thumbnail clickeable si existe)
         $fotoHtml = '';
@@ -84,9 +137,43 @@ try {
             $fotoHtml = '<a href="#" onclick="verFoto(\'' . $urlFoto . '\'); return false;"><img src="' . $urlFoto . '" alt="Foto" style="height:40px;" class="rounded border"></a>';
         }
 
-        // Añadir indicador (punto rojo) si el documento está en poder de este funcionario
+        // Verificar si está retrasado (estado Aceptado por más de 2 días)
+        $es_retrasado = false;
+        if ($correspondencia['estado'] === 'Aceptado' && !empty($correspondencia['fecha_referencia'])) {
+            $dias_pasados = floor((strtotime(date('Y-m-d')) - strtotime(date('Y-m-d', strtotime($correspondencia['fecha_referencia'])))) / 86400);
+            if ($dias_pasados >= 2) {
+                $es_retrasado = true;
+            }
+        }
+
+        // Formatear el estado con el nombre del funcionario
+        $estado_texto = $correspondencia['estado'];
+        $nombre_enturno = trim(($correspondencia['nombre'] ?? '') . ' ' . ($correspondencia['paterno'] ?? '') . ' ' . ($correspondencia['materno'] ?? ''));
+
+        if (!empty($nombre_enturno)) {
+            if ($correspondencia['estado'] === 'Aceptado') {
+                $estado_texto = 'Aceptado por';
+            } elseif ($correspondencia['estado'] === 'Derivado') {
+                $estado_texto = 'Derivado a';
+            } elseif ($correspondencia['estado'] === 'Iniciado') {
+                $estado_texto = 'Iniciado para';
+            }
+        }
+
+        $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
+
+        // Añadir indicador (punto verde o rojo) si el documento está en poder de este funcionario
         if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-            $estado_display .= ' <span class="badge bg-danger blink ms-2" title="En su poder">&bull;</span>';
+            if ($es_retrasado) {
+                $estado_display .= ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>';
+            } else {
+                $estado_display .= ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
+            }
+        }
+
+        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado'])) {
+            $color_clase = $correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info');
+            $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
         }
 
         // --- SISTEMA DE BOTONES POR ROL ---
@@ -129,36 +216,29 @@ try {
                 $acciones .= $btn_imprimir;
             }
         } else if ($usuario_cargo === 'Secretaria') {
-            // Secretaria solo ve 'Registrado'. Acciones: editar, eliminar, iniciar, historial.
+            // Secretaria ve todo. Acciones: editar, eliminar, historial. Iniciar solo si es 'Registrado'.
             $acciones .= $btn_editar . $btn_eliminar;
             if ($estado === 'Registrado') {
                 $acciones .= $btn_iniciar;
-                // El historial estará vacío, pero se añade por petición.
-                $acciones .= $btn_historial;
             }
-        } else if ($usuario_cargo === 'Gerente') {
-            // Gerente solo ve 'Iniciado'. Acciones: derivar, historial.
+            $acciones .= $btn_historial;
+        } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
             if ($estado === 'Iniciado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
                 $acciones .= $btn_historial;
-            }
-        } else if ($usuario_cargo === 'Administrativo') {
-            if ($estado === 'Derivado') {
-                // Bandeja de Entrantes: Aceptar/Rechazar, Historial
+            } elseif ($estado === 'Derivado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_aceptar;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Aceptado') {
-                // Bandeja de Pendientes: Derivar, Historial
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
                 $acciones .= $btn_historial;
             } else {
-                // Bandeja de Salida (Iniciados) y otros: Derivar (si es dueño), Historial
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
@@ -178,7 +258,7 @@ try {
             'acciones' => $acciones
         );
     }
-    echo json_encode(array("data" => $data));
+    echo json_encode(array("data" => $data, "counts" => $counts));
 } catch (PDOException $e) {
     echo json_encode(array("error" => $e->getMessage()));
 }

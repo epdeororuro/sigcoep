@@ -1,3 +1,6 @@
+:root {
+    --sidebar-width: 260px;
+}
 body {
     margin: 0;
     display: flex;
@@ -5,7 +8,7 @@ body {
 }
 /* Sidebar estilo AdminLTE */
 .sidebar {
-    width: 260px;
+    width: var(--sidebar-width);
     background-color: #343a40;
     color: #fff;
     height: 100vh;
@@ -30,6 +33,21 @@ body {
     color: #fff;
     border-radius: 4px;
 }
+/* Redimensionador de sidebar */
+.sidebar-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    background-color: transparent;
+    z-index: 1001;
+    transition: background-color 0.2s;
+}
+.sidebar-resizer:hover, .sidebar-resizer.is-resizing {
+    background-color: #0d6efd;
+}
 /* Navbar superior */
 .navbar-custom {
     background-color: #343a40;
@@ -39,7 +57,7 @@ body {
     padding: 0 20px;
     position: fixed;
     top: 0;
-    left: 220px;
+    left: var(--sidebar-width);
     right: 0;
     z-index: 1000;
     display: flex;
@@ -48,10 +66,10 @@ body {
 }
 /* Contenido principal con iframe */
 .content {
-    margin-left: 260px;
+    margin-left: var(--sidebar-width);
     margin-top: 60px;
     padding: 20px;
-    width: calc(100% - 260px);
+    width: calc(100% - var(--sidebar-width));
     height: calc(100vh - 60px);
 }
 iframe {

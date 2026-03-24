@@ -1,8 +1,11 @@
 <?php 
 session_start(); 
 if (isset($_SESSION['mensaje'])) { 
-    echo ' <div class="alert alert-success alert-dismissible fade show" role="alert"> ' . $_SESSION['mensaje'] . ' <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>'; 
+    $tipo = $_SESSION['mensaje_tipo'] ?? 'success';
+    $clase_alert = $tipo === 'danger' ? 'alert-danger' : 'alert-success';
+    echo ' <div class="alert ' . $clase_alert . ' alert-dismissible fade show" role="alert"> ' . $_SESSION['mensaje'] . ' <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>'; 
     unset($_SESSION['mensaje']); 
+    unset($_SESSION['mensaje_tipo']);
 }
 require '../db.php';
 
@@ -13,6 +16,15 @@ try {
     $funcionarios = $stmtFunc->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     $funcionarios = [];
+}
+
+// Obtener lista de comisiones para el selector de destino
+try {
+    $stmtCom = $pdo->prepare("SELECT id, nombre FROM comision WHERE estado = 'Activo' ORDER BY nombre");
+    $stmtCom->execute();
+    $comisiones = $stmtCom->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $comisiones = [];
 }
 
 // Calcular siguiente número de hoja de ruta basado en el total de registros
@@ -40,8 +52,13 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/correspondencia.css">
+    <!-- Theme Script -->
+    <script src="../assets/js/theme.js"></script>
 </head>
 
 <body>
@@ -52,11 +69,21 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-0">Lista de Correspondencia</h3>
-                            <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador'])): ?>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
-                                <i class="bi bi-envelope-plus"></i> Nueva Correspondencia
-                            </button>
-                            <?php endif; ?>
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <form action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
+                                    <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
+                                    <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
+                                    <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" required title="Fecha de fin">
+                                    <button type="submit" class="btn btn-secondary btn-sm" title="Generar Libro de Entregas">
+                                        <i class="bi bi-printer"></i> Generar
+                                    </button>
+                                </form>
+                                <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador'])): ?>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
+                                    <i class="bi bi-envelope-plus"></i> Nueva Correspondencia
+                                </button>
+                                <?php endif; ?>
+                            </div>
                         </div>
 
                         <!-- Pestañas (Tabs) de Filtro según el Rol -->
@@ -66,28 +93,46 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item">
-                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes</button>
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Pendientes</button>
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-send"></i> Iniciados (Salida)</button>
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-arrow-return-right"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-send"></i> Bandeja de Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
+                            </li>
+                        </ul>
+                        <?php elseif ($cargo_usuario === 'gerente'): ?>
+                        <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
+                            <li class="nav-item">
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-arrow-return-right"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Bandeja para Iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
                             </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'administrador'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
-                            <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button">Todos</button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="registrado" type="button">Registrados</button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="iniciado" type="button">Iniciados</button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados</button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados</button></li>
+                            <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button">Todos <span class="badge bg-secondary ms-1 count-badge" data-count="todos">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="registrado" type="button">Registrados <span class="badge bg-secondary ms-1 count-badge" data-count="registrado">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="iniciado" type="button">Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciado">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="derivado">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="aceptado">0</span></button></li>
                         </ul>
                         <?php endif; ?>
 
                         <div class="table-responsive">
-                            <table id="correspondencia" class="table table-striped table-bordered align-middle w-100">
-                                <thead class="table-primary">
+                            <table id="correspondencia" class="table table-striped table-bordered align-middle text-center w-100">
+                                <thead class="table-primary text-center">
                                     <tr>
                                         <th>Hoja de ruta</th>
                                         <th>Remitente</th>
@@ -281,9 +326,16 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <label class="form-label">Derivar a (seleccione):</label>
                             <select id="derivar_select_funcionario" class="form-select" required>
                                 <option value="">-- Seleccione funcionario/área --</option>
-                                <?php foreach($funcionarios as $f): ?>
-                                        <option value="<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
-                                <?php endforeach; ?>
+                                <optgroup label="Comisiones">
+                                    <?php foreach($comisiones as $c): ?>
+                                        <option value="c_<?= htmlspecialchars($c['id']) ?>"><i class="bi bi-people"></i> <?= htmlspecialchars($c['nombre']) ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
+                                <optgroup label="Funcionarios">
+                                    <?php foreach($funcionarios as $f): ?>
+                                        <option value="f_<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
+                                    <?php endforeach; ?>
+                                </optgroup>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -291,7 +343,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <textarea class="form-control" id="derivar_instruccion" name="instruccion_adicional" required></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Fojas</label>
+                            <label class="form-label">Fojas a añadir</label>
                             <input type="number" min="0" class="form-control" id="derivar_fojas" name="fojas">
                         </div>
                         <div class="mb-3">
@@ -385,7 +437,23 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Custom JS -->
     <script src="../assets/js/correspondencia.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2 en los modales para que tengan buscador
+            $('.modal').on('shown.bs.modal', function () {
+                $(this).find('select').each(function() {
+                    $(this).select2({
+                        theme: 'bootstrap-5',
+                        dropdownParent: $(this).parent(),
+                        width: '100%'
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

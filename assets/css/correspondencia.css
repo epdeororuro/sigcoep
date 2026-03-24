@@ -1,5 +1,5 @@
 body {
-    background-color: #f4f6f9;
+    background-color: var(--bs-tertiary-bg);
 }
 .card {
     border-radius: 1rem;
@@ -12,11 +12,13 @@ table.dataTable {
 }
 .table thead th {
     vertical-align: middle;
-    text-align: center;
+    text-align: center !important;
 }
 table.dataTable th,
 table.dataTable td {
     white-space: nowrap;
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 .dataTables_wrapper .dataTables_scroll {
@@ -25,13 +27,13 @@ table.dataTable td {
 
 /* Bordes para DataTables */
 .table-striped.table-bordered {
-    border: 1px solid #ced4da !important;
+    border: 1px solid var(--bs-border-color) !important;
 }
 .table-bordered th, .table-bordered td {
-    border: 1px solid #ced4da !important;
+    border: 1px solid var(--bs-border-color) !important;
 }
 .table thead th {
-    border-bottom: 2px solid #343a40 !important;
+    border-bottom: 2px solid var(--bs-border-color) !important;
 }
 
 /* Reducir tamaño de fuente de manera estricta a la tabla para evitar que crezca tras una recarga de Ajax */
@@ -58,7 +60,12 @@ table.dataTable td {
     background-color: #0d6efd !important;
     color: white !important;
     border-color: #0d6efd #0d6efd #0d6efd !important;
+    border-width: 2px !important;
+    font-weight: bold;
 }
 .nav-tabs .nav-link {
-    color: #495057;
+    color: var(--bs-body-color);
+    font-weight: bold;
+    font-size: 0.85rem;
+    border: 2px solid var(--bs-border-color);
 }
