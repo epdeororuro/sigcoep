@@ -11,22 +11,9 @@ if (!isset($_SESSION['usuario_cargo']) || strtolower($_SESSION['usuario_cargo'])
 }
 
 if (isset($_POST['id'])) {
-    $id = intval($_POST['id']);
-
-    try {
-        $stmt = $pdo->prepare("SELECT contrasenia FROM funcionario WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row) {
-            echo json_encode(['contrasenia' => $row['contrasenia']]);
-        } else {
-            echo json_encode(['contrasenia' => '']);
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
-    }
+    // Esta funcionalidad ha sido deshabilitada por motivos de seguridad.
+    // Las contraseñas nunca deben ser visibles en texto plano.
+    echo json_encode(['error' => 'Funcionalidad deshabilitada por seguridad. Implemente un flujo de "restablecer contraseña".']);
 } else {
     echo json_encode(['error' => 'ID no proporcionado']);
 }
-

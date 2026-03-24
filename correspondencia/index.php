@@ -504,6 +504,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     $('#edit_hojaruta').val(data.hojaruta);
                     $('#edit_referencia').val(data.referencia);
                     $('#edit_fojas').val(data.fojas);
+                    $('#edit_anexo').val(data.anexo);
                     $('#edit_foto_actual').val(data.foto || '');
 
                     if (data.foto) {

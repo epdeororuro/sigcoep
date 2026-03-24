@@ -7,6 +7,7 @@ if (isset($_POST['id'])) {
     $hojaruta = $_POST['hojaruta'] ?? '';
     $referencia = $_POST['referencia'] ?? '';
     $fojas = intval($_POST['fojas'] ?? 1);
+    $anexo = $_POST['edit_anexo'] ?? '';
     $actualizado_en = date('Y-m-d H:i:s');
 
     // Foto actual y posible nueva foto
@@ -97,6 +98,7 @@ if (isset($_POST['id'])) {
                     remitente = :remitente,
                     referencia = :referencia,
                     fojas = :fojas,
+                    anexo = :anexo,
                     foto = :foto,
                     actualizado_en = :actualizado_en 
                 WHERE id = :id";
@@ -110,6 +112,7 @@ if (isset($_POST['id'])) {
         $stmt->bindParam(':remitente', $remitente);
         $stmt->bindParam(':referencia', $referencia);
         $stmt->bindParam(':fojas', $fojas, PDO::PARAM_INT);
+        $stmt->bindParam(':anexo', $anexo);
         $stmt->bindParam(':foto', $fotoNombre);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();

@@ -22,10 +22,8 @@ if (isset($_POST['id'])) {
                     paterno = :paterno, 
                     materno = :materno, 
                     rol = :rol, 
-                    id_puesto = :id_puesto, 
-                    password = :password,
-                    contrasenia = :contrasenia,
-                    actualizado_en = :actualizado_en 
+                    id_puesto = :id_puesto,
+                    password = :password,                    actualizado_en = :actualizado_en 
                 WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
@@ -36,7 +34,6 @@ if (isset($_POST['id'])) {
         $stmt->bindParam(':rol', $rol);
         $stmt->bindParam(':id_puesto', $id_puesto);
         $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':contrasenia', $password_plain);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();
 

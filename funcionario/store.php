@@ -7,8 +7,8 @@ try {
     $usuario = strtolower(substr($_POST['nombre'], 0, 1) . $_POST['paterno']);
     $password_plain = $_POST['ci'];
     $password = password_hash($password_plain, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO funcionario (ci, nombre, paterno, materno, usuario, password, contrasenia, rol, id_puesto, estado, creado_en) 
-            VALUES (:ci, :nombre, :paterno, :materno, :usuario, :password, :contrasenia, :rol, :id_puesto, 'Activo', NOW())";
+    $sql = "INSERT INTO funcionario (ci, nombre, paterno, materno, usuario, password, rol, id_puesto, estado, creado_en) 
+            VALUES (:ci, :nombre, :paterno, :materno, :usuario, :password, :rol, :id_puesto, 'Activo', NOW())";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         'ci' => $_POST['ci'],
@@ -17,7 +17,6 @@ try {
         'materno' => $_POST['materno'],
         'usuario' => $usuario,
         'password' => $password,
-        'contrasenia' => $password_plain,
         'rol' => $_POST['rol'],
         'id_puesto' => $_POST['id_puesto']
     ]);
