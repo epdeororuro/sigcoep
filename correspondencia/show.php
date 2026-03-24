@@ -6,81 +6,72 @@ try {
     // determinar usuario actual y su rol
     $usuario_id = $_SESSION['usuario_id'] ?? null;
     $usuario_cargo = $_SESSION['usuario_cargo'] ?? null;
-
-    // POST param
-    $filtro_admin = $_POST['filtro_admin'] ?? 'derivados'; // opciones posibles: 'derivados', 'iniciados'
-
-    if (in_array($usuario_cargo, ['Administrador', 'Secretaria'])) {
-        // Administrador y Secretaria ven todas las correspondencias
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                FROM correspondencia c
-                WHERE c.eliminado_en IS NULL
-                ORDER BY c.fecha DESC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
+ 
+    // Filtro desde la URL (o POST), para soportar menú y pestañas
+    $filtro = $_REQUEST['filtro'] ?? null;
+ 
+    $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo FROM correspondencia c";
+    $where_clauses = ["c.eliminado_en IS NULL"];
+    $params = [];
+ 
+    if ($usuario_cargo === 'Administrador') {
+        // Para el Administrador, se pueden implementar pestañas para filtrar por estado
+        switch ($filtro) {
+            case 'registrado':
+                $where_clauses[] = "c.estado = 'Registrado'";
+                break;
+            case 'iniciado':
+                $where_clauses[] = "c.estado = 'Iniciado'";
+                break;
+            case 'derivado':
+                $where_clauses[] = "c.estado = 'Derivado'";
+                break;
+            case 'aceptado':
+                $where_clauses[] = "c.estado = 'Aceptado'";
+                break;
+            // 'todos' o null no añade filtro de estado, muestra todo
+        }
+    } else if ($usuario_cargo === 'Secretaria') {
+        // Secretaria ve solo correspondencias con estado 'Registrado'
+        $where_clauses[] = "c.estado = 'Registrado'";
     } else if ($usuario_cargo === 'Gerente') {
-        // Gerente ve todas desde estado Iniciado en adelante
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                FROM correspondencia c
-                WHERE c.estado != 'Registrado'
-                  AND c.eliminado_en IS NULL
-                ORDER BY c.fecha DESC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
+        // Gerente ve solo correspondencias con estado 'Iniciado'
+        $where_clauses[] = "c.estado = 'Iniciado'";
     } else if ($usuario_cargo === 'Administrativo') {
-        if ($filtro_admin === 'iniciados') {
-            // Correspondencias iniciadas por el Administrativo (donde él fue remitente original)
-            // No incluir las que ya están en estado Aceptado
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                    FROM correspondencia c
-                    WHERE c.remitente_id = :uid
-                      AND c.estado <> 'Aceptado'
-                      AND c.eliminado_en IS NULL
-                    ORDER BY c.fecha DESC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':uid' => $usuario_id]);
-        } elseif ($filtro_admin === 'aceptados') {
-            // Correspondencias actualmente aceptadas y en poder del usuario
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                    FROM correspondencia c
-                    WHERE c.idfuncionario_enturno = :uid
-                      AND c.estado = 'Aceptado'
-                      AND c.eliminado_en IS NULL
-                    ORDER BY c.fecha DESC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':uid' => $usuario_id]);
+        // El rol Administrativo usa pestañas para diferentes bandejas
+        $filtro = $filtro ?? 'entrantes'; // Filtro por defecto: Bandeja de Entrada
+ 
+        if ($filtro === 'iniciados') {
+            // Bandeja de Salida: Correspondencias iniciadas por el usuario
+            $where_clauses[] = "c.remitente_id = :uid";
+            $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'pendientes') {
+            // Bandeja de Pendientes: Aceptados y en poder del usuario
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Aceptado'";
+            $params[':uid'] = $usuario_id;
         } else {
-            // Por defecto: Correspondencias derivadas a él en algún momento (solo estado Derivado)
-            $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                    FROM correspondencia c
-                    WHERE EXISTS (
-                        SELECT 1 FROM derivacion d2
-                        WHERE d2.id_correspondencia = c.id
-                          AND d2.id_funcionario = :uid
-                    )
-                      AND c.estado = 'Derivado'
-                      AND c.eliminado_en IS NULL
-                    ORDER BY c.fecha DESC";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':uid' => $usuario_id]);
+            // Por defecto 'entrantes': Bandeja de Entrada, derivados al usuario
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Derivado'";
+            $params[':uid'] = $usuario_id;
         }
     } else {
-        // Otros roles (fallback general): derivadas
-        $sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo
-                FROM correspondencia c
-                WHERE EXISTS (
-                    SELECT 1 FROM derivacion d2
-                    WHERE d2.id_correspondencia = c.id
-                      AND d2.id_funcionario = :uid
-                )
-                  AND c.eliminado_en IS NULL
-                ORDER BY c.fecha DESC";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':uid' => $usuario_id]);
+        // Otros roles (fallback general): ven las que les fueron derivadas en algún momento
+        $where_clauses[] = "EXISTS (
+            SELECT 1 FROM derivacion d2
+            WHERE d2.id_correspondencia = c.id
+              AND d2.id_funcionario = :uid
+        )";
+        $params[':uid'] = $usuario_id;
     }
-
+ 
+    $sql = $base_sql . " WHERE " . implode(" AND ", $where_clauses) . " ORDER BY c.fecha DESC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+ 
     $correspondencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+ 
     $data = array();
     foreach ($correspondencias as $correspondencia) {
         $acciones = '';
@@ -110,8 +101,8 @@ try {
 
         $estado = $correspondencia['estado'];
 
-        if (in_array($usuario_cargo, ['Administrador', 'Secretaria'])) {
-            // Administrador y Secretaria pueden editar y eliminar en cualquier etapa
+        if ($usuario_cargo === 'Administrador') {
+            // Administrador puede editar y eliminar en cualquier etapa
             $acciones .= $btn_editar . $btn_eliminar;
 
             if ($estado === 'Registrado') {
@@ -137,37 +128,37 @@ try {
                 $acciones .= $btn_historial;
                 $acciones .= $btn_imprimir;
             }
+        } else if ($usuario_cargo === 'Secretaria') {
+            // Secretaria solo ve 'Registrado'. Acciones: editar, eliminar, iniciar, historial.
+            $acciones .= $btn_editar . $btn_eliminar;
+            if ($estado === 'Registrado') {
+                $acciones .= $btn_iniciar;
+                // El historial estará vacío, pero se añade por petición.
+                $acciones .= $btn_historial;
+            }
         } else if ($usuario_cargo === 'Gerente') {
-            if ($estado !== 'Registrado') {
-                if ($estado === 'Derivado') {
-                    if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-                        $acciones .= $btn_aceptar;
-                    }
-                    $acciones .= $btn_historial;
-                } elseif ($estado === 'Aceptado') {
-                    if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-                        $acciones .= $btn_derivar;
-                    }
-                    $acciones .= $btn_historial;
-                } else {
-                    if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-                        $acciones .= $btn_derivar;
-                    }
-                    $acciones .= $btn_historial;
+            // Gerente solo ve 'Iniciado'. Acciones: derivar, historial.
+            if ($estado === 'Iniciado') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_derivar;
                 }
+                $acciones .= $btn_historial;
             }
         } else if ($usuario_cargo === 'Administrativo') {
             if ($estado === 'Derivado') {
+                // Bandeja de Entrantes: Aceptar/Rechazar, Historial
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_aceptar;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Aceptado') {
+                // Bandeja de Pendientes: Derivar, Historial
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
                 $acciones .= $btn_historial;
             } else {
+                // Bandeja de Salida (Iniciados) y otros: Derivar (si es dueño), Historial
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }

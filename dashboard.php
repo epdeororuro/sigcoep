@@ -19,69 +19,8 @@ if(!isset($_SESSION['usuario_id'])){
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            display: flex;
-            min-height: 100vh;
-        }
-        /* Sidebar estilo AdminLTE */
-        .sidebar {
-            width: 260px;
-            background-color: #343a40;
-            color: #fff;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 60px;
-        }
-        .sidebar h4 {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 0 10px;
-        }
-        .sidebar a {
-            color: #adb5bd;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #495057;
-            color: #fff;
-            border-radius: 4px;
-        }
-        /* Navbar superior */
-        .navbar-custom {
-            background-color: #343a40;
-            color: #fff;
-            height: 60px;
-            line-height: 60px;
-            padding: 0 20px;
-            position: fixed;
-            top: 0;
-            left: 220px;
-            right: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        /* Contenido principal con iframe */
-        .content {
-            margin-left: 260px;
-            margin-top: 60px;
-            padding: 20px;
-            width: calc(100% - 260px);
-            height: calc(100vh - 60px);
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 <body>
     <!-- Sidebar -->

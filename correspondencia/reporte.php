@@ -93,32 +93,8 @@ if ($page === 1) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-..." crossorigin="anonymous">
     <!-- FontAwesome for print icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        @page { size: 21.59cm 27.94cm; margin: 1cm; }
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .page { width: 19.59cm; height: 25.94cm; position: relative; padding: 0.5cm 1cm; box-sizing: border-box; }
-        .header { display: flex; justify-content: space-between; align-items: center; height: 2.5cm; }
-        /* make the middle logo a bit wider */
-        @media print { #printBtn { display:none; } }
-        /* position print button using bootstrap utility spacing */
-        #printBtn { position:fixed; top:10px; right:10px; z-index:1000; }
-        .referencia {  border:1px solid #000; font-family: 'Arial Black', Arial, sans-serif; font-style: italic; font-weight: bold; font-size: 10px; margin-top: 0.05cm; height:0.8cm; }
-        .referencia td { vertical-align: center; padding: 1px 2px; }
-        .small-box { margin-top:0.05cm; height:0.6cm; }
-        .small-box table { width:100%; height:100%; border-collapse:collapse; border:1px solid #000; }
-        .small-box td { padding:2px; font-family: Cambria, serif; font-weight:bold; font-size:8px; vertical-align:center; }
-        .box { border: 1px solid #000; padding: 6px; margin-top: 0.25cm; font-family: Cambria, serif; font-weight: bold; font-size: 9px; height: 6.2cm; position: relative; box-sizing: border-box; }
-        .box-left-inner { display:flex; gap:6px; width:100%; }
-        .box-left-content { flex:0 0 44%; padding-right:6px; box-sizing:border-box; }
-        .box-left-checkboxes { flex:0 0 24%; font-size:7px; display:flex; flex-direction:column; }
-        .box-left-checkboxes label { display:block; margin-bottom:3px; white-space:nowrap; }
-        .box-left-recibo { flex:0 0 28%; }
-        .box-title { font-weight: bold; text-transform: uppercase; margin-bottom: 4px; font-size: 12px; }
-        .recibo { width:100%; height:4.6cm; border:1px solid #000; font-size:9px; text-align:center; padding-top:0.3cm; box-sizing:border-box; }
-        .footer { position: absolute; bottom: 0.5cm; left: 1cm; right: 1cm; font-size: 8px; text-align: center; }
-        .footer div { line-height: 1.1; }
-        .signature { position:absolute; bottom:4px; left:0; width:100%; text-align:center; font-size:9px; padding:2px; }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/reporte.css">
 </head>
 <body>
 <button id="printBtn" onclick="window.print()" class="btn btn-primary btn-sm" title="Imprimir hoja">

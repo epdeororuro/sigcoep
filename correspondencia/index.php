@@ -40,84 +40,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-
-    <style>
-        body {
-            background-color: #f4f6f9;
-        }
-        .card {
-            border-radius: 1rem;
-        }
-        table.dataTable {
-            width: 100% !important;
-        }
-        .card-body {
-            padding: 1.5rem;
-        }
-        .table thead th {
-            vertical-align: middle;
-            text-align: center;
-        }
-        table.dataTable th,
-        table.dataTable td {
-            white-space: nowrap;
-        }
-
-        .dataTables_wrapper .dataTables_scroll {
-            overflow: auto;
-        }
-
-        /* Bordes para DataTables */
-        .table-striped.table-bordered {
-            border: 1px solid #ced4da !important;
-        }
-        .table-bordered th, .table-bordered td {
-            border: 1px solid #ced4da !important;
-        }
-        .table thead th {
-            border-bottom: 2px solid #343a40 !important;
-        }
-
-        /* Reducir tamaño de fuente de manera estricta a la tabla para evitar que crezca tras una recarga de Ajax */
-        #correspondencia th,
-        #correspondencia td {
-            font-size: 0.75rem;
-            padding: 0.4rem !important;
-        }
-
-        #correspondencia thead th {
-            padding: 0.5rem !important;
-        }
-
-        /* Animación para el punto rojo */
-        @keyframes blinker {
-            50% { opacity: 0; }
-        }
-        .blink {
-            animation: blinker 1s linear infinite;
-        }
-
-        /* Estilo más visible para los radios de filtro administrativo */
-        .filtro-admin + .form-check-label {
-            border: 1px solid #adb5bd;
-            border-radius: 999px;
-            padding: 0.2rem 0.75rem;
-            font-size: 0.8rem;
-            cursor: pointer;
-            background-color: #f8f9fa;
-            color: #495057;
-            transition: all 0.15s ease-in-out;
-        }
-        .filtro-admin:checked + .form-check-label {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-            color: #fff;
-            font-weight: 600;
-        }
-        .filtro-admin:not(:checked) + .form-check-label:hover {
-            background-color: #e9ecef;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/correspondencia.css">
 </head>
 
 <body>
@@ -135,23 +59,30 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <?php endif; ?>
                         </div>
 
-                        <!-- Filtro para Rol Administrativo -->
-                        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrativo'): ?>
-                        <div class="mb-3">
-                            <label class="fw-bold me-3">Vista de correspondencias:</label>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_derivados" value="derivados" checked>
-                                <label class="form-check-label" for="filtro_derivados">Derivados a mi / En mi poder</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_aceptados" value="aceptados">
-                                <label class="form-check-label" for="filtro_aceptados">Aceptados</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input filtro-admin" type="radio" name="filtroAdmin" id="filtro_iniciados" value="iniciados">
-                                <label class="form-check-label" for="filtro_iniciados">Iniciados por mi</label>
-                            </div>
-                        </div>
+                        <!-- Pestañas (Tabs) de Filtro según el Rol -->
+                        <?php 
+                        $cargo_usuario = strtolower($_SESSION['usuario_cargo'] ?? '');
+                        if ($cargo_usuario === 'administrativo'): 
+                        ?>
+                        <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
+                            <li class="nav-item">
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Pendientes</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-send"></i> Iniciados (Salida)</button>
+                            </li>
+                        </ul>
+                        <?php elseif ($cargo_usuario === 'administrador'): ?>
+                        <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
+                            <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button">Todos</button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="registrado" type="button">Registrados</button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="iniciado" type="button">Iniciados</button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados</button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados</button></li>
+                        </ul>
                         <?php endif; ?>
 
                         <div class="table-responsive">
@@ -454,167 +385,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            var table = $('#correspondencia').DataTable({
-                ajax: {
-                    url: 'show.php',
-                    type: 'POST',
-                    data: function(d) {
-                        d.filtro_admin = $('input[name="filtroAdmin"]:checked').val() || '';
-                    }
-                },
-                autoWidth: false,
-                responsive: true,
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-                },
-                initComplete: function(settings, json) {
-                    setTimeout(function() {
-                        table.columns.adjust().responsive.recalc();
-                    }, 100);
-                },
-                columns: [
-                    { data: 'hojaruta' },
-                    { data: 'remitente' },
-                    { data: 'referencia' },
-                    { data: 'fojas' },
-                    { data: 'anexo' },
-                    { data: 'foto', orderable: false, searchable: false },
-                    { data: 'fecha' },
-                    { data: 'estado' },
-                    { data: 'acciones' }
-                ]
-            });
-
-            // Recargar tabla cuando cambia el filtro
-            $('.filtro-admin').on('change', function() {
-                table.ajax.reload();
-            });
-        });
-
-        function editarCorrespondencia(id) {
-            $.ajax({
-                type: 'POST',
-                url: 'edit.php',
-                data: {id: id},
-                dataType: 'json',
-                success: function(data) {
-                    $('#edit_id').val(data.id);
-                    $('#edit_hojaruta').val(data.hojaruta);
-                    $('#edit_referencia').val(data.referencia);
-                    $('#edit_fojas').val(data.fojas);
-                    $('#edit_anexo').val(data.anexo);
-                    $('#edit_foto_actual').val(data.foto || '');
-
-                    if (data.foto) {
-                        var urlFoto = '../assets/fotos_correspondencia/' + data.foto;
-                        $('#edit_foto_preview').html('<img src="' + urlFoto + '" alt="Foto actual" class="img-fluid rounded border">');
-                    } else {
-                        $('#edit_foto_preview').html('<span class="text-muted">Sin foto registrada</span>');
-                    }
-
-                    // Configurar tipo de remitente y selector/entrada correspondiente
-                    if (data.tipo_remitente === 'interno') {
-                        $('#edit_remitente_interno').prop('checked', true);
-                        $('#edit_div_remitente_interno').show();
-                        $('#edit_div_remitente_externo').hide();
-                        $('#edit_select_remitente_interno').val(data.remitente_id);
-                        $('#edit_input_remitente_externo').val('');
-                    } else {
-                        $('#edit_remitente_externo_radio').prop('checked', true);
-                        $('#edit_div_remitente_interno').hide();
-                        $('#edit_div_remitente_externo').show();
-                        $('#edit_select_remitente_interno').val('');
-                        $('#edit_input_remitente_externo').val(data.remitente_externo || data.remitente);
-                    }
-
-                    $('#editCorrespondenciaModal').modal('show');
-                }
-            });
-        }
-
-        function derivarCorrespondencia(id) {
-            // Cargar el ID en el campo oculto del modal
-            $('#derivar_id_correspondencia').val(id);
-            // limpiar campos previos
-            $('#derivar_select_funcionario').val('');
-            $('#derivar_id_funcionario').val('');
-            $('#derivar_instruccion').val('');
-            $('#derivar_fojas').val('');
-            $('#derivar_caracter').val('Urgente');
-            // Mostrar el modal
-            $('#derivarCorrespondenciaModal').modal('show');
-        }
-
-        // Cuando el usuario seleccione un funcionario, guardamos el id en el input oculto
-        $(document).on('change', '#derivar_select_funcionario', function() {
-            var fid = $(this).val();
-            $('#derivar_id_funcionario').val(fid);
-        });
-
-        // Ver foto en modal grande
-        function verFoto(url) {
-            $('#fotoModalImg').attr('src', url);
-            var modal = new bootstrap.Modal(document.getElementById('fotoModal'));
-            modal.show();
-        }
-
-        // función para abrir el modal de impresión y fijar el id
-        function solicitarPagina(id) {
-            $('#print_correspondencia_id').val(id);
-            $('#print_page_number').val(1);
-            $('#printPageModal').modal('show');
-        }
-
-        // función para confirmar la eliminación
-        function confirmarEliminacion(id) {
-            $('#delete_correspondencia_id').val(id);
-            $('#deleteCorrespondenciaModal').modal('show');
-        }
-
-        // Abrir modal para aceptar correspondencia
-        function abrirAceptarCorrespondencia(id) {
-            $('#aceptar_correspondencia_id').val(id);
-            $('#aceptarCorrespondenciaModal').modal('show');
-        }
-
-        // Manejo de radiobuttons para tipo de remitente
-        $(document).on('change', 'input[name="tipo_remitente"]', function() {
-            var tipoRemitente = $(this).val();
-            if (tipoRemitente === 'interno') {
-                $('#div_remitente_interno').show();
-                $('#div_remitente_externo').hide();
-                $('#select_remitente_interno').attr('required', 'required');
-                $('#input_remitente_externo').removeAttr('required');
-            } else if (tipoRemitente === 'externo') {
-                $('#div_remitente_interno').hide();
-                $('#div_remitente_externo').show();
-                $('#input_remitente_externo').attr('required', 'required');
-                $('#select_remitente_interno').removeAttr('required');
-            }
-        });
-
-        // Manejo de radiobuttons para tipo de remitente en el modal de edición
-        $(document).on('change', 'input[name="edit_tipo_remitente"]', function() {
-            var tipoRemitente = $(this).val();
-            if (tipoRemitente === 'interno') {
-                $('#edit_div_remitente_interno').show();
-                $('#edit_div_remitente_externo').hide();
-            } else if (tipoRemitente === 'externo') {
-                $('#edit_div_remitente_interno').hide();
-                $('#edit_div_remitente_externo').show();
-            }
-        });
-
-        // Limpiar el formulario cuando se abre el modal
-        $(document).on('show.bs.modal', '#createCorrespondenciaModal', function() {
-            $('#createCorrespondenciaForm')[0].reset();
-            $('#div_remitente_interno').hide();
-            $('#div_remitente_externo').hide();
-            $('#select_remitente_interno').removeAttr('required');
-            $('#input_remitente_externo').removeAttr('required');
-        });
-    </script>
+    <!-- Custom JS -->
+    <script src="../assets/js/correspondencia.js"></script>
 </body>
 </html>
