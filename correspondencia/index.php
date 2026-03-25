@@ -59,6 +59,11 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link rel="stylesheet" href="../assets/css/correspondencia.css">
     <!-- Theme Script -->
     <script src="../assets/js/theme.js"></script>
+    <style>
+        .form-check-input[type="radio"] {
+            border: 2px solid #4d5a6b;
+        }
+    </style>
 </head>
 
 <body>
@@ -70,16 +75,18 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h3 class="mb-0">Lista de Correspondencia</h3>
                             <div class="d-flex align-items-center flex-wrap gap-2">
-                                <form action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
+                                <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
+                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
                                     <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
                                     <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
                                     <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" required title="Fecha de fin">
                                     <button type="submit" class="btn btn-secondary btn-sm" title="Generar Libro de Entregas">
                                         <i class="bi bi-printer"></i> Generar
-                                    </button>
+                                        </button>
                                 </form>
+                                <?php endif;?><?php endif; ?>
                                 <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria', 'administrador'])): ?>
-                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCorrespondenciaModal">
                                     <i class="bi bi-envelope-plus"></i> Nueva Correspondencia
                                 </button>
                                 <?php endif; ?>
@@ -99,10 +106,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                 <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-arrow-return-right"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-send"></i> Bandeja de Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-play-circle"></i> Bandeja de Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
                             </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'gerente'): ?>
@@ -114,7 +121,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                 <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-arrow-return-right"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Bandeja para Iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
@@ -171,7 +178,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <!-- Tipo de Remitente -->
                         <div class="mb-3">
                             <label class="form-label">Tipo de Remitente</label>
-                            <div class="form-check">
+                            <div class="form-check tipo-remitente-radio">
                                 <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_interno" value="interno" required>
                                 <label class="form-check-label" for="remitente_interno">Interno <i><small>(Funcionario de EPDEOR)</small></i></label>
                             </div>
@@ -184,7 +191,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <!-- Remitente Interno (Select) -->
                         <div class="mb-3" id="div_remitente_interno" style="display: none;">
                             <label class="form-label">Seleccione Funcionario</label>
-                            <select class="form-select" id="select_remitente_interno" name="remitente_id">
+                            <select class="form-select border-4" id="select_remitente_interno" name="remitente_id">
                                 <option value="">-- Seleccione un funcionario --</option>
                                 <?php foreach($funcionarios as $f): ?>
                                     <option value="<?= htmlspecialchars($f['id']) ?>">
@@ -197,24 +204,24 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <!-- Remitente Externo (Input) -->
                         <div class="mb-3" id="div_remitente_externo" style="display: none;">
                             <label class="form-label">Nombre del Remitente Externo</label>
-                            <input type="text" class="form-control" id="input_remitente_externo" name="remitente_externo">
+                            <input type="text" class="form-control border-4" id="input_remitente_externo" name="remitente_externo">
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Referencia</label>
-                            <textarea class="form-control" name="referencia" required></textarea>
+                            <textarea class="form-control border-4" name="referencia" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas</label>
-                            <textarea class="form-control" id="fojas" name="fojas" required></textarea>
+                            <textarea class="form-control border-4" id="fojas" name="fojas" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Anexo</label>
-                            <textarea class="form-control" id="anexo" name="anexo"></textarea>
+                            <textarea class="form-control border-4" id="anexo" name="anexo"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto obligatorio</label>
-                            <input type="file" class="form-control" name="foto" accept="image/*" required>
+                            <input type="file" class="form-control border-4" name="foto" accept="image/*" required>
                         </div>
                     </form>
                 </div>
@@ -239,7 +246,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <input type="hidden" id="edit_foto_actual" name="foto_actual">
                         <div class="mb-3">
                             <label class="form-label">Hoja de ruta</label>
-                            <input type="text" class="form-control" id="edit_hojaruta" name="hojaruta">
+                            <input type="text" class="form-control border-4" id="edit_hojaruta" name="hojaruta">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Remitente</label>
@@ -255,7 +262,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <!-- Remitente Interno (Select) -->
                         <div class="mb-3" id="edit_div_remitente_interno" style="display: none;">
                             <label class="form-label">Seleccione Funcionario</label>
-                            <select class="form-select" id="edit_select_remitente_interno" name="edit_remitente_id">
+                            <select class="form-select border-4" id="edit_select_remitente_interno" name="edit_remitente_id">
                                 <option value="">-- Seleccione un funcionario --</option>
                                 <?php foreach($funcionarios as $f): ?>
                                     <option value="<?= htmlspecialchars($f['id']) ?>">
@@ -267,23 +274,23 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <!-- Remitente Externo (Input) -->
                         <div class="mb-3" id="edit_div_remitente_externo" style="display: none;">
                             <label class="form-label">Nombre del Remitente Externo</label>
-                            <input type="text" class="form-control" id="edit_input_remitente_externo" name="edit_remitente_externo">
+                            <input type="text" class="form-control border-4" id="edit_input_remitente_externo" name="edit_remitente_externo">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Referencia</label>
-                            <textarea class="form-control" id="edit_referencia" name="referencia"></textarea>
+                            <textarea class="form-control border-4" id="edit_referencia" name="referencia"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas</label>
-                            <textarea class="form-control" id="edit_fojas" name="fojas"></textarea>
+                            <textarea class="form-control border-4" id="edit_fojas" name="fojas"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Anexo</label>
-                            <textarea class="form-control" id="edit_anexo" name="edit_anexo"></textarea>
+                            <textarea class="form-control border-4" id="edit_anexo" name="edit_anexo"></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto actual</label>
-                            <div id="edit_foto_preview" class="mb-2"></div>
+                            <div id="edit_foto_preview" class="mb-2 border-4"></div>
                             <label class="form-label">Cambiar foto (opcional)</label>
                             <input type="file" class="form-control" name="foto_nueva" accept="image/*">
                         </div>
@@ -324,7 +331,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <input type="hidden" id="derivar_id_funcionario" name="id_funcionario">
                         <div class="mb-3">
                             <label class="form-label">Derivar a (seleccione):</label>
-                            <select id="derivar_select_funcionario" class="form-select" required>
+                            <select id="derivar_select_funcionario" class="form-select border-4" required>
                                 <option value="">-- Seleccione funcionario/área --</option>
                                 <optgroup label="Comisiones">
                                     <?php foreach($comisiones as $c): ?>
@@ -340,11 +347,11 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Instrucción adicional</label>
-                            <textarea class="form-control" id="derivar_instruccion" name="instruccion_adicional" required></textarea>
+                            <textarea class="form-control border-4" id="derivar_instruccion" name="instruccion_adicional" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas a añadir</label>
-                            <input type="number" min="0" class="form-control" id="derivar_fojas" name="fojas">
+                            <input type="number" min="0" class="form-control border-4" id="derivar_fojas" name="fojas">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Carácter</label>
@@ -454,6 +461,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 });
             });
         });
+
     </script>
 </body>
+
 </html>
