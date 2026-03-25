@@ -3,8 +3,8 @@ session_start();
 require '../db.php';
 
 // Validar acceso (Solo Administrador)
-if (!isset($_SESSION['usuario_cargo']) || strtolower(trim($_SESSION['usuario_cargo'])) !== 'administrador') {
-    echo "<div style='padding:20px; font-family:sans-serif;'><h3 style='color:red;'>Acceso denegado.</h3><p>Solo los administradores pueden gestionar comisiones.</p></div>";
+if (!isset($_SESSION['usuario_cargo']) || (strtolower(trim($_SESSION['usuario_cargo'])) !== 'administrador' && strtolower(trim($_SESSION['usuario_cargo'])) !== 'secretaria')) {
+    echo "<div style='padding:20px; font-family:sans-serif;'><h3 style='color:red;'>Acceso denegado.</h3><p>Solo los administradores y secretarias pueden gestionar comisiones.</p></div>";
     exit;
 }
 
@@ -173,6 +173,66 @@ if (isset($_SESSION['mensaje'])) {
     </div>
 </div>
 
+<!-- MODAL ELIMINAR COMISION -->
+<div class="modal fade" id="deleteComisionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar esta comisión?</p>
+                <form id="deleteComisionForm" action="delete.php" method="post">
+                    <input type="hidden" id="delete_comision_id" name="id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger" form="deleteComisionForm">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL RESTAURAR COMISION -->
+<div class="modal fade" id="restoreComisionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Restauración</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea restaurar esta comisión?</p>
+                <form id="restoreComisionForm" action="restore.php" method="post">
+                    <input type="hidden" id="restore_comision_id" name="id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success" form="restoreComisionForm">Restaurar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
@@ -230,6 +290,22 @@ function editarComision(id) {
         }
     });
 }
+function eliminarComision(id) {
+    // Asigna el ID al formulario de eliminación
+    $('#delete_comision_id').val(id);
+
+    // Muestra el modal de confirmación
+    $('#deleteComisionModal').modal('show');
+}
+function restoreComision(id) {
+    // Asigna el ID al formulario de restauración
+    $('#restore_comision_id').val(id);
+
+    // Muestra el modal de confirmación
+    $('#restoreComisionModal').modal('show');
+}
+
+
 </script>
 </body>
 </html>

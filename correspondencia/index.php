@@ -462,7 +462,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             });
         });
 
-    </script>
+</script>
 </body>
 
 </html>

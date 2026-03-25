@@ -30,7 +30,7 @@ if(!isset($_SESSION['usuario_id'])){
         <div class="sidebar-resizer" id="sidebarResizer"></div>
         <h4><?= SISTEMA_NOMBRE ?></h4>
         <a href="inicio.php" target="iframe_content"><i class="bi bi-house-door"></i> Inicio</a>
-        <?php if($_SESSION['usuario_cargo'] == 'Administrador') { ?>
+        <?php if(strtolower($_SESSION['usuario_cargo']) == 'administrador' || strtolower($_SESSION['usuario_cargo']) == 'secretaria') { ?>
             <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>
             <a href="<?= BASE_URL ?>comision/index.php" target="iframe_content"><i class="bi bi-people"></i> Comisiones</a>
         <?php } ?>

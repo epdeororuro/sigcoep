@@ -1,56 +1,72 @@
 <?php
-error_reporting(0); // Evitar que advertencias de PHP rompan el JSON
-session_start();
 require '../db.php';
 
-header('Content-Type: application/json; charset=utf-8');
+// Consulta para obtener datos de comisiones con información relacionada
+$stmt = $pdo->prepare("
+SELECT
+    c.id,
+    c.nombre,
+    c.descripcion,
+    c.estado,
+    f.nombre AS responsable_nombre,
+    f.paterno AS responsable_paterno,
+    f.materno AS responsable_materno
+FROM
+    comision c
+LEFT JOIN
+    funcionario f ON c.responsable_id = f.id
+ORDER BY
+    c.nombre;
+");
+$stmt->execute();
+$comisiones = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-try {
-    $sql = "SELECT c.id, c.nombre, c.descripcion, c.estado, 
-                   f.nombre AS r_nombre, f.paterno AS r_paterno, f.materno AS r_materno,
-                   (SELECT COUNT(*) FROM comision_miembro cm WHERE cm.comision_id = c.id) as total_miembros
-            FROM comision c
-            LEFT JOIN funcionario f ON c.responsable_id = f.id";
-            
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $comisiones = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    $data = array();
-    $n = 1;
-    foreach ($comisiones as $com) {
-        $acciones = '';
-        if ($com['estado'] == 'Activo') {
-            $acciones = '
-                <button type="button" class="btn btn-warning btn-sm" onclick="editarComision('.$com['id'].')"><i class="bi bi-pencil"></i></button>
-                <form action="destroy.php" method="post" style="display: inline;">
-                    <input type="hidden" name="id" value="'.$com['id'].'">
-                    <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
-                </form>';
-        } else {
-            $acciones = '
-                <form action="restore.php" method="post" style="display: inline;">
-                    <input type="hidden" name="id" value="'.$com['id'].'">
-                    <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-recycle"></i></button>
-                </form>';
-        }
+// Preparar el array de respuesta
+$data = [];
+$numero = 1;
 
-        $resp_full = trim(($com['r_nombre'] ?? '') . ' ' . ($com['r_paterno'] ?? '') . ' ' . ($com['r_materno'] ?? ''));
+foreach ($comisiones as $comision) {
+    // Obtener miembros de la comisión
+    $stmtMiembros = $pdo->prepare("
+    SELECT
+        f.nombre,
+        f.paterno,
+        f.materno
+    FROM
+        comision_miembros cm
+    JOIN
+        funcionario f ON cm.funcionario_id = f.id
+    WHERE
+        cm.comision_id = :comision_id
+    ORDER BY
+        f.nombre;
+    ");
+    $stmtMiembros->execute([':comision_id' => $comision['id']]);
+    $miembros = $stmtMiembros->fetchAll(PDO::FETCH_ASSOC);
 
-        $data[] = array(
-            'numero' => $n,
-            'nombre' => htmlspecialchars($com['nombre'] ?? ''),
-            'descripcion' => htmlspecialchars($com['descripcion'] ?? ''),
-            'responsable' => htmlspecialchars($resp_full),
-            'miembros' => '<span class="badge bg-primary">'.$com['total_miembros'].' Integrantes</span>',
-            'estado' => htmlspecialchars($com['estado'] ?? ''),
-            'acciones' => $acciones
-        );
-        $n++;
+    // Formatear la lista de miembros
+    $listaMiembros = '';
+    foreach ($miembros as $miembro) {
+        $listaMiembros .= htmlspecialchars(trim($miembro['nombre'] . ' ' . ($miembro['paterno'] ?? '') . ' ' . ($miembro['materno'] ?? ''))) . '<br>';
     }
-    
-    echo json_encode(array("data" => $data));
 
-} catch (Exception $e) {
-    echo json_encode(array("error" => "Error de BD: " . $e->getMessage()));
+    // Botones de acción (editar, eliminar)
+    $acciones = '<div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-outline-primary" onclick="editarComision(' . $comision['id'] . ')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarComision(' . $comision['id'] . ')"><i class="bi bi-trash"></i></button>
+                 </div>';
+
+    $data[] = [
+        'numero' => $numero++,
+        'nombre' => htmlspecialchars($comision['nombre']),
+        'descripcion' => htmlspecialchars($comision['descripcion']),
+        'responsable' => htmlspecialchars(trim($comision['responsable_nombre'] . ' ' . ($comision['responsable_paterno'] ?? '') . ' ' . ($comision['responsable_materno'] ?? ''))),
+        'miembros' => $listaMiembros,
+        'estado' => htmlspecialchars($comision['estado']),
+        'acciones' => $acciones,
+        'id' => $comision['id']
+    ];
 }
+
+// Devolver los datos en formato JSON
+echo json_encode(['data' => $data]);

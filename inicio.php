@@ -64,7 +64,7 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
         <?php endif; ?>
-        <!-- Registrar Correspondencia -->
+         <!-- Registrar Correspondencia -->
         <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-success shadow hover-card">
@@ -76,8 +76,18 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
         <?php endif; ?>
+                <!-- comisiones -->
+        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card text-white bg-info shadow hover-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-people"></i> Comisiones</h5>
+                    <p class="card-text">Gestionar equipos de trabajo.</p>
+                        <a href="comision/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
-</div>
 
 <?php if (count($retrasos) > 0): ?>
 <!-- Modal de Alerta de Retrasos -->
