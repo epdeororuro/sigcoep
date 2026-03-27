@@ -17,7 +17,7 @@ if (isset($_POST['id'])) {
         $comision = $stmt->fetch(PDO::FETCH_ASSOC);
 
          // Obtener los miembros de la comisión
-         $stmtMiembros = $pdo->prepare("SELECT funcionario_id FROM comision_miembros WHERE comision_id = ?");
+         $stmtMiembros = $pdo->prepare("SELECT funcionario_id FROM comision_miembro WHERE comision_id = ?");
          $stmtMiembros->execute([$id]);
          $miembros = $stmtMiembros->fetchAll(PDO::FETCH_COLUMN);
 

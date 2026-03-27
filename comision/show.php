@@ -15,6 +15,8 @@ FROM
     comision c
 LEFT JOIN
     funcionario f ON c.responsable_id = f.id
+WHERE
+    c.eliminado_en IS NULL
 ORDER BY
     c.nombre;
 ");
@@ -33,7 +35,7 @@ foreach ($comisiones as $comision) {
         f.paterno,
         f.materno
     FROM
-        comision_miembros cm
+        comision_miembro cm
     JOIN
         funcionario f ON cm.funcionario_id = f.id
     WHERE
@@ -52,8 +54,8 @@ foreach ($comisiones as $comision) {
 
     // Botones de acción (editar, eliminar)
     $acciones = '<div class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-sm btn-outline-primary" onclick="editarComision(' . $comision['id'] . ')"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarComision(' . $comision['id'] . ')"><i class="bi bi-trash"></i></button>
+                    <button class="btn btn-sm btn-warning" title="Editar" onclick="editarComision(' . $comision['id'] . ')"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminarComision(' . $comision['id'] . ')"><i class="bi bi-trash"></i></button>
                  </div>';
 
     $data[] = [

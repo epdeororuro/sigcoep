@@ -183,7 +183,7 @@ if (isset($_SESSION['mensaje'])) {
             </div>
             <div class="modal-body">
                 <p>¿Está seguro de que desea eliminar esta comisión?</p>
-                <form id="deleteComisionForm" action="delete.php" method="post">
+                <form id="deleteComisionForm" action="destroy.php" method="post">
                     <input type="hidden" id="delete_comision_id" name="id">
                 </form>
             </div>

@@ -11,29 +11,39 @@ if (!isset($_SESSION['usuario_cargo']) || strtolower(trim($_SESSION['usuario_car
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-    $id = filter_var($_POST['id'], FILTER_SANITIZE_NUMBER_INT);
+    $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
 
-    if ($id) {
+    if ($id !== false) {
         try {
-            // Iniciar transacción
-            $pdo->beginTransaction();
+            // 1. Obtener el nombre de la comisión para buscar en derivaciones
+            $stmtComision = $pdo->prepare("SELECT nombre FROM comision WHERE id = ?");
+            $stmtComision->execute([$id]);
+            $comision = $stmtComision->fetch(PDO::FETCH_ASSOC);
 
-            // Eliminar los miembros de la comisión
-            $stmtEliminarMiembros = $pdo->prepare("DELETE FROM comision_miembros WHERE comision_id = ?");
-            $stmtEliminarMiembros->execute([$id]);
+            if ($comision) {
+                $searchString = "[Comisión: " . $comision['nombre'] . "]%";
 
-            // Eliminar la comisión
-            $stmt = $pdo->prepare("DELETE FROM comision WHERE id = ?");
-            $stmt->execute([$id]);
+                // 2. Verificar si la comisión tiene correspondencia derivada (historial o actual)
+                $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM derivacion WHERE instruccion_adicional LIKE ?");
+                $stmtCheck->execute([$searchString]);
+                $tieneDerivaciones = $stmtCheck->fetchColumn() > 0;
 
-            // Commit la transacción
-            $pdo->commit();
+                if ($tieneDerivaciones) {
+                    $_SESSION['mensaje'] = 'No se puede eliminar: La comisión tiene correspondencia en su historial o en turno.';
+                    $_SESSION['mensaje_tipo'] = 'danger';
+                } else {
+                    // 3. Eliminación lógica (Soft delete) de la comisión
+                    $stmt = $pdo->prepare("UPDATE comision SET estado = 'Inactivo', eliminado_en = CURRENT_TIMESTAMP() WHERE id = ?");
+                    $stmt->execute([$id]);
 
-            $_SESSION['mensaje'] = 'Comisión y sus miembros eliminados exitosamente.';
-            $_SESSION['mensaje_tipo'] = 'success';
+                    $_SESSION['mensaje'] = 'Comisión eliminada exitosamente.';
+                    $_SESSION['mensaje_tipo'] = 'success';
+                }
+            } else {
+                $_SESSION['mensaje'] = 'Comisión no encontrada.';
+                $_SESSION['mensaje_tipo'] = 'danger';
+            }
         } catch (PDOException $e) {
-            // Si hay un error, rollback la transacción
-            $pdo->rollBack();
             $_SESSION['mensaje'] = 'Error al eliminar la comisión: ' . $e->getMessage();
             $_SESSION['mensaje_tipo'] = 'danger';
         }

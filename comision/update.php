@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT);
     $nombre = filter_input(INPUT_POST, 'nombre', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
     $descripcion = filter_input(INPUT_POST, 'descripcion', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
-    $responsable_id = filter_input($_POST['responsable_id'], FILTER_VALIDATE_INT);
+    $responsable_id = filter_input(INPUT_POST, 'responsable_id', FILTER_VALIDATE_INT);
     $miembros = isset($_POST['miembros']) && is_array($_POST['miembros']) ? array_map('intval', $_POST['miembros']) : [];
 
     if (empty($id) || empty($nombre) || empty($responsable_id) || empty($miembros)) {
@@ -30,15 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         // Actualizar la comisión
-        $stmt = $pdo->prepare("UPDATE comision SET nombre = ?, descripcion = ?, responsable_id = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE comision SET nombre = ?, descripcion = ?, responsable_id = ?, actualizado_en = CURRENT_TIMESTAMP() WHERE id = ?");
         $stmt->execute([$nombre, $descripcion, $responsable_id, $id]);
 
         // Eliminar los miembros actuales de la comisión
-        $stmtEliminarMiembros = $pdo->prepare("DELETE FROM comision_miembros WHERE comision_id = ?");
+        $stmtEliminarMiembros = $pdo->prepare("DELETE FROM comision_miembro WHERE comision_id = ?");
         $stmtEliminarMiembros->execute([$id]);
 
         // Insertar los nuevos miembros de la comisión
-        $stmtInsertarMiembros = $pdo->prepare("INSERT INTO comision_miembros (comision_id, funcionario_id) VALUES (?, ?)");
+        $stmtInsertarMiembros = $pdo->prepare("INSERT INTO comision_miembro (comision_id, funcionario_id) VALUES (?, ?)");
         foreach ($miembros as $miembro_id) {
             $stmtInsertarMiembros->execute([$id, $miembro_id]);
         }
