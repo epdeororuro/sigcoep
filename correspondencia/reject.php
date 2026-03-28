@@ -22,10 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->beginTransaction();
 
-        // 1. Actualizar estado de la correspondencia a Rechazado
-        $sql = "UPDATE correspondencia SET estado = 'Rechazado', actualizado_en = NOW() WHERE id = :id";
+        // Determinar si es un Rechazo normal o una declaración de "No cursada"
+        $estado_destino = isset($_POST['estado_destino']) ? trim($_POST['estado_destino']) : 'Rechazado';
+        if (!in_array($estado_destino, ['Rechazado', 'No cursada'])) {
+            $estado_destino = 'Rechazado';
+        }
+
+        // 1. Actualizar estado de la correspondencia
+        $sql = "UPDATE correspondencia SET estado = :estado, actualizado_en = NOW() WHERE id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([':estado' => $estado_destino, ':id' => $id]);
 
         // 2. Registrar la fecha de entrega como "procesado" (para cerrar el ciclo en derivacion)
         $sqlDeriv = "UPDATE derivacion SET fecha_entrega_derivacion = NOW() WHERE id_correspondencia = :id AND id_funcionario = :uid AND fecha_entrega_derivacion IS NULL ORDER BY fecha_derivacion DESC LIMIT 1";
@@ -33,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtDeriv->execute([':id' => $id, ':uid' => $usuario_id]);
 
         $pdo->commit();
-        $_SESSION['mensaje'] = 'Correspondencia devuelta y rechazada correctamente.';
+        $_SESSION['mensaje'] = 'Correspondencia marcada como ' . $estado_destino . ' correctamente.';
         $_SESSION['mensaje_tipo'] = 'warning';
     } catch (PDOException $e) {
         $pdo->rollBack();

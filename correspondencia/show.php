@@ -40,10 +40,10 @@ try {
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
-        if ($filtro === 'rechazados') {
-            $where_clauses[] = "c.estado = 'Rechazado'";
+        if ($filtro === 'no_cursadas') {
+            $where_clauses[] = "c.estado = 'No cursada'";
         } else {
-            $where_clauses[] = "c.estado != 'Rechazado'";
+            $where_clauses[] = "c.estado != 'No cursada'";
         }
     } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
         // Los roles Gerente y Administrativo comparten casi las mismas bandejas
@@ -131,8 +131,8 @@ try {
         $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
         $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
         
-        $counts['rechazados'] = $estado_counts['Rechazado'] ?? 0;
-        $counts['todos'] = array_sum($estado_counts) - $counts['rechazados'];
+        $counts['no_cursadas'] = $estado_counts['No cursada'] ?? 0;
+        $counts['todos'] = array_sum($estado_counts) - $counts['no_cursadas'];
     }
  
     $data = array();
@@ -168,6 +168,8 @@ try {
                 $estado_texto = 'Iniciado para';
         } elseif ($correspondencia['estado'] === 'Rechazado') {
             $estado_texto = 'Rechazado por';
+        } elseif ($correspondencia['estado'] === 'No cursada') {
+            $estado_texto = 'No cursada por';
             }
         }
 
@@ -182,15 +184,16 @@ try {
             }
         }
 
-        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado'])) {
-            $color_clase = $correspondencia['estado'] === 'Rechazado' ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info'));
+        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada'])) {
+            $color_clase = in_array($correspondencia['estado'], ['Rechazado', 'No cursada']) ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info'));
             $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
         }
 
         // --- SISTEMA DE BOTONES POR ROL ---
         $btn_aceptar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Aceptar/Rechazar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
 
-        $btn_rechazar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Rechazar" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-x-circle"></i></button>';
+        $btn_rechazar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Rechazar" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'Rechazado\')"><i class="bi bi-x-circle"></i></button>';
+        $btn_no_cursada = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Marcar como No Cursada" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'No cursada\')"><i class="bi bi-slash-circle"></i></button>';
         $btn_editar = '<form action="" method="post" style="display: inline;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button></form>';
         $btn_eliminar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Eliminar" onclick="confirmarEliminacion('.$correspondencia['id'].')"><i class="bi bi-trash"></i></button>';
         $btn_iniciar = '<form action="create.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-primary btn-sm" title="Iniciar"><i class="bi bi-play-circle"></i></button></form>';
@@ -239,7 +242,7 @@ try {
             if ($estado === 'Iniciado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
-                    $acciones .= $btn_rechazar;
+                    $acciones .= ($usuario_cargo === 'Gerente') ? $btn_no_cursada : $btn_rechazar;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Derivado') {

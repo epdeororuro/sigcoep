@@ -133,7 +133,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <?php elseif ($cargo_usuario === 'secretaria'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button"><i class="bi bi-folder2-open"></i> Todos <span class="badge bg-secondary ms-1 count-badge" data-count="todos">0</span></button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="rechazados" type="button"><i class="bi bi-x-octagon"></i> Rechazados <span class="badge bg-danger ms-1 count-badge" data-count="rechazados">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="no_cursadas" type="button"><i class="bi bi-slash-circle"></i> No Cursadas <span class="badge bg-danger ms-1 count-badge" data-count="no_cursadas">0</span></button></li>
                         </ul>
                         <?php endif; ?>
 
@@ -444,13 +444,14 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content border-danger">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Rechazar correspondencia</h5>
+                        <h5 class="modal-title" id="rechazarModalTitle">Rechazar correspondencia</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?</p>
+                        <p id="rechazarModalText">¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?</p>
                     <form id="rechazarCorrespondenciaForm" action="reject.php" method="post">
                         <input type="hidden" id="rechazar_correspondencia_id" name="id">
+                            <input type="hidden" id="rechazar_estado_destino" name="estado_destino" value="Rechazado">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -469,6 +470,22 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Custom JS -->
     <script src="../assets/js/correspondencia.js"></script>
+    <script>
+        // Función incrustada para evitar problemas de caché del navegador
+        function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
+            $('#rechazar_correspondencia_id').val(id);
+            $('#rechazar_estado_destino').val(tipo);
+            
+            if(tipo === 'No cursada') {
+                $('#rechazarModalTitle').text('Correspondencia No Cursada');
+                $('#rechazarModalText').html('¿Confirma que desea marcar esta correspondencia como <strong>No Cursada</strong>? (No procede para trámite).');
+            } else {
+                $('#rechazarModalTitle').text('Rechazar correspondencia');
+                $('#rechazarModalText').html('¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?');
+            }
+            $('#rechazarCorrespondenciaModal').modal('show');
+        }
+    </script>
 </body>
 
 </html>
