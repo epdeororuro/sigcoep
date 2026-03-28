@@ -59,6 +59,15 @@ try {
         ':caracter' => $caracter
     ]);
 
+    // Actualizar la fecha de entrega (recepción) de la derivación anterior si estaba pendiente
+    if (isset($_SESSION['usuario_id'])) {
+        $stmtUpdateDeriv = $pdo->prepare("UPDATE derivacion SET fecha_entrega_derivacion = NOW() WHERE id_correspondencia = :id_corr AND id_funcionario = :uid AND fecha_entrega_derivacion IS NULL ORDER BY fecha_derivacion DESC LIMIT 1");
+        $stmtUpdateDeriv->execute([
+            ':id_corr' => $id_correspondencia,
+            ':uid' => $_SESSION['usuario_id']
+        ]);
+    }
+
     // Actualizar estado de la correspondencia
     $sqlUpd = "UPDATE correspondencia SET estado = 'Derivado', idfuncionario_enturno = :id_func, actualizado_en = NOW() WHERE id = :id";
     $stmtUpd = $pdo->prepare($sqlUpd);

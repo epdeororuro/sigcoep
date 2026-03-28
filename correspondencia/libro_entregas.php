@@ -41,7 +41,7 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .table-signature th, .table-signature td { vertical-align: middle !important; border: 1px solid #000 !important; }
         .table-signature thead th { border-bottom: 2px solid #000 !important; }
         .signature-box { height: 70px; }
-        /* Cabecera idéntica a reporte.php */
+        /* Cabecera idéntica a report.php */
         .header { display: flex; justify-content: space-between; align-items: center; height: 2.5cm; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
         @media print {
             body { background-color: #fff; }
@@ -59,7 +59,7 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <button onclick="window.print()" class="btn btn-success"><i class="bi bi-printer"></i> Imprimir Planilla</button>
         </div>
 
-        <!-- Cabecera Formal idéntica a reporte.php -->
+        <!-- Cabecera Formal idéntica a report.php -->
         <div class="header">
             <img src="../assets/img/logo.png" alt="Logo Izquierdo" style="height: 70px; width: auto;" onerror="this.style.display='none'">
             <div class="text-center" style="flex-grow: 1;">

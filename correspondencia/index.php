@@ -56,14 +56,9 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../assets/css/correspondencia.css">
+    <link rel="stylesheet" href="../assets/css/correspondencia.css" >
     <!-- Theme Script -->
     <script src="../assets/js/theme.js"></script>
-    <style>
-        .form-check-input[type="radio"] {
-            border: 2px solid #4d5a6b;
-        }
-    </style>
 </head>
 
 <body>
@@ -76,10 +71,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <h3 class="mb-0">Lista de Correspondencia</h3>
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
-                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
+                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form id="formLibroEntregas" action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
                                     <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
                                     <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
-                                    <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" required title="Fecha de fin">
+                                    <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required title="Fecha de fin">
                                     <button type="submit" class="btn btn-secondary btn-sm" title="Generar Libro de Entregas">
                                         <i class="bi bi-printer"></i> Generar
                                         </button>
@@ -382,7 +377,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="printPageForm" action="reporte.php" method="post" target="_blank">
+                <form id="printPageForm" action="report.php" method="post">
                         <input type="hidden" id="print_correspondencia_id" name="id">
                         <div class="mb-3">
                             <label class="form-label">Número de página (1-10)</label>
@@ -439,6 +434,27 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             </div>
         </div>
     </div>
+    <!-- ================= MODAL RECHAZAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="rechazarCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Rechazar correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?</p>
+                    <form id="rechazarCorrespondenciaForm" action="reject.php" method="post">
+                        <input type="hidden" id="rechazar_correspondencia_id" name="id">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" form="rechazarCorrespondenciaForm">Rechazar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= JS ================= -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -448,21 +464,6 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Custom JS -->
     <script src="../assets/js/correspondencia.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Inicializar Select2 en los modales para que tengan buscador
-            $('.modal').on('shown.bs.modal', function () {
-                $(this).find('select').each(function() {
-                    $(this).select2({
-                        theme: 'bootstrap-5',
-                        dropdownParent: $(this).parent(),
-                        width: '100%'
-                    });
-                });
-            });
-        });
-
-</script>
 </body>
 
 </html>

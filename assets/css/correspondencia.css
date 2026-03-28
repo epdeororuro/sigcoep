@@ -55,18 +55,52 @@ table.dataTable td {
     animation: blinker 1s linear infinite;
 }
 
-/* Estilo para la pestaña seleccionada (Activa) */
-.nav-tabs .nav-link.active {
-    background-color: #0d6efd !important;
-    color: white !important;
-    border-color: #0d6efd #0d6efd #0d6efd !important;
-    border-width: 2px !important;
-    font-weight: bold;
+/* Estilos mejorados y más definidos para las pestañas */
+.nav-tabs {
+    border-bottom: 2px solid var(--bs-border-color);
+}
+.nav-tabs .nav-item {
+    margin-right: 4px;
 }
 .nav-tabs .nav-link {
+    border: 3px solid #0d6efd;
+    background-color: var(--bs-secondary-bg);
     color: var(--bs-body-color);
+    border-radius: 0.4rem 0.4rem 0 0;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s;
     font-weight: bold;
     font-size: 0.85rem;
-    border: 2px solid var(--bs-border-color);
+}
+.nav-tabs .nav-link.active {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    font-weight: bold;
+    color: #ffffff !important;
+    margin-bottom: -2px; /* Oculta el borde inferior fusionándose con el fondo */
 }
 
+/*
+OTRO MODELO DE PESTAÑA
+.nav-tabs .nav-link.active {
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-border-color) var(--bs-border-color) var(--bs-body-bg) var(--bs-border-color);
+    border-top: 5px solid #0d6efd;
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+    font-weight: bold;
+    color: #0d6efd;
+    color: #ffffff !important;
+    margin-bottom: -2px;
+}
+*/
+
+/* Inputs especiales */
+.form-check-input[type="radio"] {
+    border: 2px solid #4d5a6b;
+}
+
+/* Estilo para el formulario del libro de entregas */
+#formLibroEntregas {
+    border: 2px solid #0d6efd !important;
+}

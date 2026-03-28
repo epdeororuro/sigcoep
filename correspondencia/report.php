@@ -1,5 +1,5 @@
 <?php
-// reporte.php (reconstruido)
+// report.php (reconstruido)
 session_start();
 require '../db.php';
 
@@ -124,7 +124,7 @@ if ($page === 1) {
         <tr>
             <td><strong>Fecha:</strong> <?= $fecha_date ?></td>
             <td><strong>Hora:</strong> <?= $fecha_time ?></td>
-            <td><strong>Fojas:</strong> <?= $fojas ?></td>
+            <td><strong>Fojas iniciales:</strong> <?= $fojas ?></td>
             <td></td>
         </tr>
     </table>

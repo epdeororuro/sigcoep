@@ -58,7 +58,7 @@ try {
     ]);
 
     // en lugar de regresar a la lista, enviamos un formulario POST que abrirá la página de reporte
-    echo '<form id="printForm" action="reporte.php" method="post">
+    echo '<form id="printForm" action="report.php" method="post">
             <input type="hidden" name="id" value="'.$id_correspondencia.'">
             <input type="hidden" name="page" value="1">
           </form>

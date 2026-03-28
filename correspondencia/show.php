@@ -179,6 +179,7 @@ try {
         // --- SISTEMA DE BOTONES POR ROL ---
         $btn_aceptar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Aceptar/Rechazar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
 
+        $btn_rechazar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Rechazar" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-x-circle"></i></button>';
         $btn_editar = '<form action="" method="post" style="display: inline;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button></form>';
         $btn_eliminar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Eliminar" onclick="confirmarEliminacion('.$correspondencia['id'].')"><i class="bi bi-trash"></i></button>';
         $btn_iniciar = '<form action="create.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-primary btn-sm" title="Iniciar"><i class="bi bi-play-circle"></i></button></form>';
@@ -222,10 +223,12 @@ try {
                 $acciones .= $btn_iniciar;
             }
             $acciones .= $btn_historial;
+            $acciones .= $btn_imprimir;
         } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
             if ($estado === 'Iniciado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
+                    $acciones .= $btn_rechazar;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Derivado') {

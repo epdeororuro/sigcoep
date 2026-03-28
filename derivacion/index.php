@@ -28,20 +28,20 @@ $stmt2 = $pdo->prepare($sql);
 $stmt2->execute([':id' => $id]);
 $derivaciones = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
-// Calcular total aproximado de fojas y anexos
-$total_fojas = intval($cor['fojas'] ?? 0);
+// Calcular total de fojas sumando directamente de la tabla derivacion
+$stmtSum = $pdo->prepare("SELECT SUM(CAST(fojas AS UNSIGNED)) FROM derivacion WHERE id_correspondencia = :id");
+$stmtSum->execute([':id' => $id]);
+$total_fojas = (int) $stmtSum->fetchColumn();
+
 $anexos_acumulados = [];
 if (!empty(trim($cor['anexo'] ?? ''))) {
     $anexos_acumulados[] = trim($cor['anexo']);
 }
 foreach ($derivaciones as $d) {
-    $fojas_derivacion = intval($d['fojas'] ?? 0);
-    // Si la derivación registra fojas, asumimos que es el conteo físico actual (no una suma)
-    if ($fojas_derivacion > 0) {
-        $total_fojas = $fojas_derivacion;
-    }
-    if (!empty(trim($d['anexo'] ?? ''))) {
-        $anexos_acumulados[] = trim($d['anexo']);
+    // Concatenar el atributo anexos (si existe y no está vacío)
+    $anexo_derivacion = trim($d['anexos'] ?? $d['anexo'] ?? '');
+    if (!empty($anexo_derivacion)) {
+        $anexos_acumulados[] = $anexo_derivacion;
     }
 }
 // Evitar nombres de anexos duplicados si se registran repetidos
@@ -212,7 +212,7 @@ $texto_anexos = implode(', ', $anexos_acumulados);
                             </td>
                             <td><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars($d['fojas']); ?></td>
-                            <td><?php echo htmlspecialchars($d['anexo']); ?></td>
+                            <td><?php echo htmlspecialchars($d['anexos'] ?? $d['anexo'] ?? ''); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>

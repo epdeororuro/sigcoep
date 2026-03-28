@@ -48,6 +48,17 @@ $(document).ready(function() {
         // Recargar DataTables (enviará el nuevo data-filtro al backend)
         table.ajax.reload();
     });
+
+    // Inicializar Select2 en los modales para que tengan buscador
+    $('.modal').on('shown.bs.modal', function () {
+        $(this).find('select').each(function() {
+            $(this).select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $(this).parent(),
+                width: '100%'
+            });
+        });
+    });
 });
 
 function editarCorrespondencia(id) {
@@ -145,6 +156,12 @@ function confirmarEliminacion(id) {
 function abrirAceptarCorrespondencia(id) {
     $('#aceptar_correspondencia_id').val(id);
     $('#aceptarCorrespondenciaModal').modal('show');
+}
+
+// Abrir modal para rechazar correspondencia
+function abrirRechazarCorrespondencia(id) {
+    $('#rechazar_correspondencia_id').val(id);
+    $('#rechazarCorrespondenciaModal').modal('show');
 }
 
 // Manejo de radiobuttons para tipo de remitente
