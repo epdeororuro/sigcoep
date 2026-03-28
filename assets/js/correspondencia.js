@@ -160,7 +160,17 @@ function abrirAceptarCorrespondencia(id) {
 
 // Abrir modal para rechazar correspondencia
 function abrirRechazarCorrespondencia(id) {
+function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
     $('#rechazar_correspondencia_id').val(id);
+    $('#rechazar_estado_destino').val(tipo);
+    
+    if(tipo === 'No cursada') {
+        $('#rechazarModalTitle').text('Correspondencia No Cursada');
+        $('#rechazarModalText').html('¿Confirma que desea marcar esta correspondencia como <strong>No Cursada</strong>? (No procede para trámite).');
+    } else {
+        $('#rechazarModalTitle').text('Rechazar correspondencia');
+        $('#rechazarModalText').html('¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?');
+    }
     $('#rechazarCorrespondenciaModal').modal('show');
 }
 

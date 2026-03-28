@@ -130,6 +130,11 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="derivado">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="aceptado">0</span></button></li>
                         </ul>
+                        <?php elseif ($cargo_usuario === 'secretaria'): ?>
+                        <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
+                            <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button"><i class="bi bi-folder2-open"></i> Todos <span class="badge bg-secondary ms-1 count-badge" data-count="todos">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="rechazados" type="button"><i class="bi bi-x-octagon"></i> Rechazados <span class="badge bg-danger ms-1 count-badge" data-count="rechazados">0</span></button></li>
+                        </ul>
                         <?php endif; ?>
 
                         <div class="table-responsive">

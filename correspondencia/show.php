@@ -40,8 +40,11 @@ try {
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
-        // Secretaria ve todas las correspondencias sin importar el estado
-        // No se añade filtro de estado a la consulta base
+        if ($filtro === 'rechazados') {
+            $where_clauses[] = "c.estado = 'Rechazado'";
+        } else {
+            $where_clauses[] = "c.estado != 'Rechazado'";
+        }
     } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
         // Los roles Gerente y Administrativo comparten casi las mismas bandejas
         $filtro = $filtro ?? 'entrantes'; // Filtro por defecto: Bandeja de Entrada
@@ -124,6 +127,12 @@ try {
         $counts['iniciado'] = $estado_counts['Iniciado'] ?? 0;
         $counts['derivado'] = $estado_counts['Derivado'] ?? 0;
         $counts['aceptado'] = $estado_counts['Aceptado'] ?? 0;
+    } elseif ($usuario_cargo === 'Secretaria') {
+        $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
+        $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
+        
+        $counts['rechazados'] = $estado_counts['Rechazado'] ?? 0;
+        $counts['todos'] = array_sum($estado_counts) - $counts['rechazados'];
     }
  
     $data = array();
@@ -157,6 +166,8 @@ try {
                 $estado_texto = 'Derivado a';
             } elseif ($correspondencia['estado'] === 'Iniciado') {
                 $estado_texto = 'Iniciado para';
+        } elseif ($correspondencia['estado'] === 'Rechazado') {
+            $estado_texto = 'Rechazado por';
             }
         }
 
@@ -171,8 +182,8 @@ try {
             }
         }
 
-        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado'])) {
-            $color_clase = $correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info');
+        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado'])) {
+            $color_clase = $correspondencia['estado'] === 'Rechazado' ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info'));
             $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
         }
 
