@@ -32,7 +32,7 @@ if(!isset($_SESSION['usuario_id'])){
         <a href="inicio.php" target="iframe_content"><i class="bi bi-house-door"></i> Inicio</a>
         <?php if(strtolower($_SESSION['usuario_cargo']) == 'administrador' || strtolower($_SESSION['usuario_cargo']) == 'secretaria') { ?>
             <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>
-            <a href="<?= BASE_URL ?>comision/index.php" target="iframe_content"><i class="bi bi-people"></i> Comisiones</a>
+            <!-- <a href="<?= BASE_URL ?>comision/index.php" target="iframe_content"><i class="bi bi-people"></i> Comisiones</a> -->
         <?php } ?>
         <a href="<?= BASE_URL ?>correspondencia/index.php" target="iframe_content"><i class="bi bi-folder"></i> Correspondencia</a>
         <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>

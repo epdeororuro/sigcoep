@@ -54,6 +54,7 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </div>
+        <!-- Módulo de comisiones temporalmente deshabilitado
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-info shadow hover-card">
                 <div class="card-body">
@@ -63,6 +64,7 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         </div>
+        -->
         <?php endif; ?>
          <!-- Registrar Correspondencia -->
         <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente'])): ?>
@@ -76,8 +78,8 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
         <?php endif; ?>
-                <!-- comisiones -->
-        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
+        <!-- comisiones -->
+        <?php /* if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-info shadow hover-card">
                 <div class="card-body">
@@ -86,7 +88,7 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
                         <a href="comision/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
                 </div>
             </div>
-        <?php endif; ?>
+        <?php endif; */ ?>
     </div>
 
 <?php if (count($retrasos) > 0): ?>

@@ -332,12 +332,12 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <div class="mb-3">
                             <label class="form-label">Derivar a (seleccione):</label>
                             <select id="derivar_select_funcionario" class="form-select border-4" required>
-                                <option value="">-- Seleccione funcionario/área --</option>
-                                <optgroup label="Comisiones">
+                                <option value="">-- Funcionario --</option>
+                                <!--<optgroup label="Comisiones">
                                     <?php foreach($comisiones as $c): ?>
                                         <option value="c_<?= htmlspecialchars($c['id']) ?>"><i class="bi bi-people"></i> <?= htmlspecialchars($c['nombre']) ?></option>
                                     <?php endforeach; ?>
-                                </optgroup>
+                                </optgroup>-->
                                 <optgroup label="Funcionarios">
                                     <?php foreach($funcionarios as $f): ?>
                                         <option value="f_<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>

@@ -35,11 +35,17 @@ if (!empty(trim($cor['anexo'] ?? ''))) {
     $anexos_acumulados[] = trim($cor['anexo']);
 }
 foreach ($derivaciones as $d) {
-    $total_fojas += intval($d['fojas'] ?? 0);
+    $fojas_derivacion = intval($d['fojas'] ?? 0);
+    // Si la derivación registra fojas, asumimos que es el conteo físico actual (no una suma)
+    if ($fojas_derivacion > 0) {
+        $total_fojas = $fojas_derivacion;
+    }
     if (!empty(trim($d['anexo'] ?? ''))) {
         $anexos_acumulados[] = trim($d['anexo']);
     }
 }
+// Evitar nombres de anexos duplicados si se registran repetidos
+$anexos_acumulados = array_unique($anexos_acumulados);
 $texto_anexos = implode(', ', $anexos_acumulados);
 ?>
 <!doctype html>
