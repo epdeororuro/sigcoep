@@ -96,16 +96,19 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item">
-                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-play-circle"></i> Bandeja de Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-play-circle"></i> Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
                             </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'gerente'): ?>
@@ -122,6 +125,9 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Bandeja para Iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
                             </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
+                            </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'administrador'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
@@ -130,11 +136,24 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="iniciado" type="button">Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciado">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="derivado">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="aceptado">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="archivado" type="button">Archivados <span class="badge bg-secondary ms-1 count-badge" data-count="archivado">0</span></button></li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'secretaria'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="todos" type="button"><i class="bi bi-folder2-open"></i> Todos <span class="badge bg-secondary ms-1 count-badge" data-count="todos">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="no_cursadas" type="button"><i class="bi bi-slash-circle"></i> No Cursadas <span class="badge bg-danger ms-1 count-badge" data-count="no_cursadas">0</span></button></li>
+                        </ul>
+                        <?php elseif ($cargo_usuario === 'archivista central'): ?>
+                        <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
+                            <li class="nav-item">
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
+                            </li>
                         </ul>
                         <?php endif; ?>
 
@@ -468,6 +487,48 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger" form="rechazarCorrespondenciaForm" id="rechazarModalSubmitBtn">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= MODAL ARCHIVAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="archivarCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-dark">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="bi bi-archive"></i> Archivar Correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="archivarCorrespondenciaForm" action="archive.php" method="post">
+                        <input type="hidden" id="archivar_correspondencia_id" name="id">
+                        
+                        <?php if ($cargo_usuario === 'archivista central'): ?>
+                            <input type="hidden" name="tipo_archivo" value="personal">
+                            <p class="mb-3 text-center">El documento será resguardado definitivamente en el <strong>Archivo Central</strong>.</p>
+                        <?php else: ?>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-primary">Destino del Archivo:</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input border-dark" type="radio" name="tipo_archivo" id="archivo_personal" value="personal" checked>
+                                    <label class="form-check-label" for="archivo_personal"><strong>Archivo Personal</strong> (El trámite finaliza en su escritorio)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input border-dark" type="radio" name="tipo_archivo" id="archivo_central" value="central">
+                                    <label class="form-check-label" for="archivo_central"><strong>Archivo Central</strong> (Enviar al Archivista Institucional)</label>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nota o Ubicación Física <small class="text-muted">(Opcional)</small></label>
+                            <textarea class="form-control border-dark" name="nota_archivo" rows="2" placeholder="Ej: Gaveta 3, Archivador A..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark" form="archivarCorrespondenciaForm">Archivar</button>
                 </div>
             </div>
         </div>

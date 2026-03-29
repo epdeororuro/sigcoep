@@ -170,6 +170,15 @@ function abrirAceptarCorrespondencia(id) {
     $('#aceptarCorrespondenciaModal').modal('show');
 }
 
+// Abrir modal para archivar
+function abrirArchivarCorrespondencia(id) {
+    $('#archivar_correspondencia_id').val(id);
+    // Resetear el formulario para que siempre inicie en "Archivo Personal"
+    $('#archivarCorrespondenciaForm')[0].reset();
+    $('#archivo_personal').prop('checked', true);
+    $('#archivarCorrespondenciaModal').modal('show');
+}
+
 // Función para "No Cursada" (estado final) y "Rechazar"
 function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
     $('#rechazar_correspondencia_id').val(id);

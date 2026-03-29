@@ -67,7 +67,7 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
         -->
         <?php endif; ?>
          <!-- Registrar Correspondencia -->
-        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente'])): ?>
+        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente','archivista central'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-success shadow hover-card">
                 <div class="card-body">

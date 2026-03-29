@@ -187,6 +187,7 @@ if (isset($_SESSION['mensaje'])) {
                             <option>Gerente</option>
                             <option>Administrativo</option>
                             <option>Secretaria</option>
+                            <option>Archivista Central</option>
                         </select>
                     </div>
 
@@ -248,6 +249,7 @@ if (isset($_SESSION['mensaje'])) {
                             <option>Gerente</option>
                             <option>Administrativo</option>
                             <option>Secretaria</option>
+                            <option>Archivista Central</option>
                         </select>
                     </div>
 

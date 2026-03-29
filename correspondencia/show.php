@@ -37,6 +37,9 @@ try {
             case 'aceptado':
                 $where_clauses[] = "c.estado = 'Aceptado'";
                 break;
+            case 'archivado':
+                $where_clauses[] = "c.estado = 'Archivado'";
+                break;
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
@@ -44,6 +47,22 @@ try {
             $where_clauses[] = "c.estado = 'No cursada'";
         } else {
             $where_clauses[] = "c.estado != 'No cursada'";
+        }
+    } else if ($usuario_cargo === 'Archivista Central') {
+        $filtro = $filtro ?? 'entrantes';
+        if ($filtro === 'pendientes') {
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Aceptado'";
+            $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'archivo_central') {
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Archivado'";
+            $params[':uid'] = $usuario_id;
+        } else {
+            // 'entrantes' por defecto
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Derivado'";
+            $params[':uid'] = $usuario_id;
         }
     } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
         // Los roles Gerente y Administrativo comparten casi las mismas bandejas
@@ -61,6 +80,13 @@ try {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Aceptado'";
             $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'mis_archivos') {
+            $where_clauses[] = "c.idfuncionario_enturno = :uid";
+            $where_clauses[] = "c.estado = 'Archivado'";
+            $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'archivo_central') {
+            // Bandeja de Archivo Central: Todos los archivados de la empresa
+            $where_clauses[] = "c.estado = 'Archivado'";
         } elseif ($filtro === 'despachados') {
             // Bandeja de Despachados: Correspondencias que pasaron por el usuario y derivó
             $where_clauses[] = "EXISTS (
@@ -118,6 +144,14 @@ try {
             $stmt_g1->execute();
             $counts['para_iniciar'] = $stmt_g1->fetchColumn();
         }
+
+        $stmt_c5 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_c5->execute([':uid' => $usuario_id]);
+        $counts['mis_archivos'] = $stmt_c5->fetchColumn();
+
+        $stmt_c6 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND eliminado_en IS NULL");
+        $stmt_c6->execute();
+        $counts['archivo_central'] = $stmt_c6->fetchColumn();
     } elseif ($usuario_cargo === 'Administrador') {
         $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
         $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -127,6 +161,19 @@ try {
         $counts['iniciado'] = $estado_counts['Iniciado'] ?? 0;
         $counts['derivado'] = $estado_counts['Derivado'] ?? 0;
         $counts['aceptado'] = $estado_counts['Aceptado'] ?? 0;
+        $counts['archivado'] = $estado_counts['Archivado'] ?? 0;
+    } elseif ($usuario_cargo === 'Archivista Central') {
+        $stmt_a1 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Derivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_a1->execute([':uid' => $usuario_id]);
+        $counts['entrantes'] = $stmt_a1->fetchColumn();
+
+        $stmt_a2 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Aceptado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_a2->execute([':uid' => $usuario_id]);
+        $counts['pendientes'] = $stmt_a2->fetchColumn();
+
+        $stmt_a3 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_a3->execute([':uid' => $usuario_id]);
+        $counts['archivo_central'] = $stmt_a3->fetchColumn();
     } elseif ($usuario_cargo === 'Secretaria') {
         $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
         $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
@@ -170,6 +217,8 @@ try {
             $estado_texto = 'Rechazado por ';
         } elseif ($correspondencia['estado'] === 'No cursada') {
             $estado_texto = 'No cursada por ';
+        } elseif ($correspondencia['estado'] === 'Archivado') {
+            $estado_texto = 'Archivado por ';
             }
         }
 
@@ -184,8 +233,8 @@ try {
             }
         }
 
-        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada'])) {
-            $color_clase = in_array($correspondencia['estado'], ['Rechazado', 'No cursada']) ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : 'text-info'));
+        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Archivado'])) {
+            $color_clase = in_array($correspondencia['estado'], ['Rechazado', 'No cursada']) ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : ($correspondencia['estado'] === 'Archivado' ? 'text-dark' : 'text-info')));
             $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
         }
 
@@ -201,6 +250,7 @@ try {
         $btn_derivar = '<form action="" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-success btn-sm" title="Derivar" data-bs-toggle="modal" data-bs-target="#derivarCorrespondenciaModal" onclick="derivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-arrow-right-circle"></i></button></form>';
         $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-secondary btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
         $btn_imprimir = '<button type="button" class="btn btn-info btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
+        $btn_archivar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Archivar correspondencia" onclick="abrirArchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-archive"></i></button>';
 
         $estado = $correspondencia['estado'];
         if ($usuario_cargo === 'Administrador') {
@@ -238,6 +288,21 @@ try {
             }
             $acciones .= $btn_historial;
             $acciones .= $btn_imprimir;
+        } else if ($usuario_cargo === 'Archivista Central') {
+            if ($estado === 'Derivado') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_aceptar;
+                    $acciones .= $btn_devolver;
+                }
+                $acciones .= $btn_historial;
+            } elseif ($estado === 'Aceptado') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_archivar;
+                }
+                $acciones .= $btn_historial;
+            } elseif ($estado === 'Archivado') {
+                $acciones .= $btn_historial;
+            }
         } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
             if ($estado === 'Iniciado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
@@ -254,7 +319,10 @@ try {
             } elseif ($estado === 'Aceptado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
+                    $acciones .= $btn_archivar;
                 }
+                $acciones .= $btn_historial;
+            } elseif ($estado === 'Archivado') {
                 $acciones .= $btn_historial;
             } else {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
