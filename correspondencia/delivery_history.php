@@ -34,32 +34,7 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Libro de Entregas - <?= date('d/m/Y', strtotime($fecha_inicio)) ?> al <?= date('d/m/Y', strtotime($fecha_fin)) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #f8f9fa; }
-        .report-container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 20px; min-height: 800px; }
-        /* Bordes estrictamente negros para impresión formal */
-        .table-signature th, .table-signature td { vertical-align: middle !important; border: 1px solid #000 !important; }
-        .table-signature thead th { border-bottom: 2px solid #000 !important; }
-        .signature-box { height: 70px; }
-        /* Cabecera idéntica a report.php */
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
-        .header img { max-height: 80px; width: auto; }
-        .footer {
-            text-align: center;
-            font-size: 0.7rem;
-            color: #6c757d;
-            border-top: 1px solid #dee2e6;
-            padding-top: 10px;
-            margin-top: 40px;
-        }
-        @media print {
-            body { background-color: #fff; }
-            .no-print { display: none !important; }
-            .report-container { box-shadow: none; margin-top: 0; padding: 0; }
-            .footer { position: fixed; bottom: 0; left: 1.5cm; right: 1.5cm; }
-            @page { margin: 1.5cm; margin-bottom: 3cm; }
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/delivery_history.css">
 </head>
 <body>
     <div class="container report-container">

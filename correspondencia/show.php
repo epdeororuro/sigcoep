@@ -186,11 +186,16 @@ try {
     foreach ($correspondencias as $correspondencia) {
         $acciones = '';
 
-        // Foto (thumbnail clickeable si existe)
+        // Foto o Archivo (thumbnail o icono si existe)
         $fotoHtml = '';
         if (!empty($correspondencia['foto'])) {
             $urlFoto = '../assets/fotos_correspondencia/' . $correspondencia['foto'];
-            $fotoHtml = '<a href="#" onclick="verFoto(\'' . $urlFoto . '\'); return false;"><img src="' . $urlFoto . '" alt="Foto" style="height:40px;" class="rounded border"></a>';
+            $ext = strtolower(pathinfo($correspondencia['foto'], PATHINFO_EXTENSION));
+            if ($ext === 'pdf') {
+                $fotoHtml = '<a href="' . $urlFoto . '" target="_blank" class="text-danger text-decoration-none" title="Ver documento PDF"><i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem;"></i></a>';
+            } else {
+                $fotoHtml = '<a href="#" onclick="verFoto(\'' . $urlFoto . '\'); return false;"><img src="' . $urlFoto . '" alt="Foto" style="height:40px;" class="rounded border"></a>';
+            }
         }
 
         // Verificar si está retrasado (estado Aceptado por más de 2 días)
@@ -203,38 +208,36 @@ try {
         }
 
         // Formatear el estado con el nombre del funcionario
-        $estado_texto = $correspondencia['estado'];
+        $estado = $correspondencia['estado'];
+        $estado_texto = $estado;
         $nombre_enturno = trim(($correspondencia['nombre'] ?? '') . ' ' . ($correspondencia['paterno'] ?? '') . ' ' . ($correspondencia['materno'] ?? ''));
+        $es_dueno = ($correspondencia['idfuncionario_enturno'] == $usuario_id);
 
         if (!empty($nombre_enturno)) {
-            if ($correspondencia['estado'] === 'Aceptado') {
-                $estado_texto = 'Aceptado por ';
-            } elseif ($correspondencia['estado'] === 'Derivado') {
-                $estado_texto = 'Derivado a ';
-            } elseif ($correspondencia['estado'] === 'Iniciado') {
-                $estado_texto = 'Iniciado para ';
-        } elseif ($correspondencia['estado'] === 'Rechazado') {
-            $estado_texto = 'Rechazado por ';
-        } elseif ($correspondencia['estado'] === 'No cursada') {
-            $estado_texto = 'No cursada por ';
-        } elseif ($correspondencia['estado'] === 'Archivado') {
-            $estado_texto = 'Archivado por ';
+            $prefijos = [
+                'Aceptado'   => 'Aceptado por ',
+                'Derivado'   => 'Derivado a ',
+                'Iniciado'   => 'Iniciado para ',
+                'Rechazado'  => 'Rechazado por ',
+                'No cursada' => 'No cursada por ',
+                'Archivado'  => 'Archivado por '
+            ];
+            if (isset($prefijos[$estado])) {
+                $estado_texto = $prefijos[$estado];
             }
         }
 
         $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
 
         // Añadir indicador (punto verde o rojo) si el documento está en poder de este funcionario
-        if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-            if ($es_retrasado) {
-                $estado_display .= ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>';
-            } else {
-                $estado_display .= ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
-            }
+        if ($es_dueno) {
+            $estado_display .= $es_retrasado ? ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>' 
+                                             : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
         }
 
-        if (!empty($nombre_enturno) && in_array($correspondencia['estado'], ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Archivado'])) {
-            $color_clase = in_array($correspondencia['estado'], ['Rechazado', 'No cursada']) ? 'text-danger' : ($correspondencia['estado'] === 'Aceptado' ? 'text-primary' : ($correspondencia['estado'] === 'Derivado' ? 'text-success' : ($correspondencia['estado'] === 'Archivado' ? 'text-dark' : 'text-info')));
+        if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Archivado'])) {
+            $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info'];
+            $color_clase = $colores[$estado] ?? 'text-info';
             $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
         }
 
@@ -251,6 +254,8 @@ try {
         $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-secondary btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
         $btn_imprimir = '<button type="button" class="btn btn-info btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
         $btn_archivar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Archivar correspondencia" onclick="abrirArchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-archive"></i></button>';
+        $btn_ampliacion = '<button type="button" class="btn btn-outline-primary btn-sm" style="margin-left:4px;" title="Solicitar ampliación de plazo (+2 días)" onclick="solicitarAmpliacion('.$correspondencia['id'].')"><i class="bi bi-calendar-plus"></i></button>';
+        $btn_desarchivar = '<button type="button" class="btn btn-outline-success btn-sm" style="margin-left:4px;" title="Desarchivar (Retornar a pendientes)" onclick="abrirDesarchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-box-arrow-up"></i></button>';
 
         $estado = $correspondencia['estado'];
         if ($usuario_cargo === 'Administrador') {
@@ -269,12 +274,17 @@ try {
                 // Aceptado: puede derivar y ver historial (e imprimir)
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
+                    if ($es_retrasado) {
+                        $acciones .= $btn_ampliacion;
+                    }
                 }
                 $acciones .= $btn_historial;
                 $acciones .= $btn_imprimir;
             } else {
                 // Otros estados: conservar lógica anterior
-                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                if ($estado === 'Archivado') {
+                    $acciones .= $btn_desarchivar;
+                } elseif ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
                 $acciones .= $btn_historial;
@@ -285,6 +295,9 @@ try {
             $acciones .= $btn_editar . $btn_eliminar;
             if ($estado === 'Registrado') {
                 $acciones .= $btn_iniciar;
+            }
+            if ($estado === 'Archivado' && $correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                $acciones .= $btn_desarchivar;
             }
             $acciones .= $btn_historial;
             $acciones .= $btn_imprimir;
@@ -297,10 +310,17 @@ try {
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Aceptado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_derivar;
                     $acciones .= $btn_archivar;
+                    if ($es_retrasado) {
+                        $acciones .= $btn_ampliacion;
+                    }
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Archivado') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_desarchivar;
+                }
                 $acciones .= $btn_historial;
             }
         } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
@@ -320,9 +340,15 @@ try {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                     $acciones .= $btn_archivar;
+                    if ($es_retrasado) {
+                        $acciones .= $btn_ampliacion;
+                    }
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Archivado') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_desarchivar;
+                }
                 $acciones .= $btn_historial;
             } else {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {

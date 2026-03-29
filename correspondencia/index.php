@@ -117,16 +117,16 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <?php elseif ($cargo_usuario === 'gerente'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item">
-                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Bandeja de Despachados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Bandeja para Iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Para iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
@@ -152,10 +152,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <?php elseif ($cargo_usuario === 'archivista central'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                             <li class="nav-item">
-                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Bandeja de Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
+                                <button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Bandeja de Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Pendientes <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
@@ -247,7 +247,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Foto obligatorio</label>
-                            <input type="file" class="form-control border-4" name="foto" accept="image/*" required>
+                            <input type="file" class="form-control border-4" name="foto" accept="image/*,.pdf" required>
                         </div>
                     </form>
                 </div>
@@ -319,7 +319,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <label class="form-label">Foto actual</label>
                             <div id="edit_foto_preview" class="mb-2 border-4"></div>
                             <label class="form-label">Cambiar foto (opcional)</label>
-                            <input type="file" class="form-control" name="foto_nueva" accept="image/*">
+                            <input type="file" class="form-control" name="foto_nueva" accept="image/*,.pdf">
                         </div>
                     </form>
                 </div>
@@ -535,6 +535,63 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-dark" form="archivarCorrespondenciaForm">Archivar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= MODAL SOLICITAR AMPLIACIÓN ================= -->
+    <div class="modal fade" id="solicitarAmpliacionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-primary">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-calendar-plus"></i> Solicitar Ampliación de Plazo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="solicitarAmpliacionForm" action="extend.php" method="post">
+                        <input type="hidden" id="ampliacion_correspondencia_id" name="id">
+                        <p>Está a punto de solicitar una ampliación de <strong>2 días hábiles</strong> para atender esta correspondencia.</p>
+                        <p>Esta acción quedará registrada en el historial del documento. ¿Desea continuar?</p>
+                        <div class="mb-3 mt-3">
+                            <label class="form-label"><strong>Motivo de la ampliación (Justificación):</strong></label>
+                            <textarea class="form-control border-primary" name="justificacion" rows="3" required placeholder="Explique brevemente por qué necesita más tiempo para atender la correspondencia..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" form="solicitarAmpliacionForm">Sí, solicitar ampliación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= MODAL DESARCHIVAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="desarchivarCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-light text-success border-bottom border-success">
+                    <h5 class="modal-title"><i class="bi bi-box-arrow-up"></i> Desarchivar Correspondencia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="desarchivarCorrespondenciaForm" action="unarchive.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" id="desarchivar_correspondencia_id" name="id">
+                        <p>¿Está seguro de que desea <strong>desarchivar</strong> esta correspondencia?</p>
+                        <p class="text-muted small">El documento volverá a su bandeja de pendientes (Aceptados) para continuar con su trámite.</p>
+                        
+                        <div class="mb-3 mt-3">
+                            <label class="form-label"><strong>Autorización / Justificación:</strong> <small class="text-muted">(Requerido para Archivo Central)</small></label>
+                            <textarea class="form-control border-success" name="autorizacion" rows="2" placeholder="Especifique quién autorizó el desarchivo y por qué..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Foto de respaldo:</strong> <small class="text-danger fw-bold">(Obligatorio)</small></label>
+                            <input type="file" class="form-control border-success" name="foto_desarchivo" accept="image/*,.pdf" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-outline-success fw-bold" form="desarchivarCorrespondenciaForm">Sí, Desarchivar</button>
                 </div>
             </div>
         </div>

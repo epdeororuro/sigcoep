@@ -28,7 +28,10 @@ if(!isset($_SESSION['usuario_id'])){
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-resizer" id="sidebarResizer"></div>
-        <h4><?= SISTEMA_NOMBRE ?></h4>
+        <div class="text-center mt-2 mb-4">
+            <img src="assets/img/logo_1.png" alt="Logo EPDEOR" class="img-fluid mb-2" style="max-width: 110px; height: auto;">
+            <h4 class="fw-bold m-0" style="line-height: 1.4;"><?= SISTEMA_NOMBRE ?></h4>
+        </div>
         <a href="inicio.php" target="iframe_content"><i class="bi bi-house-door"></i> Inicio</a>
         <?php if(strtolower($_SESSION['usuario_cargo']) == 'administrador' || strtolower($_SESSION['usuario_cargo']) == 'secretaria') { ?>
             <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>

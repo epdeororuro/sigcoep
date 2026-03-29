@@ -13,7 +13,9 @@ if (isset($_POST['id'])) {
     // Foto actual y posible nueva foto
     $foto_actual = $_POST['foto_actual'] ?? '';
     $fotoNombre = $foto_actual;
-    $uploadDir = __DIR__ . '/../assets/fotos_correspondencia/';
+    $anio = date('Y');
+    $uploadBaseDir = __DIR__ . '/../assets/fotos_correspondencia/';
+    $uploadDir = $uploadBaseDir . $anio . '/';
 
     if (!is_dir($uploadDir)) {
         @mkdir($uploadDir, 0777, true);
@@ -23,28 +25,58 @@ if (isset($_POST['id'])) {
         $tmpName = $_FILES['foto_nueva']['tmp_name'];
         $origName = basename($_FILES['foto_nueva']['name']);
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
 
         if (!in_array($ext, $allowed)) {
-            throw new Exception('Formato de foto no permitido. Use JPG, PNG, GIF o WEBP');
+            throw new Exception('Formato de archivo no permitido. Use JPG, PNG, WEBP o PDF');
         }
 
-        $nuevoNombre = uniqid('corr_', true) . '.' . $ext;
-        $destino = $uploadDir . $nuevoNombre;
+        $nuevoNombreSolo = uniqid('corr_', true) . '.' . $ext;
+        $destino = $uploadDir . $nuevoNombreSolo;
+        $nuevoNombreDB = $anio . '/' . $nuevoNombreSolo; // Ej: 2024/corr_xyz.jpg
 
-        if (!move_uploaded_file($tmpName, $destino)) {
-            throw new Exception('No se pudo guardar la foto en el servidor');
+        if ($ext === 'pdf') {
+            if (!move_uploaded_file($tmpName, $destino)) {
+                throw new Exception('No se pudo guardar el documento PDF en el servidor');
+            }
+        } else {
+            // Proceso de compresión de imágenes
+            if (extension_loaded('gd')) {
+                $info = @getimagesize($tmpName);
+                $img = null;
+                if ($info) {
+                    if ($info['mime'] == 'image/jpeg') $img = @imagecreatefromjpeg($tmpName);
+                    elseif ($info['mime'] == 'image/png') $img = @imagecreatefrompng($tmpName);
+                    elseif ($info['mime'] == 'image/webp') $img = @imagecreatefromwebp($tmpName);
+                }
+    
+                if ($img) {
+                    if ($ext === 'png') { imagealphablending($img, true); imagesavealpha($img, true); imagepng($img, $destino, 7); }
+                    elseif ($ext === 'webp') { imagewebp($img, $destino, 75); }
+                    else { imagejpeg($img, $destino, 75); }
+                    imagedestroy($img);
+                } else {
+                    if (!move_uploaded_file($tmpName, $destino)) {
+                        throw new Exception('No se pudo guardar la foto en el servidor');
+                    }
+                }
+            } else {
+                // Fallback si la extensión GD no está activada en PHP
+                if (!move_uploaded_file($tmpName, $destino)) {
+                    throw new Exception('No se pudo guardar la foto en el servidor');
+                }
+            }
         }
 
         // Eliminar foto anterior si existe
         if (!empty($foto_actual)) {
-            $rutaAnterior = $uploadDir . $foto_actual;
+            $rutaAnterior = $uploadBaseDir . $foto_actual;
             if (is_file($rutaAnterior)) {
                 @unlink($rutaAnterior);
             }
         }
 
-        $fotoNombre = $nuevoNombre;
+        $fotoNombre = $nuevoNombreDB;
     }
 
     // Tipo de remitente y datos asociados desde el formulario de edición

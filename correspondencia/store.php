@@ -59,7 +59,9 @@ try {
 
     // Manejo de carga de foto (opcional)
     $fotoNombre = '';
-    $uploadDir = __DIR__ . '/../assets/fotos_correspondencia/';
+    $anio = date('Y');
+    $uploadBaseDir = __DIR__ . '/../assets/fotos_correspondencia/';
+    $uploadDir = $uploadBaseDir . $anio . '/';
 
     if (!is_dir($uploadDir)) {
         @mkdir($uploadDir, 0777, true);
@@ -69,17 +71,49 @@ try {
         $tmpName = $_FILES['foto']['tmp_name'];
         $origName = basename($_FILES['foto']['name']);
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
 
         if (!in_array($ext, $allowed)) {
-            throw new Exception('Formato de foto no permitido. Use JPG, PNG, GIF o WEBP');
+            throw new Exception('Formato de archivo no permitido. Use JPG, PNG, WEBP o PDF');
         }
 
-        $fotoNombre = uniqid('corr_', true) . '.' . $ext;
-        $destino = $uploadDir . $fotoNombre;
+        // Reemplazar la barra de la hoja de ruta (ej. 1/2023) por un guion (ej. 1-2023)
+        $safe_hojaruta = str_replace(['/', '\\'], '-', $hojaruta);
+        $fotoNombreSolo = $safe_hojaruta . '.' . $ext;
+        $destino = $uploadDir . $fotoNombreSolo;
+        $fotoNombre = $anio . '/' . $fotoNombreSolo; // Guardado en DB (ej: 2024/1-2024.jpg)
 
-        if (!move_uploaded_file($tmpName, $destino)) {
-            throw new Exception('No se pudo guardar la foto en el servidor');
+        if ($ext === 'pdf') {
+            if (!move_uploaded_file($tmpName, $destino)) {
+                throw new Exception('No se pudo guardar el documento PDF en el servidor');
+            }
+        } else {
+            // Proceso de compresión de imágenes usando GD Library
+            if (extension_loaded('gd')) {
+                $info = @getimagesize($tmpName);
+                $img = null;
+                if ($info) {
+                    if ($info['mime'] == 'image/jpeg') $img = @imagecreatefromjpeg($tmpName);
+                    elseif ($info['mime'] == 'image/png') $img = @imagecreatefrompng($tmpName);
+                    elseif ($info['mime'] == 'image/webp') $img = @imagecreatefromwebp($tmpName);
+                }
+    
+                if ($img) {
+                    if ($ext === 'png') { imagealphablending($img, true); imagesavealpha($img, true); imagepng($img, $destino, 7); }
+                    elseif ($ext === 'webp') { imagewebp($img, $destino, 75); }
+                    else { imagejpeg($img, $destino, 75); } // Calidad 75 para reducir tamaño sin pérdida notable
+                    imagedestroy($img);
+                } else {
+                    if (!move_uploaded_file($tmpName, $destino)) {
+                        throw new Exception('No se pudo guardar la foto en el servidor');
+                    }
+                }
+            } else {
+                // Fallback si la extensión GD no está activada en PHP
+                if (!move_uploaded_file($tmpName, $destino)) {
+                    throw new Exception('No se pudo guardar la foto en el servidor');
+                }
+            }
         }
     }
 

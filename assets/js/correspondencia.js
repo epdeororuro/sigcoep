@@ -108,7 +108,12 @@ function editarCorrespondencia(id) {
 
             if (data.foto) {
                 var urlFoto = '../assets/fotos_correspondencia/' + data.foto;
-                $('#edit_foto_preview').html('<img src="' + urlFoto + '" alt="Foto actual" class="img-fluid rounded border">');
+                var ext = data.foto.split('.').pop().toLowerCase();
+                if (ext === 'pdf') {
+                    $('#edit_foto_preview').html('<a href="' + urlFoto + '" target="_blank" class="text-danger text-decoration-none" title="Ver PDF actual"><i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem; vertical-align: middle;"></i> Ver documento PDF actual</a>');
+                } else {
+                    $('#edit_foto_preview').html('<img src="' + urlFoto + '" alt="Foto actual" class="img-fluid rounded border">');
+                }
             } else {
                 $('#edit_foto_preview').html('<span class="text-muted">Sin foto registrada</span>');
             }
@@ -187,6 +192,20 @@ function abrirArchivarCorrespondencia(id) {
     $('#archivarCorrespondenciaForm')[0].reset();
     $('#archivo_personal').prop('checked', true);
     $('#archivarCorrespondenciaModal').modal('show');
+}
+
+// NUEVA FUNCIÓN: Abrir modal para solicitar ampliación
+function solicitarAmpliacion(id) {
+    $('#ampliacion_correspondencia_id').val(id);
+    $('#solicitarAmpliacionForm')[0].reset();
+    $('#solicitarAmpliacionModal').modal('show');
+}
+
+// NUEVA FUNCIÓN: Abrir modal para desarchivar
+function abrirDesarchivarCorrespondencia(id) {
+    $('#desarchivar_correspondencia_id').val(id);
+    $('#desarchivarCorrespondenciaForm')[0].reset();
+    $('#desarchivarCorrespondenciaModal').modal('show');
 }
 
 // Función para "No Cursada" (estado final) y "Rechazar"

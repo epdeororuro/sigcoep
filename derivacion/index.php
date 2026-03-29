@@ -59,73 +59,8 @@ $texto_anexos = implode(', ', $anexos_acumulados);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        /* Timeline simple */
-        .timeline {
-            position: relative;
-            padding: 1rem 0;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: #dee2e6;
-        }
-        .timeline-item {
-            position: relative;
-            margin-left: 60px;
-            margin-bottom: 1.5rem;
-        }
-        .timeline-item .time-marker {
-            position: absolute;
-            left: -43px;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #ffffff;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        .timeline-item .card {
-            box-shadow: none;
-            border: 1px solid #e9ecef;
-        }
-        .time-marker {
-            display: flex;
-            flex-direction: column; 
-            align-items: center;    
-            gap: 4px;               
-        }
-        .circle_blue {
-            width: 50px;
-            height: 60px;
-            border-radius: 50%;    
-            background-color: #007bff; 
-            color: #fff;           
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        .circle_green {
-            width: 50px;
-            height: 60px;
-            border-radius: 50%;    
-            background-color: #28a745; 
-            color: #fff;           
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-    </style>
+    <!-- Estilos de Derivación -->
+    <link rel="stylesheet" href="../assets/css/derivacion.css">
 </head>
 <body>
 <div class="container mt-4">
