@@ -50,6 +50,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- DataTables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <!-- Select2 CSS -->
@@ -75,7 +76,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                     <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
                                     <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
                                     <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required title="Fecha de fin">
-                                    <button type="submit" class="btn btn-secondary btn-sm" title="Generar Libro de Entregas">
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Generar Libro de Entregas">
                                         <i class="bi bi-printer"></i> Generar
                                         </button>
                                 </form>
@@ -162,11 +163,11 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     </div>
     <!-- ================= MODAL NUEVA CORRESPONDENCIA ================= -->
     <div class="modal fade" id="createCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Agregar Nueva Correspondencia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-primary">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-envelope-plus"></i> Agregar Nueva Correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="createCorrespondenciaForm" action="store.php" method="post" enctype="multipart/form-data">
@@ -226,7 +227,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button class="btn btn-primary" form="createCorrespondenciaForm">Guardar</button>
                 </div>
             </div>
@@ -234,10 +235,10 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     </div>
     <!-- ================= MODAL EDITAR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="editCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Correspondencia</h5>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Editar Correspondencia</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -298,8 +299,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button class="btn btn-primary" form="editCorrespondenciaForm">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning text-dark" form="editCorrespondenciaForm">Guardar</button>
                 </div>
             </div>
         </div>
@@ -320,16 +321,16 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     </div>
     <!-- ================= MODAL DERIVAR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="derivarCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Derivar Correspondencia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-arrow-right-circle"></i> Derivar Correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="derivarCorrespondenciaForm" action="../derivacion/store.php" method="post">
-                            <input type="hidden" id="derivar_id_correspondencia" name="id_correspondencia">
-                            <input type="hidden" id="derivar_id_funcionario" name="id_funcionario">
+                        <input type="hidden" id="derivar_id_correspondencia" name="id_correspondencia">
+                        <input type="hidden" id="derivar_id_funcionario" name="id_funcionario">
                         <div class="mb-3">
                             <label class="form-label">Derivar a (seleccione):</label>
                             <select id="derivar_select_funcionario" class="form-select border-4" required>
@@ -341,18 +342,20 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                 </optgroup>-->
                                 <optgroup label="Funcionarios">
                                     <?php foreach($funcionarios as $f): ?>
-                                        <option value="f_<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
+                                    <option value="f_<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
                                     <?php endforeach; ?>
                                 </optgroup>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Instrucción adicional</label>
-                            <textarea class="form-control border-4" id="derivar_instruccion" name="instruccion_adicional" required></textarea>
+                            <textarea class="form-control border-4" id="derivar_instruccion" name="instruccion_adicional"
+                                required></textarea>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Fojas a añadir</label>
-                            <input type="number" min="0" class="form-control border-4" id="derivar_fojas" name="fojas">
+                            <input type="number" min="0" class="form-control border-4" id="derivar_fojas"
+                                name="fojas">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Carácter</label>
@@ -368,8 +371,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button class="btn btn-primary" form="derivarCorrespondenciaForm">Derivar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success" form="derivarCorrespondenciaForm">Derivar</button>
                 </div>
             </div>
         </div>
@@ -377,34 +380,34 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <!-- ================= MODAL IMPRESIÓN DE PÁGINA ================= -->
     <div class="modal fade" id="printPageModal" tabindex="-1">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Indica el número de página de hoja de ruta</h5>
+            <div class="modal-content border-info">
+                <div class="modal-header bg-info text-dark">
+                    <h5 class="modal-title"><i class="bi bi-printer"></i> Indica el número de página de hoja de ruta</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                <form id="printPageForm" action="report.php" method="post">
+                    <form id="printPageForm" action="report.php" method="post">
                         <input type="hidden" id="print_correspondencia_id" name="id">
                         <div class="mb-3">
                             <label class="form-label">Número de página (1-10)</label>
-                            <input type="number" min="1" max="10" class="form-control" id="print_page_number" name="page" value="1" required>
+                            <input type="number" min="1" max="10" class="form-control border-4" id="print_page_number" name="page" value="1" required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button class="btn btn-primary" form="printPageForm">Generar Hoja</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info fw-bold" form="printPageForm">Generar hoja</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- ================= MODAL ELIMINAR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="deleteCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirmar Eliminación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-danger">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="bi bi-trash"></i> Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <p>¿Está seguro de que desea eliminar esta correspondencia?</p>
@@ -413,24 +416,24 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success" form="deleteCorrespondenciaForm">Aceptar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" form="deleteCorrespondenciaForm">Aceptar</button>
                 </div>
             </div>
         </div>
     </div>
     <!-- ================= MODAL ACEPTAR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="aceptarCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Aceptar correspondencia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="bi bi-check-circle"></i> Aceptar correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Confirma que desea marcar esta correspondencia como <strong>Aceptada</strong>?</p>
                     <form id="aceptarCorrespondenciaForm" action="accept.php" method="post">
                         <input type="hidden" id="aceptar_correspondencia_id" name="id">
+                        <p class="mb-0 fs-6">¿Confirma que desea marcar esta correspondencia como <strong>Aceptada</strong>?</p>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -458,7 +461,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
 
                         <div class="mb-3" id="motivoRechazoContainer" style="display: none;">
                             <label for="motivo_rechazo" class="form-label">Motivo de la Devolución:</label>
-                            <textarea class="form-control" id="motivo_rechazo" name="motivo_rechazo" rows="3"></textarea>
+                            <textarea class="form-control border border-danger border-2 shadow-sm" id="motivo_rechazo" name="motivo_rechazo" rows="3" placeholder="Describa el motivo por el cual devuelve esta correspondencia..."></textarea>
                         </div>
                     </form>
                 </div>
@@ -474,46 +477,15 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <!-- DataTables Buttons para Excel -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Custom JS -->
     <script src="../assets/js/correspondencia.js?v=<?= time() ?>"></script>
-    <script>
-        // Función para "No Cursada" (estado final)
-        function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
-            $('#rechazar_correspondencia_id').val(id);
-            $('#rechazar_estado_destino').val(tipo);
-            $('#rechazar_action_type').val('final');
-
-            $('#motivoRechazoContainer').hide();
-            $('#motivo_rechazo').prop('required', false);
-            
-            if(tipo === 'No cursada') {
-                $('#rechazarModalTitle').text('Correspondencia No Cursada');
-                $('#rechazarModalText').html('¿Confirma que desea marcar esta correspondencia como <strong>No Cursada</strong>? (No procede para trámite).');
-            } else {
-                $('#rechazarModalTitle').text('Rechazar correspondencia');
-                $('#rechazarModalText').html('¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?');
-            }
-            $('#rechazarModalSubmitBtn').text('Confirmar').removeClass('btn-warning').addClass('btn-danger');
-            $('#rechazarCorrespondenciaModal').modal('show');
-        }
-
-        // Nueva función para "Devolver" (retorno al remitente anterior)
-        function abrirModalDevolucion(id) {
-            $('#rechazar_correspondencia_id').val(id);
-            $('#rechazar_action_type').val('devolver');
-
-            $('#motivoRechazoContainer').show();
-            $('#motivo_rechazo').prop('required', true);
-            $('#motivo_rechazo').val('');
-
-            $('#rechazarModalTitle').text('Devolver Correspondencia');
-            $('#rechazarModalText').html('La correspondencia será devuelta al remitente anterior. Por favor, especifique el motivo:');
-            $('#rechazarModalSubmitBtn').text('Devolver').removeClass('btn-danger').addClass('btn-warning');
-            $('#rechazarCorrespondenciaModal').modal('show');
-        }
-    </script>
 </body>
 
 </html>

@@ -170,6 +170,41 @@ function abrirAceptarCorrespondencia(id) {
     $('#aceptarCorrespondenciaModal').modal('show');
 }
 
+// Función para "No Cursada" (estado final) y "Rechazar"
+function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
+    $('#rechazar_correspondencia_id').val(id);
+    $('#rechazar_estado_destino').val(tipo);
+    $('#rechazar_action_type').val('final');
+
+    $('#motivoRechazoContainer').hide();
+    $('#motivo_rechazo').prop('required', false);
+    
+    if(tipo === 'No cursada') {
+        $('#rechazarModalTitle').text('Correspondencia No Cursada');
+        $('#rechazarModalText').html('¿Confirma que desea marcar esta correspondencia como <strong>No Cursada</strong>? (No procede para trámite).');
+    } else {
+        $('#rechazarModalTitle').text('Rechazar correspondencia');
+        $('#rechazarModalText').html('¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?');
+    }
+    $('#rechazarModalSubmitBtn').text('Confirmar').removeClass('btn-warning').addClass('btn-danger');
+    $('#rechazarCorrespondenciaModal').modal('show');
+}
+
+// Nueva función para "Devolver" (retorno al remitente anterior)
+function abrirModalDevolucion(id) {
+    $('#rechazar_correspondencia_id').val(id);
+    $('#rechazar_action_type').val('devolver');
+
+    $('#motivoRechazoContainer').show();
+    $('#motivo_rechazo').prop('required', true);
+    $('#motivo_rechazo').val('');
+
+    $('#rechazarModalTitle').text('Devolver Correspondencia');
+    $('#rechazarModalText').html('La correspondencia será devuelta al remitente anterior. Por favor, especifique el motivo:');
+    $('#rechazarModalSubmitBtn').text('Devolver').removeClass('btn-warning').addClass('btn-danger');
+    $('#rechazarCorrespondenciaModal').modal('show');
+}
+
 // Manejo de Checkbox para remitente externo (Crear)
 $(document).on('change', '#checkbox_remitente_externo', function() {
     if ($(this).is(':checked')) {

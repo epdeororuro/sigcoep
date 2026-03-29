@@ -202,7 +202,7 @@ if (isset($_SESSION['mensaje'])) {
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button class="btn btn-primary" form="createFuncionarioForm">Guardar</button>
             </div>
         </div>
@@ -211,10 +211,10 @@ if (isset($_SESSION['mensaje'])) {
 
 <!-- ================= MODAL EDITAR FUNCIONARIO ================= -->
 <div class="modal fade" id="editFuncionarioModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Funcionario</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Editar Funcionario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -263,8 +263,8 @@ if (isset($_SESSION['mensaje'])) {
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button class="btn btn-primary" form="editFuncionarioForm">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-warning text-dark" form="editFuncionarioForm">Guardar</button>
             </div>
         </div>
     </div>

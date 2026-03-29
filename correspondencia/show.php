@@ -161,15 +161,15 @@ try {
 
         if (!empty($nombre_enturno)) {
             if ($correspondencia['estado'] === 'Aceptado') {
-                $estado_texto = 'Aceptado por';
+                $estado_texto = 'Aceptado por ';
             } elseif ($correspondencia['estado'] === 'Derivado') {
-                $estado_texto = 'Derivado a';
+                $estado_texto = 'Derivado a ';
             } elseif ($correspondencia['estado'] === 'Iniciado') {
-                $estado_texto = 'Iniciado para';
+                $estado_texto = 'Iniciado para ';
         } elseif ($correspondencia['estado'] === 'Rechazado') {
-            $estado_texto = 'Rechazado por';
+            $estado_texto = 'Rechazado por ';
         } elseif ($correspondencia['estado'] === 'No cursada') {
-            $estado_texto = 'No cursada por';
+            $estado_texto = 'No cursada por ';
             }
         }
 
@@ -190,20 +190,19 @@ try {
         }
 
         // --- SISTEMA DE BOTONES POR ROL ---
-        $btn_aceptar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Aceptar/Rechazar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
+        $btn_aceptar = '<button type="button" class="btn btn-success btn-sm" style="margin-left:4px;" title="Aceptar" onclick="abrirAceptarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check-circle"></i></button>';
 
         $btn_rechazar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Rechazar" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'Rechazado\')"><i class="bi bi-x-circle"></i></button>';
         $btn_no_cursada = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Marcar como No Cursada" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'No cursada\')"><i class="bi bi-slash-circle"></i></button>';
-        $btn_devolver = '<button type="button" class="btn btn-warning btn-sm" style="margin-left:4px;" title="Devolver al remitente" onclick="abrirModalDevolucion('.$correspondencia['id'].')"><i class="bi bi-arrow-return-left"></i></button>';
+        $btn_devolver = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Devolver al remitente" onclick="abrirModalDevolucion('.$correspondencia['id'].')"><i class="bi bi-arrow-return-left"></i></button>';
         $btn_editar = '<form action="" method="post" style="display: inline;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button></form>';
         $btn_eliminar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Eliminar" onclick="confirmarEliminacion('.$correspondencia['id'].')"><i class="bi bi-trash"></i></button>';
         $btn_iniciar = '<form action="create.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-primary btn-sm" title="Iniciar"><i class="bi bi-play-circle"></i></button></form>';
         $btn_derivar = '<form action="" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-success btn-sm" title="Derivar" data-bs-toggle="modal" data-bs-target="#derivarCorrespondenciaModal" onclick="derivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-arrow-right-circle"></i></button></form>';
-        $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-info btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
-        $btn_imprimir = '<button type="button" class="btn btn-secondary btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
+        $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-secondary btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
+        $btn_imprimir = '<button type="button" class="btn btn-info btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
 
         $estado = $correspondencia['estado'];
-
         if ($usuario_cargo === 'Administrador') {
             // Administrador puede editar y eliminar en cualquier etapa
             $acciones .= $btn_editar . $btn_eliminar;

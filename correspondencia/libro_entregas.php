@@ -55,7 +55,7 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="container report-container">
         <!-- Controles no imprimibles -->
         <div class="text-end mb-4 no-print border-bottom pb-3">
-            <a href="index.php" class="btn btn-secondary me-2"><i class="bi bi-arrow-left-circle"></i> Volver a Correspondencia</a>
+            <a href="index.php" class="btn btn-danger me-2"><i class="bi bi-arrow-left-circle"></i> Volver a Correspondencia</a>
             <button onclick="window.print()" class="btn btn-success"><i class="bi bi-printer"></i> Imprimir Planilla</button>
         </div>
 
