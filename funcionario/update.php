@@ -13,6 +13,7 @@ if (isset($_POST['id'])) {
     $actualizado_en = date('Y-m-d H:i:s');
     // Recalcular y encriptar la contraseña en función de los datos editados
     $password_plain = $ci;
+    $contrasenia_plain = $ci;
     $password = password_hash($password_plain, PASSWORD_DEFAULT);
 
     try {
@@ -23,7 +24,9 @@ if (isset($_POST['id'])) {
                     materno = :materno, 
                     rol = :rol, 
                     id_puesto = :id_puesto,
-                    password = :password,                    actualizado_en = :actualizado_en 
+                    password = :password,
+                    contrasenia = :contrasenia,
+                    actualizado_en = :actualizado_en 
                 WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':id', $id);
@@ -34,6 +37,7 @@ if (isset($_POST['id'])) {
         $stmt->bindParam(':rol', $rol);
         $stmt->bindParam(':id_puesto', $id_puesto);
         $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':contrasenia', $contrasenia_plain);
         $stmt->bindParam(':actualizado_en', $actualizado_en);
         $stmt->execute();
 

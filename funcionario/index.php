@@ -133,17 +133,23 @@ if (isset($_SESSION['mensaje'])) {
 
 <!-- ================= MODAL VER CONTRASEÑA ================= -->
 <div class="modal fade" id="verContraseniaModal" tabindex="-1">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="bi bi-eye"></i> Contraseña actual</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-info">
+            <div class="modal-header bg-info text-dark">
+                <h5 class="modal-title"><i class="bi bi-eye"></i> Credenciales de Acceso</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <div class="mb-2">
-                    <label class="form-label">Contraseña</label>
-                    <input type="text" class="form-control" id="contrasenia_actual" readonly>
+            <div class="modal-body px-4">
+                <div class="mb-3 text-center">
+                    <label class="form-label text-muted fw-bold">Nombre de Usuario:</label>
+                    <input type="text" class="form-control border-info text-center fs-5 mb-3" id="usuario_actual" readonly>
+                    
+                    <label class="form-label text-muted fw-bold">Contraseña:</label>
+                    <input type="text" class="form-control border-info text-center fs-4 fw-bold" id="contrasenia_actual" readonly>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -367,11 +373,12 @@ function editarFuncionario(id) {
 function verContrasenia(id) {
     $.ajax({
         type: 'POST',
-        url: 'show_password.php',
+        url: 'credentials.php',
         data: {id: id},
         dataType: 'json',
         success: function (data) {
             if (data && data.contrasenia !== undefined) {
+                $('#usuario_actual').val(data.usuario);
                 $('#contrasenia_actual').val(data.contrasenia);
                 var modal = new bootstrap.Modal(document.getElementById('verContraseniaModal'));
                 modal.show();

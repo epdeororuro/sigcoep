@@ -11,9 +11,18 @@ if (!isset($_SESSION['usuario_cargo']) || strtolower($_SESSION['usuario_cargo'])
 }
 
 if (isset($_POST['id'])) {
-    // Esta funcionalidad ha sido deshabilitada por motivos de seguridad.
-    // Las contraseñas nunca deben ser visibles en texto plano.
-    echo json_encode(['error' => 'Funcionalidad deshabilitada por seguridad. Implemente un flujo de "restablecer contraseña".']);
+    $stmt = $pdo->prepare("SELECT usuario, contrasenia FROM funcionario WHERE id = :id");
+    $stmt->execute([':id' => $_POST['id']]);
+    $func = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($func) {
+        echo json_encode([
+            'usuario' => $func['usuario'],
+            'contrasenia' => $func['contrasenia']
+        ]);
+    } else {
+        echo json_encode(['error' => 'Funcionario no encontrado']);
+    }
 } else {
     echo json_encode(['error' => 'ID no proporcionado']);
 }
