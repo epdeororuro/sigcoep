@@ -72,7 +72,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <h3 class="mb-0">Lista de Correspondencia</h3>
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
-                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form id="formLibroEntregas" action="libro_entregas.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
+                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form id="formLibroEntregas" action="delivery_history.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
                                     <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
                                     <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
                                     <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required title="Fecha de fin">
@@ -110,6 +110,9 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
                             </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
+                            </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'gerente'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
@@ -127,6 +130,9 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
                             </li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'administrador'): ?>
@@ -415,7 +421,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-info fw-bold" form="printPageForm">Generar hoja</button>
+                    <button type="submit" class="btn btn-info" form="printPageForm">Generar hoja</button>
                 </div>
             </div>
         </div>
@@ -542,6 +548,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

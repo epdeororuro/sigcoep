@@ -42,35 +42,46 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .table-signature thead th { border-bottom: 2px solid #000 !important; }
         .signature-box { height: 70px; }
         /* Cabecera idéntica a report.php */
-        .header { display: flex; justify-content: space-between; align-items: center; height: 2.5cm; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .header img { max-height: 80px; width: auto; }
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+            margin-top: 40px;
+        }
         @media print {
             body { background-color: #fff; }
             .no-print { display: none !important; }
             .report-container { box-shadow: none; margin-top: 0; padding: 0; }
-            @page { margin: 1.5cm; }
+            .footer { position: fixed; bottom: 0; left: 1.5cm; right: 1.5cm; }
+            @page { margin: 1.5cm; margin-bottom: 3cm; }
         }
     </style>
 </head>
 <body>
     <div class="container report-container">
         <!-- Controles no imprimibles -->
-        <div class="text-end mb-4 no-print border-bottom pb-3">
+        <div class="text-end mb-4 no-print border-bottom pb-3 d-flex justify-content-end">
             <a href="index.php" class="btn btn-danger me-2"><i class="bi bi-arrow-left-circle"></i> Volver a Correspondencia</a>
-            <button onclick="window.print()" class="btn btn-success"><i class="bi bi-printer"></i> Imprimir Planilla</button>
+            <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Imprimir Historial</button>
         </div>
 
         <!-- Cabecera Formal idéntica a report.php -->
         <div class="header">
-            <img src="../assets/img/logo.png" alt="Logo Izquierdo" style="height: 70px; width: auto;" onerror="this.style.display='none'">
-            <div class="text-center" style="flex-grow: 1;">
-                <h4 class="text-uppercase fw-bold m-0" style="font-family: 'Arial Black', Arial, sans-serif;">Cuaderno de Cargo</h4>
-                <h6 class="text-uppercase m-0" style="font-family: Cambria, serif; font-weight: bold;">Libro de Entregas Físicas</h6>
-                <p class="mb-0 text-muted" style="font-size: 0.85rem;">Sistema de Gestión de Correspondencia</p>
-            </div>
-            <img src="../assets/img/logo2.png" alt="Logo Derecho" style="height: 70px; width: auto;" onerror="this.style.display='none'">
+            <img src="../assets/img/logo_1.png" alt="EPDEOR LOGO">
+            <img src="../assets/img/logo_2.png" alt="EPDEOR">
+            <img src="../assets/img/logo_3.png" alt="G.A.D.OR.">
         </div>
         
-        <div class="row mb-3" style="font-size: 0.9rem;">
+        <div class="text-center my-3">
+            <h4 class="text-uppercase fw-bold m-0" style="font-family: 'Arial Black', Arial, sans-serif;">Cuaderno de Cargo</h4>
+            <h6 class="text-uppercase m-0" style="font-family: Cambria, serif; font-weight: bold;">Libro de Entregas Físicas</h6>
+        </div>
+
+        <div class="row mb-3 mt-4" style="font-size: 0.9rem;">
             <div class="col-6">
                 <strong>Funcionario Remitente:</strong> <?= htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Usuario') ?><br>
                 <strong>Fecha Impresión:</strong> <?= date('d/m/Y H:i') ?>
@@ -110,6 +121,14 @@ $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php if (!empty($registros)): ?>
                 <div class="text-end fw-bold mt-2" style="font-size: 0.85rem;">Total de trámites despachados: <?= count($registros) ?></div>
             <?php endif; ?>
+        </div>
+
+        <!-- pie de página con datos de contacto -->
+        <div class="footer">
+            <div>Dirección: Rajka Bacovick entre Aroma y Villarroel – Edificio Empresa Pública Departamental Hotel Terminal-Terminal de Buses de Oruro “EPDEOR”</div>
+            <div>Teléfonos: (591-2) 5276389 – 5279535 *Hotel Terminal de Oruro (591-2) 5276227</div>
+            <div>Correo: epdeororuro@gmail.com</div>
+            <div>Oruro – Bolivia</div>
         </div>
     </div>
 </body>

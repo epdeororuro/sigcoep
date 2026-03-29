@@ -20,10 +20,20 @@ $(document).ready(function() {
         buttons: [
             {
                 extend: 'excelHtml5',
-                text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+                text: '<i class="bi bi-file-earmark-excel"></i> Excel',
                 className: 'btn btn-success btn-sm',
                 exportOptions: {
                     columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas 5 (Foto) y 8 (Acciones)
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm ms-1',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas de Foto y Acciones
                 }
             }
         ],
