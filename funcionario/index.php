@@ -270,6 +270,28 @@ if (isset($_SESSION['mensaje'])) {
     </div>
 </div>
 
+<!-- ================= MODAL ELIMINAR FUNCIONARIO ================= -->
+<div class="modal fade" id="deleteFuncionarioModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-person-x"></i> Dar de Baja Funcionario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea dar de baja a este funcionario?</p>
+                <form id="deleteFuncionarioForm" action="destroy.php" method="post">
+                    <input type="hidden" id="delete_funcionario_id" name="id">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-danger" form="deleteFuncionarioForm">Dar de Baja</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- ================= JS ================= -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -354,6 +376,13 @@ function verContrasenia(id) {
             }
         }
     });
+}
+
+function eliminarFuncionario(id) {
+    // Asigna el ID al formulario de eliminación
+    $('#delete_funcionario_id').val(id);
+    // Muestra el modal de confirmación
+    $('#deleteFuncionarioModal').modal('show');
 }
 </script>
 
