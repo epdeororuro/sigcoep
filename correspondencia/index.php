@@ -11,7 +11,7 @@ require '../db.php';
 
 // Obtener lista de funcionarios para el selector de destino
 try {
-    $stmtFunc = $pdo->prepare("SELECT id, nombre, paterno, materno FROM funcionario WHERE estado = 'Activo' ORDER BY nombre, paterno");
+    $stmtFunc = $pdo->prepare("SELECT id, nombre, paterno, materno FROM funcionario WHERE estado = 'Activo' AND LOWER(rol) NOT IN ('administrador', 'secretaria') ORDER BY nombre, paterno");
     $stmtFunc->execute();
     $funcionarios = $stmtFunc->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
@@ -56,7 +56,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../assets/css/correspondencia.css" >
+    <link rel="stylesheet" href="../assets/css/correspondencia.css?v=<?= time() ?>" >
     <!-- Theme Script -->
     <script src="../assets/js/theme.js"></script>
 </head>
@@ -175,21 +175,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <input type="text" class="form-control" name="hojaruta" value="<?= htmlspecialchars($siguienteHojaRuta) ?>" readonly>
                         </div>
                         
-                        <!-- Tipo de Remitente -->
-                        <div class="mb-3">
-                            <label class="form-label">Tipo de Remitente</label>
-                            <div class="form-check tipo-remitente-radio">
-                                <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_interno" value="interno" required>
-                                <label class="form-check-label" for="remitente_interno">Interno <i><small>(Funcionario de EPDEOR)</small></i></label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="tipo_remitente" id="remitente_externo" value="externo" required>
-                                <label class="form-check-label" for="remitente_externo">Externo <i><small>(Persona/Entidad)</small></i></label>
-                            </div>
-                        </div>
-                        
                         <!-- Remitente Interno (Select) -->
-                        <div class="mb-3" id="div_remitente_interno" style="display: none;">
+                        <div class="mb-3" id="div_remitente_interno">
                             <label class="form-label">Seleccione Funcionario</label>
                             <select class="form-select border-4" id="select_remitente_interno" name="remitente_id">
                                 <option value="">-- Seleccione un funcionario --</option>
@@ -205,6 +192,19 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <div class="mb-3" id="div_remitente_externo" style="display: none;">
                             <label class="form-label">Nombre del Remitente Externo</label>
                             <input type="text" class="form-control border-4" id="input_remitente_externo" name="remitente_externo">
+                        </div>
+                        
+                        <!-- Tipo de Remitente (Checkbox) -->
+                        <div class="mb-3">
+                            <input type="hidden" name="tipo_remitente" id="hidden_tipo_remitente" value="interno">
+                            <div class="border p-2 rounded bg-light">
+                                <div class="form-check mb-0 d-flex align-items-center">
+                                    <input class="form-check-input fs-5 mt-0" type="checkbox" id="checkbox_remitente_externo">
+                                    <label class="form-check-label fw-bold ms-2" for="checkbox_remitente_externo">
+                                        Remitente Externo
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="mb-3">
@@ -248,19 +248,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <label class="form-label">Hoja de ruta</label>
                             <input type="text" class="form-control border-4" id="edit_hojaruta" name="hojaruta">
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Remitente</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit_tipo_remitente" id="edit_remitente_interno" value="interno">
-                                <label class="form-check-label" for="edit_remitente_interno">Interno <i><small>(Funcionario de EPDEOR)</small></i></label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit_tipo_remitente" id="edit_remitente_externo_radio" value="externo">
-                                <label class="form-check-label" for="edit_remitente_externo_radio">Externo <i><small>(Persona/Entidad)</small></i></label>
-                            </div>
-                        </div>
                         <!-- Remitente Interno (Select) -->
-                        <div class="mb-3" id="edit_div_remitente_interno" style="display: none;">
+                        <div class="mb-3" id="edit_div_remitente_interno">
                             <label class="form-label">Seleccione Funcionario</label>
                             <select class="form-select border-4" id="edit_select_remitente_interno" name="edit_remitente_id">
                                 <option value="">-- Seleccione un funcionario --</option>
@@ -275,6 +264,18 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                         <div class="mb-3" id="edit_div_remitente_externo" style="display: none;">
                             <label class="form-label">Nombre del Remitente Externo</label>
                             <input type="text" class="form-control border-4" id="edit_input_remitente_externo" name="edit_remitente_externo">
+                        </div>
+                        <!-- Tipo de Remitente (Checkbox) -->
+                        <div class="mb-3">
+                            <input type="hidden" name="edit_tipo_remitente" id="edit_hidden_tipo_remitente" value="interno">
+                            <div class="border p-2 rounded bg-light">
+                                <div class="form-check mb-0 d-flex align-items-center">
+                                    <input class="form-check-input fs-5 mt-0" type="checkbox" id="edit_checkbox_remitente_externo">
+                                    <label class="form-check-label fw-bold ms-2" for="edit_checkbox_remitente_externo">
+                                        Remitente Externo
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Referencia</label>
@@ -441,22 +442,29 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     </div>
     <!-- ================= MODAL RECHAZAR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="rechazarCorrespondenciaModal" tabindex="-1">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-danger">
                 <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title" id="rechazarModalTitle">Rechazar correspondencia</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                        <p id="rechazarModalText">¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?</p>
                     <form id="rechazarCorrespondenciaForm" action="reject.php" method="post">
                         <input type="hidden" id="rechazar_correspondencia_id" name="id">
-                            <input type="hidden" id="rechazar_estado_destino" name="estado_destino" value="Rechazado">
+                        <input type="hidden" id="rechazar_estado_destino" name="estado_destino" value="Rechazado">
+                        <input type="hidden" id="rechazar_action_type" name="action_type" value="final">
+
+                        <p id="rechazarModalText">¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?</p>
+
+                        <div class="mb-3" id="motivoRechazoContainer" style="display: none;">
+                            <label for="motivo_rechazo" class="form-label">Motivo de la Devolución:</label>
+                            <textarea class="form-control" id="motivo_rechazo" name="motivo_rechazo" rows="3"></textarea>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" form="rechazarCorrespondenciaForm">Rechazar</button>
+                    <button type="submit" class="btn btn-danger" form="rechazarCorrespondenciaForm" id="rechazarModalSubmitBtn">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -469,12 +477,16 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <!-- Custom JS -->
-    <script src="../assets/js/correspondencia.js"></script>
+    <script src="../assets/js/correspondencia.js?v=<?= time() ?>"></script>
     <script>
-        // Función incrustada para evitar problemas de caché del navegador
+        // Función para "No Cursada" (estado final)
         function abrirRechazarCorrespondencia(id, tipo = 'Rechazado') {
             $('#rechazar_correspondencia_id').val(id);
             $('#rechazar_estado_destino').val(tipo);
+            $('#rechazar_action_type').val('final');
+
+            $('#motivoRechazoContainer').hide();
+            $('#motivo_rechazo').prop('required', false);
             
             if(tipo === 'No cursada') {
                 $('#rechazarModalTitle').text('Correspondencia No Cursada');
@@ -483,6 +495,22 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 $('#rechazarModalTitle').text('Rechazar correspondencia');
                 $('#rechazarModalText').html('¿Confirma que desea <strong>Rechazar</strong> esta correspondencia?');
             }
+            $('#rechazarModalSubmitBtn').text('Confirmar').removeClass('btn-warning').addClass('btn-danger');
+            $('#rechazarCorrespondenciaModal').modal('show');
+        }
+
+        // Nueva función para "Devolver" (retorno al remitente anterior)
+        function abrirModalDevolucion(id) {
+            $('#rechazar_correspondencia_id').val(id);
+            $('#rechazar_action_type').val('devolver');
+
+            $('#motivoRechazoContainer').show();
+            $('#motivo_rechazo').prop('required', true);
+            $('#motivo_rechazo').val('');
+
+            $('#rechazarModalTitle').text('Devolver Correspondencia');
+            $('#rechazarModalText').html('La correspondencia será devuelta al remitente anterior. Por favor, especifique el motivo:');
+            $('#rechazarModalSubmitBtn').text('Devolver').removeClass('btn-danger').addClass('btn-warning');
             $('#rechazarCorrespondenciaModal').modal('show');
         }
     </script>

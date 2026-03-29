@@ -1,4 +1,9 @@
 $(document).ready(function() {
+    // Eliminar tabindex de los modales para evitar que Bootstrap bloquee el cuadro de búsqueda (filtro) de Select2
+    $('.modal').on('show.bs.modal', function () {
+        $(this).removeAttr('tabindex');
+    });
+
     var table = $('#correspondencia').DataTable({
         ajax: {
             url: 'show.php',
@@ -9,6 +14,19 @@ $(document).ready(function() {
         },
         autoWidth: false,
         responsive: true,
+        dom: '<"row align-items-center mb-3"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4 text-center"B><"col-sm-12 col-md-4"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                text: '<i class="bi bi-file-earmark-excel"></i> Exportar a Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas 5 (Foto) y 8 (Acciones)
+                }
+            }
+        ],
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
         },
@@ -51,12 +69,15 @@ $(document).ready(function() {
 
     // Inicializar Select2 en los modales para que tengan buscador
     $('.modal').on('shown.bs.modal', function () {
+        var modalInstance = $(this);
         $(this).find('select').each(function() {
-            $(this).select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $(this).parent(),
-                width: '100%'
-            });
+            if (!$(this).hasClass("select2-hidden-accessible")) {
+                $(this).select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modalInstance,
+                    width: '100%'
+                });
+            }
         });
     });
 });
@@ -84,24 +105,15 @@ function editarCorrespondencia(id) {
 
             // Configurar tipo de remitente y selector/entrada correspondiente
             if (data.tipo_remitente === 'interno') {
-                $('#edit_remitente_interno').prop('checked', true);
-                $('#edit_div_remitente_interno').show();
-                $('#edit_div_remitente_externo').hide();
-                $('#edit_select_remitente_interno').val(data.remitente_id);
+                $('#edit_checkbox_remitente_externo').prop('checked', false).trigger('change');
+                $('#edit_select_remitente_interno').val(data.remitente_id).trigger('change');
                 $('#edit_input_remitente_externo').val('');
             } else {
-                $('#edit_remitente_externo_radio').prop('checked', true);
-                $('#edit_div_remitente_interno').hide();
-                $('#edit_div_remitente_externo').show();
-                $('#edit_select_remitente_interno').val('');
+                $('#edit_checkbox_remitente_externo').prop('checked', true).trigger('change');
+                $('#edit_select_remitente_interno').val('').trigger('change');
                 $('#edit_input_remitente_externo').val(data.remitente_externo || data.remitente);
             }
             
-            // Actualizar vista del select si ya tiene select2
-            if ($('#edit_select_remitente_interno').hasClass("select2-hidden-accessible")) {
-                $('#edit_select_remitente_interno').trigger('change.select2');
-            }
-
             $('#editCorrespondenciaModal').modal('show');
         }
     });
@@ -158,43 +170,44 @@ function abrirAceptarCorrespondencia(id) {
     $('#aceptarCorrespondenciaModal').modal('show');
 }
 
-// Manejo de radiobuttons para tipo de remitente
-$(document).on('change', 'input[name="tipo_remitente"]', function() {
-    var tipoRemitente = $(this).val();
-    if (tipoRemitente === 'interno') {
+// Manejo de Checkbox para remitente externo (Crear)
+$(document).on('change', '#checkbox_remitente_externo', function() {
+    if ($(this).is(':checked')) {
+        $('#hidden_tipo_remitente').val('externo');
+        $('#div_remitente_interno').hide();
+        $('#div_remitente_externo').show();
+        $('#select_remitente_interno').removeAttr('required');
+        $('#input_remitente_externo').attr('required', 'required');
+    } else {
+        $('#hidden_tipo_remitente').val('interno');
         $('#div_remitente_interno').show();
         $('#div_remitente_externo').hide();
         $('#select_remitente_interno').attr('required', 'required');
         $('#input_remitente_externo').removeAttr('required');
-    } else if (tipoRemitente === 'externo') {
-        $('#div_remitente_interno').hide();
-        $('#div_remitente_externo').show();
-        $('#input_remitente_externo').attr('required', 'required');
-        $('#select_remitente_interno').removeAttr('required');
     }
 });
 
-// Manejo de radiobuttons para tipo de remitente en el modal de edición
-$(document).on('change', 'input[name="edit_tipo_remitente"]', function() {
-    var tipoRemitente = $(this).val();
-    if (tipoRemitente === 'interno') {
-        $('#edit_div_remitente_interno').show();
-        $('#edit_div_remitente_externo').hide();
-    } else if (tipoRemitente === 'externo') {
+// Manejo de Checkbox para remitente externo (Editar)
+$(document).on('change', '#edit_checkbox_remitente_externo', function() {
+    if ($(this).is(':checked')) {
+        $('#edit_hidden_tipo_remitente').val('externo');
         $('#edit_div_remitente_interno').hide();
         $('#edit_div_remitente_externo').show();
+    } else {
+        $('#edit_hidden_tipo_remitente').val('interno');
+        $('#edit_div_remitente_interno').show();
+        $('#edit_div_remitente_externo').hide();
     }
 });
 
 // Limpiar el formulario cuando se abre el modal
 $(document).on('show.bs.modal', '#createCorrespondenciaModal', function() {
     $('#createCorrespondenciaForm')[0].reset();
-    $('#div_remitente_interno').hide();
-    $('#div_remitente_externo').hide();
-    $('#select_remitente_interno').removeAttr('required');
-    $('#input_remitente_externo').removeAttr('required');
+    
+    // Resetear a estado Interno por defecto
+    $('#checkbox_remitente_externo').prop('checked', false).trigger('change');
     
     if ($('#select_remitente_interno').hasClass("select2-hidden-accessible")) {
-        $('#select_remitente_interno').val('').trigger('change.select2');
+        $('#select_remitente_interno').val('').trigger('change');
     }
 });

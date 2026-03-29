@@ -194,6 +194,7 @@ try {
 
         $btn_rechazar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Rechazar" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'Rechazado\')"><i class="bi bi-x-circle"></i></button>';
         $btn_no_cursada = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Marcar como No Cursada" onclick="abrirRechazarCorrespondencia('.$correspondencia['id'].', \'No cursada\')"><i class="bi bi-slash-circle"></i></button>';
+        $btn_devolver = '<button type="button" class="btn btn-warning btn-sm" style="margin-left:4px;" title="Devolver al remitente" onclick="abrirModalDevolucion('.$correspondencia['id'].')"><i class="bi bi-arrow-return-left"></i></button>';
         $btn_editar = '<form action="" method="post" style="display: inline;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-warning btn-sm" title="Editar" data-bs-toggle="modal" data-bs-target="#editCorrespondenciaModal" onclick="editarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-pencil"></i></button></form>';
         $btn_eliminar = '<button type="button" class="btn btn-danger btn-sm" style="margin-left:4px;" title="Eliminar" onclick="confirmarEliminacion('.$correspondencia['id'].')"><i class="bi bi-trash"></i></button>';
         $btn_iniciar = '<form action="create.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-primary btn-sm" title="Iniciar"><i class="bi bi-play-circle"></i></button></form>';
@@ -248,6 +249,7 @@ try {
             } elseif ($estado === 'Derivado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_aceptar;
+                    $acciones .= $btn_devolver;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Aceptado') {
