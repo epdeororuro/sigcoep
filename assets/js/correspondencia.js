@@ -192,6 +192,13 @@ function abrirConcluirCorrespondencia(id) {
     $('#concluirCorrespondenciaModal').modal('show');
 }
 
+// Abrir modal para solicitar archivo
+function abrirSolicitarArchivo(id) {
+    $('#solicitar_archivo_id').val(id);
+    $('#solicitarArchivoForm')[0].reset();
+    $('#solicitarArchivoModal').modal('show');
+}
+
 // NUEVA FUNCIÓN: Abrir modal para solicitar ampliación
 function solicitarAmpliacion(id) {
     $('#ampliacion_correspondencia_id').val(id);

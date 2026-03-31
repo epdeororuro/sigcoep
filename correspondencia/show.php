@@ -90,7 +90,7 @@ try {
             $params[':uid'] = $usuario_id;
         } elseif ($filtro === 'concluidos') {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
-            $where_clauses[] = "c.estado = 'Archivado'";
+            $where_clauses[] = "c.estado = 'Concluido'";
             $params[':uid'] = $usuario_id;
         } elseif ($filtro === 'archivo_central') {
             // Bandeja de Archivo Central: Todos los archivados de la empresa
@@ -241,7 +241,9 @@ try {
                     'Rechazado'  => 'Rechazado por ',
                     'Concluido'  => 'Concluido por ',
                     'No cursada' => 'No cursada por ',                    
-                    'Archivado'  => 'Archivado por '
+                    'Archivado'  => 'Archivado por ',
+                    'Pendiente Aprobación Archivo' => 'En revisión por ',
+                    'Pendiente Archivo' => 'Por archivar '
                 ];
                 if (isset($prefijos[$estado])) {
                     $estado_texto = $prefijos[$estado];
@@ -256,8 +258,8 @@ try {
                                                  : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
             }
 
-            if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado'])) {
-                $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info'];
+            if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado', 'Pendiente Aprobación Archivo', 'Pendiente Archivo'])) {
+                $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info', 'Pendiente Aprobación Archivo' => 'text-warning', 'Pendiente Archivo' => 'text-warning'];
                 $color_clase = $colores[$estado] ?? 'text-info';
                 $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
             }
@@ -279,6 +281,7 @@ try {
         $btn_ampliacion = '<button type="button" class="btn btn-outline-primary btn-sm" style="margin-left:4px;" title="Solicitar ampliación de plazo (+2 días)" onclick="solicitarAmpliacion('.$correspondencia['id'].')"><i class="bi bi-calendar-plus"></i></button>';
         $btn_desarchivar = '<button type="button" class="btn btn-outline-success btn-sm" style="margin-left:4px;" title="Desarchivar (Retornar a pendientes)" onclick="abrirDesarchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-box-arrow-up"></i></button>';
         $btn_agrupar = '<button type="button" class="btn btn-info btn-sm" style="margin-left:4px;" title="Agrupar con otra correspondencia" onclick="abrirModalAgrupar('.$correspondencia['id'].')"><i class="bi bi-folder-symlink"></i></button>';
+        $btn_solicitar_archivo = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Solicitar envío a Archivo Central" onclick="abrirSolicitarArchivo('.$correspondencia['id'].')"><i class="bi bi-archive-fill"></i></button>';
 
         $estado = $correspondencia['estado'];
         if ($estado === 'Agrupado') {
@@ -346,6 +349,11 @@ try {
                     }
                 }
                 $acciones .= $btn_historial;
+            } elseif ($estado === 'Concluido') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_solicitar_archivo;
+                }
+                $acciones .= $btn_historial;
             } elseif ($estado === 'Archivado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_desarchivar;
@@ -373,6 +381,11 @@ try {
                     if ($es_retrasado) {
                         $acciones .= $btn_ampliacion;
                     }
+                }
+                $acciones .= $btn_historial;
+            } elseif ($estado === 'Concluido') {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_solicitar_archivo;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Archivado') {

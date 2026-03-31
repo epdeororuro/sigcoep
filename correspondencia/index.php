@@ -498,6 +498,31 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             </div>
         </div>
     </div>
+    <!-- ================= MODAL SOLICITAR ARCHIVO ================= -->
+    <div class="modal fade" id="solicitarArchivoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-dark">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title"><i class="bi bi-archive-fill"></i> Solicitar Envío a Archivo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="solicitarArchivoForm" action="request_archive.php" method="post">
+                        <input type="hidden" id="solicitar_archivo_id" name="id">
+                        <p>Esta acción enviará una solicitud formal a su Jefe de Área (o directo al Archivo) para autorizar el traslado físico del documento.</p>
+                        <div class="mb-3">
+                            <label class="form-label">Nota o Justificación <small class="text-muted">(Opcional)</small></label>
+                            <textarea class="form-control border-dark" name="nota_solicitud" rows="2" placeholder="Ej: Trámite finalizado, se remite carpeta completa..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-dark" form="solicitarArchivoForm">Enviar Solicitud</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- ================= MODAL CONCLUIR CORRESPONDENCIA ================= -->
     <div class="modal fade" id="concluirCorrespondenciaModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
