@@ -1,0 +1,345 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 31-03-2026 a las 22:40:23
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `sigcoep`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `comision`
+--
+
+CREATE TABLE `comision` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(255) NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `responsable_id` int(11) NOT NULL,
+  `estado` varchar(15) NOT NULL DEFAULT 'Activo',
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  `actualizado_en` timestamp NULL DEFAULT NULL,
+  `eliminado_en` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `comision`
+--
+
+INSERT INTO `comision` (`id`, `nombre`, `descripcion`, `responsable_id`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
+(1, 'Seguridad Privada', '', 8, 'Activo', '2026-03-25 22:01:41', '2026-03-27 17:02:09', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `comision_miembro`
+--
+
+CREATE TABLE `comision_miembro` (
+  `id` int(11) NOT NULL,
+  `comision_id` int(11) NOT NULL,
+  `funcionario_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `comision_miembro`
+--
+
+INSERT INTO `comision_miembro` (`id`, `comision_id`, `funcionario_id`) VALUES
+(4, 1, 8),
+(5, 1, 2),
+(6, 1, 11);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `correspondencia`
+--
+
+CREATE TABLE `correspondencia` (
+  `id` int(11) NOT NULL,
+  `hojaruta` varchar(255) DEFAULT NULL,
+  `remitente_id` int(11) DEFAULT NULL,
+  `remitente_externo` varchar(255) DEFAULT NULL,
+  `idfuncionario_enturno` int(11) DEFAULT NULL,
+  `tipo_remitente` enum('interno','externo') DEFAULT NULL,
+  `remitente` varchar(255) DEFAULT NULL,
+  `referencia` text DEFAULT NULL,
+  `fojas` int(11) DEFAULT NULL,
+  `anexo` varchar(255) NOT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp(),
+  `foto` varchar(255) DEFAULT NULL,
+  `estado` varchar(255) DEFAULT NULL,
+  `actualizado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  `eliminado_en` timestamp NULL DEFAULT NULL,
+  `agrupado_en` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `correspondencia`
+--
+
+INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `anexo`, `fecha`, `foto`, `estado`, `actualizado_en`, `eliminado_en`, `agrupado_en`) VALUES
+(1, '1/2026', 9, NULL, 14, 'interno', 'David Ticona Cabrera', 'Mantenimiento de CPU', 1, '', '2026-03-31 19:54:23', '2026/1-2026.png', 'Aceptado', '2026-03-31 19:58:40', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `derivacion`
+--
+
+CREATE TABLE `derivacion` (
+  `id` int(11) NOT NULL,
+  `id_correspondencia` int(11) NOT NULL,
+  `id_funcionario` int(11) NOT NULL,
+  `fecha_derivacion` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fecha_entrega_derivacion` timestamp NULL DEFAULT NULL,
+  `instruccion_adicional` text DEFAULT NULL,
+  `fojas` varchar(255) DEFAULT NULL,
+  `anexo` varchar(255) DEFAULT NULL,
+  `caracter` varchar(25) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `derivacion`
+--
+
+INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `fecha_entrega_derivacion`, `instruccion_adicional`, `fojas`, `anexo`, `caracter`) VALUES
+(1, 1, 2, '2026-03-31 19:54:37', '2026-03-31 19:57:01', 'Para su atención', '1', NULL, 'Para conocimiento'),
+(2, 1, 14, '2026-03-31 19:57:01', '2026-03-31 19:58:40', '-', '0', NULL, 'Procesar');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `funcionario`
+--
+
+CREATE TABLE `funcionario` (
+  `id` int(11) NOT NULL,
+  `ci` int(11) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `paterno` varchar(60) NOT NULL,
+  `materno` varchar(60) NOT NULL,
+  `usuario` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `contrasenia` varchar(255) NOT NULL,
+  `rol` varchar(25) DEFAULT NULL,
+  `id_puesto` int(11) NOT NULL,
+  `estado` varchar(12) NOT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  `actualizado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  `eliminado_en` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `funcionario`
+--
+
+INSERT INTO `funcionario` (`id`, `ci`, `nombre`, `paterno`, `materno`, `usuario`, `password`, `contrasenia`, `rol`, `id_puesto`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
+(1, 123456789, 'Superadmin', ' ', ' ', 'admin', '$2y$10$29Br5HbBSerZ6YYH6ekGvOyfs4rFkJpRHET9fUbGnHG7zSXbkuWOG', '123456789', 'Administrador', 19, 'Activo', '2026-02-26 22:56:07', '2026-03-06 05:25:07', '2026-02-26 22:56:07'),
+(2, 7343846, 'Elizabeth', 'Martinez', 'Achacollo', 'emartinez', '$2y$10$H05dXZb8DvWcIMMmkkG4ZurvPN4aSTa7fvTgZl6zFPebxwN86jo4G', '7343846', 'Gerente', 1, 'Activo', '2026-02-27 00:38:37', '2026-02-28 05:36:32', '2026-02-27 00:38:37'),
+(3, 7200300, 'Mirian', 'Rada', 'Lopez', 'mrada', '$2y$10$pDn5NQVkE8hGRMc7qseH/.OLYcuCQCzwu.svmM0icxjE2uN9WZ5cu', '5067188', 'Administrativo', 2, 'Activo', '2026-02-27 00:39:16', '2026-03-10 04:37:08', '2026-02-27 00:39:16'),
+(4, 3544712, 'Carmen Marisol', 'Rufino', 'Segovia', 'crufino', '$2y$10$bdDF93ECe1JCt8PPymzuZelsoa.T6R5aKt5j2KTIiGoTKroJWOjlu', '3544712', 'Administrativo', 3, 'Activo', '2026-02-27 00:40:56', '2026-03-06 05:29:08', '2026-02-27 00:40:56'),
+(5, 5778923, 'Maricruz Sara', 'Mamani', 'Nieto', 'mmamani', '$2y$10$nX3nj7RQ49ie9eb.UIeFr.SpylO0NLRh5toDSepa/WHm0OXmGTMsS', '5778923', 'Administrativo', 4, 'Activo', '2026-02-27 00:41:32', '2026-03-10 05:02:52', '2026-02-27 00:41:32'),
+(6, 4058090, 'Belinda', 'Perez', 'Ayma', 'bperez', '$2y$10$pI2mgOqOa8CNOlhknSBoEujEAPl2Ydun7GOUJ0u4n8/bzWZzpc0eW', '4058090', 'Administrativo', 5, 'Activo', '2026-02-27 00:41:55', '2026-03-06 05:56:41', '2026-02-27 00:41:55'),
+(7, 7260666, 'Erwin Jorge', 'Gonzales', 'Rioja', 'egonzales', '$2y$10$vOp3UWdnIdm7wVCRXcHnIekGysrhSdFa0MmOxL3o5l861svrk/y5.', '7260666', 'Administrativo', 7, 'Activo', '2026-02-27 00:42:23', '2026-03-06 05:57:04', '2026-02-27 00:42:23'),
+(8, 5732101, 'Carlos G. ', 'Rodriguez', 'Rocha', 'crodriguez', '$2y$10$f1waFtdvwLtu.75fCvikZ..PZed/tMBTXdzpzRBcD.CJuG7mU1iLW', '5732101', 'Administrativo', 6, 'Activo', '2026-02-27 00:42:46', '2026-03-06 05:40:54', '2026-02-27 00:42:46'),
+(9, 7423343, 'David', 'Ticona', 'Cabrera', 'dticona', '$2y$10$l2u8Jzfvesd3XyvmUH61u.SMT6ftzanbjGc/igjbHTw8TnUjeeWMe', '7423343', 'Administrativo', 16, 'Activo', '2026-02-27 00:44:20', '2026-03-06 05:57:32', '2026-02-27 00:44:20'),
+(10, 7270861, 'Jeanneth Angelica', 'Chambi', 'Chinche', 'jchambi', '$2y$10$RQHIsO/Exx.HS0.BPZX5MOx6RnP5VscEMBAK2DUQYVBxlSRkcGj0q', '7270861', 'Administrativo', 8, 'Activo', '2026-02-27 00:44:34', '2026-03-06 05:29:39', '2026-02-27 00:44:34'),
+(11, 13857686, 'Guadalupe', 'Gutierrez', 'Mamani', 'ggutierrez', '$2y$10$JE8eYoGXgF5Fax9FOuxL..LV3c/iDuDI.niwUTrfoUIwdkTUOVXN.', '13857686', 'Administrativo', 10, 'Activo', '2026-02-27 00:45:23', '2026-03-06 05:44:46', '2026-03-06 00:55:33'),
+(12, 5755448, 'Marina', 'Alegre', 'Mamani', 'malegre', '$2y$10$vX7ZrTcnhqkARc2VA766luM8AXxb/fGyubNLnUyWPyVaVOttZiskS', '5755448', 'Administrativo', 13, 'Activo', '2026-02-27 00:45:57', '2026-03-06 05:58:00', '2026-02-27 00:45:57'),
+(13, 7307898, 'Maria Lizeth', 'Colque', 'Rivera', 'mcolque', '$2y$10$/LxJmuqcS34qDcJedXRCe.nAlU5wARdrWAKRvAHRnV89zJmdpTzR6', '73007898', 'Administrativo', 9, 'Activo', '2026-02-27 00:47:04', '2026-03-06 05:58:26', '2026-02-27 00:47:04'),
+(14, 7403044, 'Reynaldo Jesus', 'Flores', 'Jaillita', 'rflores', '$2y$10$igxATlsz5.CDcbRJrWIAqubDhq9lGgKGmVVU39Frxv3kJUyiI89rW', '7403044', 'Administrativo', 15, 'Activo', '2026-02-27 00:47:26', '2026-03-10 05:02:28', '2026-02-27 00:47:26'),
+(15, 7292221, 'Milton Jose', 'Torrez', 'Alegre', 'mtorrez', '$2y$10$hDv4SpqzrnQqPhE4sGahJu0N30GQG48AcAyrIwRlNEqaee8/b0G.S', '7292221', 'Administrativo', 11, 'Activo', '2026-02-27 00:47:57', '2026-03-06 05:36:54', '2026-02-27 00:47:57'),
+(16, 7376273, 'Marina Ana', 'Alejandro', 'Ayala', 'malejandro', '$2y$10$jmEogWqLr1LPVNvsxVWKAu3703YKbHBu10dao3fdBd1098TnWhhBG', '7376273', 'Administrativo', 12, 'Activo', '2026-02-27 00:48:17', '2026-03-06 05:30:51', '2026-02-27 00:48:17'),
+(17, 4069420, 'Scarleth Shirley', 'Encinas', 'Colque ', 's-', '$2y$10$pm401iIhuE448FnFw7AYYebspudJBLOD8E8pG2qAokPvYSF6KDaci', '4069420', 'Administrativo', 17, 'Activo', '2026-02-27 00:49:01', '2026-03-06 05:45:52', '2026-02-27 00:49:01'),
+(18, 4060082, 'Jorge', 'Quillaguaman', '-', 'jquillaguaman', '$2y$10$/gvCssPtY82XuQRSHJRW3.IISXeoJEVub51PCNwQ5zNV38iJ/4miC', '4060082', 'Administrativo', 18, 'Activo', '2026-02-27 00:49:23', '2026-03-06 05:44:20', '2026-02-27 00:49:23'),
+(19, 123456, 'Ventanilla/Recepción', 'Unica', 'EPDEOR', 'vunica', '$2y$10$dGoIwThTAXGuQaegsSGaAelM5H04dLyRg3LihjPL.BLecvOx6qdeS', '123456', 'Secretaria', 19, 'Activo', '2026-03-06 22:10:05', '2026-03-06 22:10:05', '2026-03-06 22:10:05');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `puesto`
+--
+
+CREATE TABLE `puesto` (
+  `id` int(11) NOT NULL,
+  `descripcion` varchar(70) DEFAULT NULL,
+  `sigla` varchar(25) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `puesto`
+--
+
+INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
+(1, 'Gerencia General', 'GERENCIA GENERAL'),
+(2, 'Asesorí­a Legal', 'ASESORIA LEGAL'),
+(3, 'Auditoria Interna', 'UNIDAD DE AUDITORIA INT.'),
+(4, 'Secretaria Ejecutiva', 'SEC. EJE.'),
+(5, 'Jefatura Dpto. de Administración y Finanzas', 'JDAF'),
+(6, 'Jefatura Dpto. de Operaciones Hotel Terminal', 'JDOHT'),
+(7, 'Jefatura Dpto. de Operaciones Terminal', 'JDOT'),
+(8, 'Encargado de Contabilidad', 'AREA CONTABILIDAD'),
+(9, 'Profesional I de Recursos Humanos y Normas', 'RR.HH.'),
+(10, 'Profesional I de Activos Fijos/Almacenes y Archivos', 'ACT.FIJ.-ALM-ARC'),
+(11, 'Profesional I de Contrataciones y Provisión de Bs. y Ss.', 'CONTRATACIONES'),
+(12, 'Profesional I de Tesoreria', 'TESORERIA'),
+(13, 'Profesional I de Cobranzas', 'COBRANZAS'),
+(14, 'Profesional I de Planificación y Presupuestos', 'PRESUPUESTOS'),
+(15, 'Profesional I de Sistemas Informáticos y Redes', 'SISTEMAS'),
+(16, 'Encargado Área de Mantenimiento y Reparación', 'AREA MANTENIMIENTO'),
+(17, 'Recepcionista 1', 'RECEPCION HOTEL'),
+(18, 'Recaudador de Valores 1', 'AUXILIAR JDTO'),
+(19, 'Administrador del Sistema', 'ADM'),
+(20, 'Responsable de Proceso de Contratacion Menor', 'RPA'),
+(21, 'Responsable de Proceso de Contratacion Mayor', 'RPC');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `comision`
+--
+ALTER TABLE `comision`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_comision_responsable` (`responsable_id`);
+
+--
+-- Indices de la tabla `comision_miembro`
+--
+ALTER TABLE `comision_miembro`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_cm_comision` (`comision_id`),
+  ADD KEY `fk_cm_funcionario` (`funcionario_id`);
+
+--
+-- Indices de la tabla `correspondencia`
+--
+ALTER TABLE `correspondencia`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `remitente_id` (`remitente_id`),
+  ADD KEY `idfuncionario_enturno` (`idfuncionario_enturno`),
+  ADD KEY `fk_correspondencia_agrupado_en` (`agrupado_en`);
+
+--
+-- Indices de la tabla `derivacion`
+--
+ALTER TABLE `derivacion`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_correspondencia` (`id_correspondencia`),
+  ADD KEY `id_funcionario` (`id_funcionario`);
+
+--
+-- Indices de la tabla `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `usuario` (`usuario`),
+  ADD KEY `puesto_id` (`id_puesto`);
+
+--
+-- Indices de la tabla `puesto`
+--
+ALTER TABLE `puesto`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `comision`
+--
+ALTER TABLE `comision`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `comision_miembro`
+--
+ALTER TABLE `comision_miembro`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `correspondencia`
+--
+ALTER TABLE `correspondencia`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `derivacion`
+--
+ALTER TABLE `derivacion`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `funcionario`
+--
+ALTER TABLE `funcionario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+
+--
+-- AUTO_INCREMENT de la tabla `puesto`
+--
+ALTER TABLE `puesto`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `comision`
+--
+ALTER TABLE `comision`
+  ADD CONSTRAINT `fk_comision_responsable` FOREIGN KEY (`responsable_id`) REFERENCES `funcionario` (`id`);
+
+--
+-- Filtros para la tabla `comision_miembro`
+--
+ALTER TABLE `comision_miembro`
+  ADD CONSTRAINT `fk_cm_comision` FOREIGN KEY (`comision_id`) REFERENCES `comision` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_cm_funcionario` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionario` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `correspondencia`
+--
+ALTER TABLE `correspondencia`
+  ADD CONSTRAINT `fk_correspondencia_agrupado_en` FOREIGN KEY (`agrupado_en`) REFERENCES `correspondencia` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_correspondencia_funcionario_remitente` FOREIGN KEY (`remitente_id`) REFERENCES `funcionario` (`id`),
+  ADD CONSTRAINT `fk_correspondencia_funcionario_turno` FOREIGN KEY (`idfuncionario_enturno`) REFERENCES `funcionario` (`id`);
+
+--
+-- Filtros para la tabla `derivacion`
+--
+ALTER TABLE `derivacion`
+  ADD CONSTRAINT `fk_derivacion_correspondencia` FOREIGN KEY (`id_correspondencia`) REFERENCES `correspondencia` (`id`),
+  ADD CONSTRAINT `fk_derivacion_funcionario` FOREIGN KEY (`id_funcionario`) REFERENCES `funcionario` (`id`);
+
+--
+-- Filtros para la tabla `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD CONSTRAINT `fk_funcionario_puesto` FOREIGN KEY (`id_puesto`) REFERENCES `puesto` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

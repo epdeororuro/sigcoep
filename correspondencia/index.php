@@ -108,7 +108,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                 <button class="nav-link filtro-tab" data-filtro="iniciados" type="button"><i class="bi bi-play-circle"></i> Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciados">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="concluidos" type="button"><i class="bi bi-check2-circle"></i> Concluidos <span class="badge bg-secondary ms-1 count-badge" data-count="concluidos">0</span></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
@@ -129,7 +129,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                                 <button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Para iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button>
                             </li>
                             <li class="nav-item">
-                                <button class="nav-link filtro-tab" data-filtro="mis_archivos" type="button"><i class="bi bi-archive"></i> Mis Archivos <span class="badge bg-secondary ms-1 count-badge" data-count="mis_archivos">0</span></button>
+                                <button class="nav-link filtro-tab" data-filtro="concluidos" type="button"><i class="bi bi-check2-circle"></i> Concluidos <span class="badge bg-secondary ms-1 count-badge" data-count="concluidos">0</span></button>
                             </li>
                             <li class="nav-item">
                                 <button class="nav-link filtro-tab" data-filtro="archivo_central" type="button"><i class="bi bi-archive-fill"></i> Archivo Central <span class="badge bg-secondary ms-1 count-badge" data-count="archivo_central">0</span></button>
@@ -142,7 +142,8 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="iniciado" type="button">Iniciados <span class="badge bg-secondary ms-1 count-badge" data-count="iniciado">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="derivado" type="button">Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="derivado">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptado" type="button">Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="aceptado">0</span></button></li>
-                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="archivado" type="button">Archivados <span class="badge bg-secondary ms-1 count-badge" data-count="archivado">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="concluido" type="button">Concluidos <span class="badge bg-secondary ms-1 count-badge" data-count="concluido">0</span></button></li>
+                            <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="archivado" type="button">Archivados (Central) <span class="badge bg-secondary ms-1 count-badge" data-count="archivado">0</span></button></li>
                         </ul>
                         <?php elseif ($cargo_usuario === 'secretaria'): ?>
                         <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
@@ -497,44 +498,27 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
             </div>
         </div>
     </div>
-    <!-- ================= MODAL ARCHIVAR CORRESPONDENCIA ================= -->
-    <div class="modal fade" id="archivarCorrespondenciaModal" tabindex="-1">
+    <!-- ================= MODAL CONCLUIR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="concluirCorrespondenciaModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-dark">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title"><i class="bi bi-archive"></i> Archivar Correspondencia</h5>
+            <div class="modal-content border-primary">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-check2-circle"></i> Concluir Trámite</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="archivarCorrespondenciaForm" action="archive.php" method="post">
-                        <input type="hidden" id="archivar_correspondencia_id" name="id">
-                        
-                        <?php if ($cargo_usuario === 'archivista central'): ?>
-                            <input type="hidden" name="tipo_archivo" value="personal">
-                            <p class="mb-3 text-center">El documento será resguardado definitivamente en el <strong>Archivo Central</strong>.</p>
-                        <?php else: ?>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-primary">Destino del Archivo:</label>
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input border-dark" type="radio" name="tipo_archivo" id="archivo_personal" value="personal" checked>
-                                    <label class="form-check-label" for="archivo_personal"><strong>Archivo Personal</strong> (El trámite finaliza en su escritorio)</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input border-dark" type="radio" name="tipo_archivo" id="archivo_central" value="central">
-                                    <label class="form-check-label" for="archivo_central"><strong>Archivo Central</strong> (Enviar al Archivista Institucional)</label>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-
+                    <form id="concluirCorrespondenciaForm" action="conclude.php" method="post">
+                        <input type="hidden" id="concluir_correspondencia_id" name="id">
+                        <p>Esta acción marcará el trámite como <strong>Concluido</strong> en su bandeja. El documento quedará a la espera de ser enviado al Archivo Central posteriormente.</p>
                         <div class="mb-3">
-                            <label class="form-label">Nota o Ubicación Física <small class="text-muted">(Opcional)</small></label>
-                            <textarea class="form-control border-dark" name="nota_archivo" rows="2" placeholder="Ej: Gaveta 3, Archivador A..."></textarea>
+                            <label class="form-label">Nota de Conclusión <small class="text-muted">(Opcional)</small></label>
+                            <textarea class="form-control border-primary" name="nota_conclusion" rows="2" placeholder="Ej: Se atendió la solicitud, se adjuntó informe final..."></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark" form="archivarCorrespondenciaForm">Archivar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" form="concluirCorrespondenciaForm">Confirmar Conclusión</button>
                 </div>
             </div>
         </div>
@@ -592,6 +576,35 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-outline-success fw-bold" form="desarchivarCorrespondenciaForm">Sí, Desarchivar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= MODAL AGRUPAR CORRESPONDENCIA ================= -->
+    <div class="modal fade" id="agruparCorrespondenciaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-info">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="bi bi-folder-symlink"></i> Agrupar Correspondencia</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="agruparCorrespondenciaForm" action="group.php" method="POST">
+                        <input type="hidden" name="id_hija" id="agrupar_id_hija" value="">
+                        
+                        <p>Seleccione la correspondencia principal (Madre) a la cual desea adjuntar este trámite. <strong>Esta acción concluirá el trámite actual.</strong></p>
+                        
+                        <div class="mb-3 mt-3">
+                            <label for="agrupar_id_madre" class="form-label fw-bold">Hoja de Ruta Destino (Madre) <span class="text-danger">*</span></label>
+                            <select class="form-select border-info" name="id_madre" id="agrupar_id_madre" required style="width: 100%;">
+                                <option value="">-- Seleccione una correspondencia --</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info text-white" form="agruparCorrespondenciaForm"><i class="bi bi-check-circle"></i> Confirmar Agrupación</button>
                 </div>
             </div>
         </div>

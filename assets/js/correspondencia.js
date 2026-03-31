@@ -185,13 +185,11 @@ function abrirAceptarCorrespondencia(id) {
     $('#aceptarCorrespondenciaModal').modal('show');
 }
 
-// Abrir modal para archivar
-function abrirArchivarCorrespondencia(id) {
-    $('#archivar_correspondencia_id').val(id);
-    // Resetear el formulario para que siempre inicie en "Archivo Personal"
-    $('#archivarCorrespondenciaForm')[0].reset();
-    $('#archivo_personal').prop('checked', true);
-    $('#archivarCorrespondenciaModal').modal('show');
+// Abrir modal para concluir
+function abrirConcluirCorrespondencia(id) {
+    $('#concluir_correspondencia_id').val(id);
+    $('#concluirCorrespondenciaForm')[0].reset();
+    $('#concluirCorrespondenciaModal').modal('show');
 }
 
 // NUEVA FUNCIÓN: Abrir modal para solicitar ampliación
@@ -241,6 +239,35 @@ function abrirModalDevolucion(id) {
     $('#rechazarModalText').html('La correspondencia será devuelta al remitente anterior. Por favor, especifique el motivo:');
     $('#rechazarModalSubmitBtn').text('Devolver').removeClass('btn-warning').addClass('btn-danger');
     $('#rechazarCorrespondenciaModal').modal('show');
+}
+
+// Abrir modal para agrupar correspondencia
+function abrirModalAgrupar(id) {
+    $('#agrupar_id_hija').val(id);
+    
+    // Limpiar el select y mostrar un estado de carga mientras se obtienen los datos
+    $('#agrupar_id_madre').empty().append('<option value="">Cargando opciones...</option>').trigger('change');
+    $('#agruparCorrespondenciaModal').modal('show');
+
+    // Cargar las opciones vía AJAX excluyendo la correspondencia actual
+    $.ajax({
+        url: 'get_groupable_mothers.php',
+        type: 'GET',
+        data: { child_id: id },
+        dataType: 'json',
+        success: function(response) {
+            $('#agrupar_id_madre').empty().append('<option value="">-- Seleccione una correspondencia --</option>');
+            if (response && !response.error) {
+                $.each(response, function(index, madre) {
+                    $('#agrupar_id_madre').append('<option value="' + madre.id + '">HR: ' + madre.hojaruta + ' - ' + madre.referencia + '</option>');
+                });
+            }
+            $('#agrupar_id_madre').trigger('change'); // Refrescar el Select2
+        },
+        error: function() {
+            $('#agrupar_id_madre').empty().append('<option value="">Error al cargar opciones</option>').trigger('change');
+        }
+    });
 }
 
 // Manejo de Checkbox para remitente externo (Crear)

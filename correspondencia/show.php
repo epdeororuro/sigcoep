@@ -11,6 +11,7 @@ try {
     $filtro = $_REQUEST['filtro'] ?? null;
  
     $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo, 
+                 c.agrupado_en, madre.hojaruta as hojaruta_madre,
                  COALESCE(
                      (SELECT MAX(fecha_entrega_derivacion) FROM derivacion WHERE id_correspondencia = c.id AND id_funcionario = c.idfuncionario_enturno), 
                      c.actualizado_en, 
@@ -18,7 +19,8 @@ try {
                  ) as fecha_referencia,
                  f.nombre, f.paterno, f.materno 
                  FROM correspondencia c
-                 LEFT JOIN funcionario f ON c.idfuncionario_enturno = f.id";
+                 LEFT JOIN funcionario f ON c.idfuncionario_enturno = f.id
+                 LEFT JOIN correspondencia madre ON c.agrupado_en = madre.id";
     $where_clauses = ["c.eliminado_en IS NULL"];
     $params = [];
  
@@ -37,8 +39,14 @@ try {
             case 'aceptado':
                 $where_clauses[] = "c.estado = 'Aceptado'";
                 break;
+            case 'concluido':
+                $where_clauses[] = "c.estado = 'Concluido'";
+                break;
             case 'archivado':
                 $where_clauses[] = "c.estado = 'Archivado'";
+                break;
+            case 'agrupado':
+                $where_clauses[] = "c.estado = 'Agrupado'";
                 break;
             // 'todos' o null no añade filtro de estado, muestra todo
         }
@@ -80,7 +88,7 @@ try {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Aceptado'";
             $params[':uid'] = $usuario_id;
-        } elseif ($filtro === 'mis_archivos') {
+        } elseif ($filtro === 'concluidos') {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Archivado'";
             $params[':uid'] = $usuario_id;
@@ -145,9 +153,9 @@ try {
             $counts['para_iniciar'] = $stmt_g1->fetchColumn();
         }
 
-        $stmt_c5 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
+        $stmt_c5 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Concluido' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
         $stmt_c5->execute([':uid' => $usuario_id]);
-        $counts['mis_archivos'] = $stmt_c5->fetchColumn();
+        $counts['concluidos'] = $stmt_c5->fetchColumn();
 
         $stmt_c6 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND eliminado_en IS NULL");
         $stmt_c6->execute();
@@ -161,7 +169,9 @@ try {
         $counts['iniciado'] = $estado_counts['Iniciado'] ?? 0;
         $counts['derivado'] = $estado_counts['Derivado'] ?? 0;
         $counts['aceptado'] = $estado_counts['Aceptado'] ?? 0;
+        $counts['concluido'] = $estado_counts['Concluido'] ?? 0;
         $counts['archivado'] = $estado_counts['Archivado'] ?? 0;
+        $counts['agrupado'] = $estado_counts['Agrupado'] ?? 0;
     } elseif ($usuario_cargo === 'Archivista Central') {
         $stmt_a1 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Derivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
         $stmt_a1->execute([':uid' => $usuario_id]);
@@ -209,36 +219,48 @@ try {
 
         // Formatear el estado con el nombre del funcionario
         $estado = $correspondencia['estado'];
-        $estado_texto = $estado;
-        $nombre_enturno = trim(($correspondencia['nombre'] ?? '') . ' ' . ($correspondencia['paterno'] ?? '') . ' ' . ($correspondencia['materno'] ?? ''));
-        $es_dueno = ($correspondencia['idfuncionario_enturno'] == $usuario_id);
+        $estado_display = '';
 
-        if (!empty($nombre_enturno)) {
-            $prefijos = [
-                'Aceptado'   => 'Aceptado por ',
-                'Derivado'   => 'Derivado a ',
-                'Iniciado'   => 'Iniciado para ',
-                'Rechazado'  => 'Rechazado por ',
-                'No cursada' => 'No cursada por ',
-                'Archivado'  => 'Archivado por '
-            ];
-            if (isset($prefijos[$estado])) {
-                $estado_texto = $prefijos[$estado];
+        if ($estado === 'Agrupado') {
+            $estado_texto = 'Agrupado';
+            if (!empty($correspondencia['hojaruta_madre'])) {
+                $estado_texto .= ' en H.R. ' . htmlspecialchars($correspondencia['hojaruta_madre']);
             }
-        }
+            $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
+            $estado_display .= '<br><small class="text-secondary fw-semibold">Trámite concluido</small>';
+        } else {
+            $estado_texto = $estado;
+            $nombre_enturno = trim(($correspondencia['nombre'] ?? '') . ' ' . ($correspondencia['paterno'] ?? '') . ' ' . ($correspondencia['materno'] ?? ''));
+            $es_dueno = ($correspondencia['idfuncionario_enturno'] == $usuario_id);
 
-        $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
+            if (!empty($nombre_enturno)) {
+                $prefijos = [
+                    'Aceptado'   => 'Aceptado por ',
+                    'Derivado'   => 'Derivado a ',
+                    'Iniciado'   => 'Iniciado para ',
+                    'Rechazado'  => 'Rechazado por ',
+                    'Concluido'  => 'Concluido por ',
+                    'No cursada' => 'No cursada por ',                    
+                    'Archivado'  => 'Archivado por '
+                ];
+                if (isset($prefijos[$estado])) {
+                    $estado_texto = $prefijos[$estado];
+                }
+            }
 
-        // Añadir indicador (punto verde o rojo) si el documento está en poder de este funcionario
-        if ($es_dueno) {
-            $estado_display .= $es_retrasado ? ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>' 
-                                             : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
-        }
+            $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
 
-        if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Archivado'])) {
-            $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info'];
-            $color_clase = $colores[$estado] ?? 'text-info';
-            $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
+            // Añadir indicador (punto verde o rojo) si el documento está en poder de este funcionario
+            if ($es_dueno) {
+                $estado_display .= $es_retrasado ? ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>' 
+                                                 : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
+            }
+
+            if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado'])) {
+                $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info'];
+                $color_clase = $colores[$estado] ?? 'text-info';
+                $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
+            }
         }
 
         // --- SISTEMA DE BOTONES POR ROL ---
@@ -253,12 +275,17 @@ try {
         $btn_derivar = '<form action="" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="button" class="btn btn-success btn-sm" title="Derivar" data-bs-toggle="modal" data-bs-target="#derivarCorrespondenciaModal" onclick="derivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-arrow-right-circle"></i></button></form>';
         $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-secondary btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
         $btn_imprimir = '<button type="button" class="btn btn-info btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
-        $btn_archivar = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Archivar correspondencia" onclick="abrirArchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-archive"></i></button>';
+        $btn_concluir = '<button type="button" class="btn btn-outline-dark btn-sm" style="margin-left:4px;" title="Concluir trámite" onclick="abrirConcluirCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check2-circle"></i></button>';
         $btn_ampliacion = '<button type="button" class="btn btn-outline-primary btn-sm" style="margin-left:4px;" title="Solicitar ampliación de plazo (+2 días)" onclick="solicitarAmpliacion('.$correspondencia['id'].')"><i class="bi bi-calendar-plus"></i></button>';
         $btn_desarchivar = '<button type="button" class="btn btn-outline-success btn-sm" style="margin-left:4px;" title="Desarchivar (Retornar a pendientes)" onclick="abrirDesarchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-box-arrow-up"></i></button>';
+        $btn_agrupar = '<button type="button" class="btn btn-info btn-sm" style="margin-left:4px;" title="Agrupar con otra correspondencia" onclick="abrirModalAgrupar('.$correspondencia['id'].')"><i class="bi bi-folder-symlink"></i></button>';
 
         $estado = $correspondencia['estado'];
-        if ($usuario_cargo === 'Administrador') {
+        if ($estado === 'Agrupado') {
+            // Para correspondencias agrupadas, solo se puede ver el historial.
+            $acciones .= $btn_historial;
+
+        } else if ($usuario_cargo === 'Administrador') {
             // Administrador puede editar y eliminar en cualquier etapa
             $acciones .= $btn_editar . $btn_eliminar;
 
@@ -274,6 +301,7 @@ try {
                 // Aceptado: puede derivar y ver historial (e imprimir)
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
+                    $acciones .= $btn_agrupar;
                     if ($es_retrasado) {
                         $acciones .= $btn_ampliacion;
                     }
@@ -311,7 +339,8 @@ try {
             } elseif ($estado === 'Aceptado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
-                    $acciones .= $btn_archivar;
+                    $acciones .= $btn_concluir;
+                    $acciones .= $btn_agrupar;
                     if ($es_retrasado) {
                         $acciones .= $btn_ampliacion;
                     }
@@ -339,7 +368,8 @@ try {
             } elseif ($estado === 'Aceptado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
-                    $acciones .= $btn_archivar;
+                    $acciones .= $btn_concluir;
+                    $acciones .= $btn_agrupar;
                     if ($es_retrasado) {
                         $acciones .= $btn_ampliacion;
                     }
