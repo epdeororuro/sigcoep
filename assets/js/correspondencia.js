@@ -277,6 +277,20 @@ function abrirModalAgrupar(id) {
     });
 }
 
+// Abrir modal para aprobar archivo (Jefe)
+function abrirAprobarArchivo(id) {
+    $('#aprobar_archivo_id').val(id);
+    $('#aprobarArchivoForm')[0].reset();
+    $('#aprobarArchivoModal').modal('show');
+}
+
+// Abrir modal para archivar definitivo (Archivista Central)
+function abrirArchivarDefinitivo(id) {
+    $('#archivar_definitivo_id').val(id);
+    $('#archivarDefinitivoForm')[0].reset();
+    $('#archivarDefinitivoModal').modal('show');
+}
+
 // Manejo de Checkbox para remitente externo (Crear)
 $(document).on('change', '#checkbox_remitente_externo', function() {
     if ($(this).is(':checked')) {

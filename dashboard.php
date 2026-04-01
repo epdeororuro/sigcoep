@@ -37,7 +37,11 @@ if(!isset($_SESSION['usuario_id'])){
             <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>
             <!-- <a href="<?= BASE_URL ?>comision/index.php" target="iframe_content"><i class="bi bi-people"></i> Comisiones</a> -->
         <?php } ?>
-        <a href="<?= BASE_URL ?>correspondencia/index.php" target="iframe_content"><i class="bi bi-folder"></i> Correspondencia</a>
+        <a href="<?= BASE_URL ?>correspondencia/index.php?view=activas" target="iframe_content"><i class="bi bi-envelope-paper"></i> Correspondencia</a>
+        <?php if(strtolower($_SESSION['usuario_cargo']) !== 'archivista central'): ?>
+            <a href="<?= BASE_URL ?>correspondencia/index.php?view=concluidos" target="iframe_content"><i class="bi bi-check2-circle"></i> Concluidos y Revisión</a>
+        <?php endif; ?>
+        <a href="<?= BASE_URL ?>correspondencia/index.php?view=archivo" target="iframe_content"><i class="bi bi-archive"></i> Archivo Central</a>
         <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
     </div>
     <!-- Navbar superior -->

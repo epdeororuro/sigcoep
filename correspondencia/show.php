@@ -48,11 +48,25 @@ try {
             case 'agrupado':
                 $where_clauses[] = "c.estado = 'Agrupado'";
                 break;
+            case 'revision':
+                $where_clauses[] = "c.estado IN ('Revisión Archivo', 'Pendiente Archivo')";
+                break;
+            case 'todos_activos':
+                $where_clauses[] = "c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo')";
+                break;
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
         if ($filtro === 'no_cursadas') {
             $where_clauses[] = "c.estado = 'No cursada'";
+        } elseif ($filtro === 'concluido') {
+            $where_clauses[] = "c.estado = 'Concluido'";
+        } elseif ($filtro === 'archivado') {
+            $where_clauses[] = "c.estado = 'Archivado'";
+        } elseif ($filtro === 'revision') {
+            $where_clauses[] = "c.estado IN ('Revisión Archivo', 'Pendiente Archivo')";
+        } elseif ($filtro === 'todos_activos') {
+            $where_clauses[] = "c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo', 'No cursada')";
         } else {
             $where_clauses[] = "c.estado != 'No cursada'";
         }
@@ -62,6 +76,14 @@ try {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Aceptado'";
             $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'revision') {
+            $where_clauses[] = "(c.idfuncionario_enturno = :uid OR c.remitente_id = :uid OR EXISTS (
+                SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid
+            ))";
+            $where_clauses[] = "c.estado IN ('Revisión Archivo', 'Pendiente Archivo')";
+            $params[':uid1'] = $usuario_id;
+            $params[':uid2'] = $usuario_id;
+            $params[':uid3'] = $usuario_id;
         } elseif ($filtro === 'archivo_central') {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Archivado'";
@@ -92,9 +114,23 @@ try {
             $where_clauses[] = "c.idfuncionario_enturno = :uid";
             $where_clauses[] = "c.estado = 'Concluido'";
             $params[':uid'] = $usuario_id;
+        } elseif ($filtro === 'revision') {
+            $where_clauses[] = "(c.idfuncionario_enturno = :uid1 OR c.remitente_id = :uid2 OR EXISTS (
+                SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid3
+            ))";
+            $where_clauses[] = "c.estado IN ('Revisión Archivo', 'Pendiente Archivo')";
+            $params[':uid1'] = $usuario_id;
+            $params[':uid2'] = $usuario_id;
+            $params[':uid3'] = $usuario_id;
         } elseif ($filtro === 'archivo_central') {
-            // Bandeja de Archivo Central: Todos los archivados de la empresa
+            // Bandeja de Archivo Central: Solo archivados donde participó en la línea de vida
+            $where_clauses[] = "(c.idfuncionario_enturno = :uid1 OR c.remitente_id = :uid2 OR EXISTS (
+                SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid3
+            ))";
             $where_clauses[] = "c.estado = 'Archivado'";
+            $params[':uid1'] = $usuario_id;
+            $params[':uid2'] = $usuario_id;
+            $params[':uid3'] = $usuario_id;
         } elseif ($filtro === 'despachados') {
             // Bandeja de Despachados: Correspondencias que pasaron por el usuario y derivó
             $where_clauses[] = "EXISTS (
@@ -103,6 +139,7 @@ try {
                   AND d2.id_funcionario = :uid1
             )";
             $where_clauses[] = "c.idfuncionario_enturno != :uid2";
+            $where_clauses[] = "c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo')";
             $params[':uid1'] = $usuario_id;
             $params[':uid2'] = $usuario_id;
         } else {
@@ -138,7 +175,7 @@ try {
         $stmt_c2->execute([':uid' => $usuario_id]);
         $counts['pendientes'] = $stmt_c2->fetchColumn();
 
-        $stmt_c3 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid1) AND c.idfuncionario_enturno != :uid2 AND c.eliminado_en IS NULL");
+        $stmt_c3 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid1) AND c.idfuncionario_enturno != :uid2 AND c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo') AND c.eliminado_en IS NULL");
         $stmt_c3->execute([':uid1' => $usuario_id, ':uid2' => $usuario_id]);
         $counts['despachados'] = $stmt_c3->fetchColumn();
 
@@ -157,8 +194,12 @@ try {
         $stmt_c5->execute([':uid' => $usuario_id]);
         $counts['concluidos'] = $stmt_c5->fetchColumn();
 
-        $stmt_c6 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND eliminado_en IS NULL");
-        $stmt_c6->execute();
+        $stmt_rev = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE c.estado IN ('Revisión Archivo', 'Pendiente Archivo') AND (c.idfuncionario_enturno = :uid1 OR c.remitente_id = :uid2 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid3)) AND c.eliminado_en IS NULL");
+        $stmt_rev->execute([':uid1' => $usuario_id, ':uid2' => $usuario_id, ':uid3' => $usuario_id]);
+        $counts['revision'] = $stmt_rev->fetchColumn();
+
+        $stmt_c6 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE c.estado = 'Archivado' AND (c.idfuncionario_enturno = :uid1 OR c.remitente_id = :uid2 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid3)) AND c.eliminado_en IS NULL");
+        $stmt_c6->execute([':uid1' => $usuario_id, ':uid2' => $usuario_id, ':uid3' => $usuario_id]);
         $counts['archivo_central'] = $stmt_c6->fetchColumn();
     } elseif ($usuario_cargo === 'Administrador') {
         $stmt_c = $pdo->query("SELECT estado, COUNT(*) as total FROM correspondencia WHERE eliminado_en IS NULL GROUP BY estado");
@@ -172,6 +213,8 @@ try {
         $counts['concluido'] = $estado_counts['Concluido'] ?? 0;
         $counts['archivado'] = $estado_counts['Archivado'] ?? 0;
         $counts['agrupado'] = $estado_counts['Agrupado'] ?? 0;
+        $counts['revision'] = ($estado_counts['Revisión Archivo'] ?? 0) + ($estado_counts['Pendiente Archivo'] ?? 0);
+        $counts['todos_activos'] = $counts['todos'] - $counts['concluido'] - $counts['archivado'] - $counts['revision'];
     } elseif ($usuario_cargo === 'Archivista Central') {
         $stmt_a1 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Derivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
         $stmt_a1->execute([':uid' => $usuario_id]);
@@ -180,6 +223,10 @@ try {
         $stmt_a2 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Aceptado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
         $stmt_a2->execute([':uid' => $usuario_id]);
         $counts['pendientes'] = $stmt_a2->fetchColumn();
+
+        $stmt_rev = $pdo->prepare("SELECT COUNT(*) FROM correspondencia c WHERE c.estado IN ('Revisión Archivo', 'Pendiente Archivo') AND (c.idfuncionario_enturno = :uid1 OR c.remitente_id = :uid2 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :uid3)) AND c.eliminado_en IS NULL");
+        $stmt_rev->execute([':uid1' => $usuario_id, ':uid2' => $usuario_id, ':uid3' => $usuario_id]);
+        $counts['revision'] = $stmt_rev->fetchColumn();
 
         $stmt_a3 = $pdo->prepare("SELECT COUNT(*) FROM correspondencia WHERE estado = 'Archivado' AND idfuncionario_enturno = :uid AND eliminado_en IS NULL");
         $stmt_a3->execute([':uid' => $usuario_id]);
@@ -190,6 +237,8 @@ try {
         
         $counts['no_cursadas'] = $estado_counts['No cursada'] ?? 0;
         $counts['todos'] = array_sum($estado_counts) - $counts['no_cursadas'];
+        $counts['revision'] = ($estado_counts['Revisión Archivo'] ?? 0) + ($estado_counts['Pendiente Archivo'] ?? 0);
+        $counts['todos_activos'] = $counts['todos'] - ($estado_counts['Concluido'] ?? 0) - ($estado_counts['Archivado'] ?? 0) - $counts['revision'];
     }
  
     $data = array();
@@ -247,7 +296,7 @@ try {
                     'Concluido'  => 'Concluido por ',
                     'No cursada' => 'No cursada por ',                    
                     'Archivado'  => 'Archivado por ',
-                    'Pendiente Aprobación Archivo' => 'En revisión por ',
+                    'Revisión Archivo' => 'En revisión por ',
                     'Pendiente Archivo' => 'Por archivar '
                 ];
                 if (isset($prefijos[$estado])) {
@@ -263,8 +312,8 @@ try {
                                                  : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
             }
 
-            if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado', 'Pendiente Aprobación Archivo', 'Pendiente Archivo'])) {
-                $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info', 'Pendiente Aprobación Archivo' => 'text-warning', 'Pendiente Archivo' => 'text-warning'];
+            if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo'])) {
+                $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info', 'Revisión Archivo' => 'text-warning', 'Pendiente Archivo' => 'text-warning'];
                 $color_clase = $colores[$estado] ?? 'text-info';
                 $estado_display .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
             }
@@ -287,6 +336,8 @@ try {
         $btn_desarchivar = '<button type="button" class="btn btn-outline-success btn-sm" style="margin-left:4px;" title="Desarchivar (Retornar a pendientes)" onclick="abrirDesarchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-box-arrow-up"></i></button>';
         $btn_agrupar = '<button type="button" class="btn btn-info btn-sm" style="margin-left:4px;" title="Agrupar con otra correspondencia" onclick="abrirModalAgrupar('.$correspondencia['id'].')"><i class="bi bi-folder-symlink"></i></button>';
         $btn_solicitar_archivo = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Solicitar envío a Archivo Central" onclick="abrirSolicitarArchivo('.$correspondencia['id'].')"><i class="bi bi-archive-fill"></i></button>';
+        $btn_aprobar_archivo = '<button type="button" class="btn btn-success btn-sm" style="margin-left:4px;" title="Aprobar envío a Archivo Central" onclick="abrirAprobarArchivo('.$correspondencia['id'].')"><i class="bi bi-check-all"></i></button>';
+        $btn_archivar_definitivo = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Archivar Físicamente" onclick="abrirArchivarDefinitivo('.$correspondencia['id'].')"><i class="bi bi-archive-fill"></i></button>';
 
         $estado = $correspondencia['estado'];
         if ($estado === 'Agrupado') {
@@ -320,6 +371,11 @@ try {
                 // Otros estados: conservar lógica anterior
                 if ($estado === 'Archivado') {
                     $acciones .= $btn_desarchivar;
+                } elseif (in_array($estado, ['Revisión Archivo', 'Revision Archivo', 'Pendiente Aprobación Archivo'])) {
+                    if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                        $acciones .= $btn_aprobar_archivo;
+                        $acciones .= $btn_devolver; // El jefe puede devolverlo si hay observaciones
+                    }
                 } elseif ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_derivar;
                 }
@@ -346,12 +402,7 @@ try {
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Aceptado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
-                    $acciones .= $btn_derivar;
-                    $acciones .= $btn_concluir;
-                    $acciones .= $btn_agrupar;
-                    if ($es_retrasado) {
-                        $acciones .= $btn_ampliacion;
-                    }
+                    $acciones .= $btn_archivar_definitivo;
                 }
                 $acciones .= $btn_historial;
             } elseif ($estado === 'Concluido') {
@@ -396,6 +447,12 @@ try {
             } elseif ($estado === 'Archivado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
                     $acciones .= $btn_desarchivar;
+                }
+                $acciones .= $btn_historial;
+            } elseif (in_array($estado, ['Revisión Archivo', 'Revision Archivo', 'Pendiente Aprobación Archivo'])) {
+                if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
+                    $acciones .= $btn_aprobar_archivo;
+                    $acciones .= $btn_devolver; // El jefe puede devolverlo si hay observaciones
                 }
                 $acciones .= $btn_historial;
             } else {

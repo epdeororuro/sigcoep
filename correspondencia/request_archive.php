@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$jefe) throw new Exception("No se encontró un funcionario activo para el puesto de Jefe de su Departamento.");
 
             $id_destino = $jefe['id'];
-            $nuevo_estado = 'Pendiente Aprobación Archivo';
+            $nuevo_estado = 'Revisión Archivo';
             $instruccion = "[SOLICITUD APROBACIÓN ARCHIVO] " . (!empty($nota) ? $nota : "Solicito visto bueno para Archivo Central.");
         }
 
