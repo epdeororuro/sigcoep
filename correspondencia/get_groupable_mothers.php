@@ -26,7 +26,7 @@ try {
               AND id != :child_id
               AND agrupado_en IS NULL
               AND eliminado_en IS NULL
-            ORDER BY fecha DESC";
+            ORDER BY fecha_registro DESC";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':uid' => $usuario_id, ':child_id' => $child_id]);

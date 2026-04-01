@@ -33,9 +33,9 @@ $hojaruta = htmlspecialchars($c['hojaruta']);
 $remitente = htmlspecialchars($c['remitente']);
 $referencia = htmlspecialchars($c['referencia']);
 $fojas = htmlspecialchars($c['fojas']);
-$fecha_ts = $c['fecha'];
-$fecha_date = date('d-m-Y', strtotime($fecha_ts));
-$fecha_time = date('H:i', strtotime($fecha_ts));
+$fecha_registro_ts = $c['fecha_registro'];
+$fecha_date = date('d-m-Y', strtotime($fecha_registro_ts));
+$fecha_time = date('H:i', strtotime($fecha_registro_ts));
 
 // preparar listado de destinatarios según derivaciones
 $stmt = $pdo->prepare(

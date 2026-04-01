@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtDerivacion = $pdo->prepare($sqlDerivacion);
         $stmtDerivacion->execute([':id_corr' => $id, ':id_func' => $usuario_id, ':instruccion' => $instruccion]);
 
-        // 3. Actualizar estado a 'Concluido' (Se queda en poder del usuario actual)
-        $sqlCorrespondencia = "UPDATE correspondencia SET estado = 'Concluido', actualizado_en = NOW() WHERE id = :id";
+        // 3. Actualizar estado a 'Concluido', registrar la fecha de conclusión y la fecha de actualización
+        $sqlCorrespondencia = "UPDATE correspondencia SET estado = 'Concluido', fecha_conclusion = NOW(), actualizado_en = NOW() WHERE id = :id";
         $stmtCorrespondencia = $pdo->prepare($sqlCorrespondencia);
         $stmtCorrespondencia->execute([':id' => $id]);
 

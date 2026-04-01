@@ -10,12 +10,12 @@ try {
     // Filtro desde la URL (o POST), para soportar menú y pestañas
     $filtro = $_REQUEST['filtro'] ?? null;
  
-    $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.fecha, c.estado, c.idfuncionario_enturno, c.anexo, 
-                 c.agrupado_en, madre.hojaruta as hojaruta_madre,
+    $base_sql = "SELECT c.id, c.hojaruta, c.remitente, c.referencia, c.fojas, c.foto, c.estado, c.idfuncionario_enturno, c.anexo, 
+                 c.agrupado_en, madre.hojaruta as hojaruta_madre, c.fecha_registro, c.fecha_conclusion,
                  COALESCE(
                      (SELECT MAX(fecha_entrega_derivacion) FROM derivacion WHERE id_correspondencia = c.id AND id_funcionario = c.idfuncionario_enturno), 
                      c.actualizado_en, 
-                     c.fecha
+                     c.fecha_registro
                  ) as fecha_referencia,
                  f.nombre, f.paterno, f.materno 
                  FROM correspondencia c
@@ -121,7 +121,7 @@ try {
         $params[':uid'] = $usuario_id;
     }
  
-    $sql = $base_sql . " WHERE " . implode(" AND ", $where_clauses) . " ORDER BY c.fecha DESC";
+    $sql = $base_sql . " WHERE " . implode(" AND ", $where_clauses) . " ORDER BY c.fecha_registro DESC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
  
@@ -229,6 +229,11 @@ try {
             $estado_display = '<span class="fw-bold">' . $estado_texto . '</span>';
             $estado_display .= '<br><small class="text-secondary fw-semibold">Trámite concluido</small>';
         } else {
+            // Si el estado es Concluido, mostrar la fecha de conclusión
+            if ($estado === 'Concluido' && !empty($correspondencia['fecha_conclusion'])) {
+                $estado_display .= '<br><small class="text-secondary fw-semibold">Concluido el: ' . date('d-m-Y H:i:s', strtotime($correspondencia['fecha_conclusion'])) . '</small>';
+            }
+
             $estado_texto = $estado;
             $nombre_enturno = trim(($correspondencia['nombre'] ?? '') . ' ' . ($correspondencia['paterno'] ?? '') . ' ' . ($correspondencia['materno'] ?? ''));
             $es_dueno = ($correspondencia['idfuncionario_enturno'] == $usuario_id);
@@ -401,6 +406,12 @@ try {
             }
         }
 
+        // Construir la cadena de fecha/hora para mostrar en la tabla
+        $fecha_display = '<span class="text-nowrap"><strong>Registro:</strong> ' . date('d-m-Y H:i:s', strtotime($correspondencia['fecha_registro'])) . '</span>';
+        if ($correspondencia['estado'] === 'Concluido' && !empty($correspondencia['fecha_conclusion'])) {
+            $fecha_display .= '<br><span class="text-nowrap text-primary"><strong>Conclusión:</strong> ' . date('d-m-Y H:i:s', strtotime($correspondencia['fecha_conclusion'])) . '</span>';
+        }
+
         $data[] = array(
             'hojaruta' => $correspondencia['hojaruta'],
             'remitente' => $correspondencia['remitente'],
@@ -408,7 +419,7 @@ try {
             'fojas' => $correspondencia['fojas'],
             'anexo' => $correspondencia['anexo'],
             'foto' => $fotoHtml,
-            'fecha' => date('d-m-Y H:i:s', strtotime($correspondencia['fecha'])),
+            'fecha' => $fecha_display,
             'estado' => $estado_display,
             'acciones' => $acciones
         );

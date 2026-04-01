@@ -16,7 +16,7 @@ $stmt_retrasos = $pdo->prepare("
            COALESCE(
                (SELECT MAX(fecha_entrega_derivacion) FROM derivacion WHERE id_correspondencia = c.id AND id_funcionario = c.idfuncionario_enturno), 
                c.actualizado_en, 
-               c.fecha
+               c.fecha_registro
            ) as fecha_referencia
     FROM correspondencia c 
     WHERE c.estado = 'Aceptado' AND c.idfuncionario_enturno = :uid AND c.eliminado_en IS NULL

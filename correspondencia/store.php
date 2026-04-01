@@ -128,7 +128,7 @@ try {
     }
 
     // Insertar la correspondencia
-    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha, foto, estado, actualizado_en, eliminado_en) 
+    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha_registro, foto, estado, actualizado_en, eliminado_en) 
             VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, :anexo, NOW(), :foto, 'Registrado', NULL, NULL)";
     
     $stmt = $pdo->prepare($sql);

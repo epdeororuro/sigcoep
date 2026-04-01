@@ -10,7 +10,7 @@ if (empty($id)) {
 }
 
 // Obtener datos de la correspondencia
-$stmt = $pdo->prepare("SELECT id, hojaruta, remitente, referencia, fojas, anexo, fecha, estado FROM correspondencia WHERE id = :id");
+$stmt = $pdo->prepare("SELECT id, hojaruta, remitente, referencia, fojas, anexo, fecha_registro, estado FROM correspondencia WHERE id = :id");
 $stmt->execute([':id' => $id]);
 $cor = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$cor) {

@@ -2,10 +2,10 @@
 // db.php - Conexión a la base de datos PDO
 
 // Configuración de la base de datos
-$DB_HOST = 'localhost';       // Cambia si tu MySQL está en otro host
-$DB_NAME = 'sigcoep';
-$DB_USER = 'root';            // Cambia por tu usuario MySQL
-$DB_PASS = '';                // Cambia por tu contraseña MySQL
+$DB_HOST = 'localhost';       // Host de la base de datos (generalmente localhost)
+$DB_NAME = 'sigcoep';         // Nombre de la base de datos
+$DB_USER = 'root';            // Cambia esto en el servidor de la intranet
+$DB_PASS = '';                // Cambia esto en el servidor de la intranet
 
 try {
     // DSN (Data Source Name)
