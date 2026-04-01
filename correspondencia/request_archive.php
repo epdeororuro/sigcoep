@@ -50,14 +50,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             if (empty($user_data['id_area'])) throw new Exception("No tiene un Departamento asignado. Contacte al Administrador.");
             
-            // Obtener al Jefe del Área
-            $stmtArea = $pdo->prepare("SELECT jefe_id FROM area WHERE id = :id_area");
+            // Obtener el PUESTO del Jefe del Área
+            $stmtArea = $pdo->prepare("SELECT jefe_puesto_id FROM area WHERE id = :id_area");
             $stmtArea->execute([':id_area' => $user_data['id_area']]);
             $area = $stmtArea->fetch(PDO::FETCH_ASSOC);
             
-            if (empty($area['jefe_id'])) throw new Exception("Su Departamento no tiene un Jefe asignado. Contacte al Administrador.");
+            if (empty($area['jefe_puesto_id'])) throw new Exception("Su Departamento no tiene un Puesto de Jefe asignado. Contacte al Administrador.");
 
-            $id_destino = $area['jefe_id'];
+            // Encontrar al funcionario que ocupa ese puesto
+            $stmtJefe = $pdo->prepare("SELECT id FROM funcionario WHERE id_puesto = :puesto_id AND estado = 'Activo' LIMIT 1");
+            $stmtJefe->execute([':puesto_id' => $area['jefe_puesto_id']]);
+            $jefe = $stmtJefe->fetch(PDO::FETCH_ASSOC);
+
+            if (!$jefe) throw new Exception("No se encontró un funcionario activo para el puesto de Jefe de su Departamento.");
+
+            $id_destino = $jefe['id'];
             $nuevo_estado = 'Pendiente Aprobación Archivo';
             $instruccion = "[SOLICITUD APROBACIÓN ARCHIVO] " . (!empty($nota) ? $nota : "Solicito visto bueno para Archivo Central.");
         }

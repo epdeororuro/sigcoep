@@ -8,13 +8,15 @@ SELECT
     c.nombre,
     c.descripcion,
     c.estado,
-    f.nombre AS responsable_nombre,
-    f.paterno AS responsable_paterno,
-    f.materno AS responsable_materno
+    resp.nombre AS responsable_nombre,
+    resp.paterno AS responsable_paterno,
+    resp.materno AS responsable_materno
 FROM
     comision c
-LEFT JOIN
-    funcionario f ON c.responsable_id = f.id
+LEFT JOIN 
+    puesto p ON c.responsable_puesto_id = p.id
+LEFT JOIN 
+    funcionario resp ON p.id = resp.id_puesto AND resp.estado = 'Activo'
 WHERE
     c.eliminado_en IS NULL
 ORDER BY

@@ -559,7 +559,7 @@ $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
                 <div class="modal-body">
                     <form id="solicitarAmpliacionForm" action="extend.php" method="post">
                         <input type="hidden" id="ampliacion_correspondencia_id" name="id">
-                        <p>Está a punto de solicitar una ampliación de <strong>2 días hábiles</strong> para atender esta correspondencia.</p>
+                        <p>Está a punto de solicitar una ampliación de <strong>5 días hábiles</strong> para atender esta correspondencia.</p>
                         <p>Esta acción quedará registrada en el historial del documento. ¿Desea continuar?</p>
                         <div class="mb-3 mt-3">
                             <label class="form-label"><strong>Motivo de la ampliación (Justificación):</strong></label>

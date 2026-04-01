@@ -52,10 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         // 3. (Opcional) La fecha de referencia se actualiza automáticamente por la subconsulta en show.php
-        //    al tomar el MAX(fecha_entrega_derivacion), dando los 2 días.
+        //    al tomar el MAX(fecha_entrega_derivacion), dando los 5 días.
 
         $pdo->commit();
-        $_SESSION['mensaje'] = 'Ampliación de plazo solicitada con éxito. Dispone de 2 días adicionales.';
+        $_SESSION['mensaje'] = 'Ampliación de plazo solicitada con éxito. Dispone de 5 días adicionales.';
         $_SESSION['mensaje_tipo'] = 'success';
 
     } catch (Exception $e) {

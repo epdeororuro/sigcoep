@@ -24,6 +24,16 @@ if (isset($_POST['id'])) {
     if (isset($_FILES['foto_nueva']) && $_FILES['foto_nueva']['error'] === UPLOAD_ERR_OK) {
         $tmpName = $_FILES['foto_nueva']['tmp_name'];
         $origName = basename($_FILES['foto_nueva']['name']);
+        
+        // Validar MIME type real por seguridad (evitar scripts camuflados)
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime_type_real = $finfo->file($tmpName);
+        $mimes_permitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+        
+        if (!in_array($mime_type_real, $mimes_permitidos)) {
+            throw new Exception('Error de seguridad: El contenido del archivo no es válido o no está permitido.');
+        }
+        
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
 

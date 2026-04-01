@@ -208,11 +208,11 @@ try {
             }
         }
 
-        // Verificar si está retrasado (estado Aceptado por más de 2 días)
+        // Verificar si está retrasado (estado Aceptado por más de 5 días)
         $es_retrasado = false;
         if ($correspondencia['estado'] === 'Aceptado' && !empty($correspondencia['fecha_referencia'])) {
             $dias_pasados = floor((strtotime(date('Y-m-d')) - strtotime(date('Y-m-d', strtotime($correspondencia['fecha_referencia'])))) / 86400);
-            if ($dias_pasados >= 2) {
+            if ($dias_pasados >= 5) {
                 $es_retrasado = true;
             }
         }
@@ -254,7 +254,7 @@ try {
 
             // Añadir indicador (punto verde o rojo) si el documento está en poder de este funcionario
             if ($es_dueno) {
-                $estado_display .= $es_retrasado ? ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 2 días)">&bull;</span>' 
+                $estado_display .= $es_retrasado ? ' <span class="badge bg-danger blink ms-1" title="Retrasado (más de 5 días)">&bull;</span>' 
                                                  : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
             }
 
@@ -278,7 +278,7 @@ try {
         $btn_historial = '<form action="../derivacion/index.php" method="post" style="display: inline; margin-left:4px;"><input type="hidden" name="id" value="'.$correspondencia['id'].'"><button type="submit" class="btn btn-secondary btn-sm" title="Ver historial de derivaciones"><i class="bi bi-list-ul"></i></button></form>';
         $btn_imprimir = '<button type="button" class="btn btn-info btn-sm ms-1" style="margin-left:4px;" title="Imprimir" onclick="solicitarPagina('.$correspondencia['id'].')"><i class="bi bi-printer"></i></button>';
         $btn_concluir = '<button type="button" class="btn btn-outline-dark btn-sm" style="margin-left:4px;" title="Concluir trámite" onclick="abrirConcluirCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-check2-circle"></i></button>';
-        $btn_ampliacion = '<button type="button" class="btn btn-outline-primary btn-sm" style="margin-left:4px;" title="Solicitar ampliación de plazo (+2 días)" onclick="solicitarAmpliacion('.$correspondencia['id'].')"><i class="bi bi-calendar-plus"></i></button>';
+        $btn_ampliacion = '<button type="button" class="btn btn-outline-primary btn-sm" style="margin-left:4px;" title="Solicitar ampliación de plazo (+5 días)" onclick="solicitarAmpliacion('.$correspondencia['id'].')"><i class="bi bi-calendar-plus"></i></button>';
         $btn_desarchivar = '<button type="button" class="btn btn-outline-success btn-sm" style="margin-left:4px;" title="Desarchivar (Retornar a pendientes)" onclick="abrirDesarchivarCorrespondencia('.$correspondencia['id'].')"><i class="bi bi-box-arrow-up"></i></button>';
         $btn_agrupar = '<button type="button" class="btn btn-info btn-sm" style="margin-left:4px;" title="Agrupar con otra correspondencia" onclick="abrirModalAgrupar('.$correspondencia['id'].')"><i class="bi bi-folder-symlink"></i></button>';
         $btn_solicitar_archivo = '<button type="button" class="btn btn-dark btn-sm" style="margin-left:4px;" title="Solicitar envío a Archivo Central" onclick="abrirSolicitarArchivo('.$correspondencia['id'].')"><i class="bi bi-archive-fill"></i></button>';
