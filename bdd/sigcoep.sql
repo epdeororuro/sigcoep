@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 31-03-2026 a las 22:40:23
+-- Tiempo de generación: 01-04-2026 a las 16:02:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -30,53 +30,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `area` (
   `id` int(11) NOT NULL,
   `nombre` varchar(255) NOT NULL,
+  `jefe_puesto_id` int(11) DEFAULT NULL,
   `jefe_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `comision`
---
-
-CREATE TABLE `comision` (
-  `id` int(11) NOT NULL,
-  `nombre` varchar(255) NOT NULL,
-  `descripcion` text DEFAULT NULL,
-  `responsable_id` int(11) NOT NULL,
-  `estado` varchar(15) NOT NULL DEFAULT 'Activo',
-  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
-  `actualizado_en` timestamp NULL DEFAULT NULL,
-  `eliminado_en` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `comision`
---
-
-INSERT INTO `comision` (`id`, `nombre`, `descripcion`, `responsable_id`, `estado`, `creado_en`, `actualizado_en`, `eliminado_en`) VALUES
-(1, 'Seguridad Privada', '', 8, 'Activo', '2026-03-25 22:01:41', '2026-03-27 17:02:09', NULL);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `comision_miembro`
---
-
-CREATE TABLE `comision_miembro` (
-  `id` int(11) NOT NULL,
-  `comision_id` int(11) NOT NULL,
-  `funcionario_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `comision_miembro`
---
-
-INSERT INTO `comision_miembro` (`id`, `comision_id`, `funcionario_id`) VALUES
-(4, 1, 8),
-(5, 1, 2),
-(6, 1, 11);
 
 -- --------------------------------------------------------
 
@@ -108,7 +64,7 @@ CREATE TABLE `correspondencia` (
 --
 
 INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `anexo`, `fecha`, `foto`, `estado`, `actualizado_en`, `eliminado_en`, `agrupado_en`) VALUES
-(1, '1/2026', 9, NULL, 14, 'interno', 'David Ticona Cabrera', 'Mantenimiento de CPU', 1, '', '2026-03-31 19:54:23', '2026/1-2026.png', 'Aceptado', '2026-03-31 19:58:40', NULL, NULL);
+(1, '1/2026', 9, NULL, 14, 'interno', 'David Ticona Cabrera', 'Mantenimiento de CPU', 1, '', '2026-03-31 21:03:42', '2026/1-2026.png', 'Concluido', '2026-03-31 21:04:45', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -133,8 +89,9 @@ CREATE TABLE `derivacion` (
 --
 
 INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `fecha_entrega_derivacion`, `instruccion_adicional`, `fojas`, `anexo`, `caracter`) VALUES
-(1, 1, 2, '2026-03-31 19:54:37', '2026-03-31 19:57:01', 'Para su atención', '1', NULL, 'Para conocimiento'),
-(2, 1, 14, '2026-03-31 19:57:01', '2026-03-31 19:58:40', '-', '0', NULL, 'Procesar');
+(1, 1, 2, '2026-03-31 21:03:46', '2026-03-31 21:04:21', 'Para su atención', '1', NULL, 'Para conocimiento'),
+(2, 1, 14, '2026-03-31 21:04:21', '2026-03-31 21:04:37', 'Para su atencion', '0', NULL, 'Procesar'),
+(3, 1, 14, '2026-03-31 21:04:45', '2026-03-31 21:04:45', '[CONCLUIDO] Nota: Atendido', '0', NULL, 'Concluido');
 
 -- --------------------------------------------------------
 
@@ -233,22 +190,8 @@ INSERT INTO `puesto` (`id`, `descripcion`, `sigla`) VALUES
 --
 ALTER TABLE `area`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `jefe_id` (`jefe_id`);
-
---
--- Indices de la tabla `comision`
---
-ALTER TABLE `comision`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_comision_responsable` (`responsable_id`);
-
---
--- Indices de la tabla `comision_miembro`
---
-ALTER TABLE `comision_miembro`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_cm_comision` (`comision_id`),
-  ADD KEY `fk_cm_funcionario` (`funcionario_id`);
+  ADD KEY `jefe_id` (`jefe_id`),
+  ADD KEY `fk_area_puesto` (`jefe_puesto_id`);
 
 --
 -- Indices de la tabla `correspondencia`
@@ -293,18 +236,6 @@ ALTER TABLE `area`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `comision`
---
-ALTER TABLE `comision`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT de la tabla `comision_miembro`
---
-ALTER TABLE `comision_miembro`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
@@ -314,7 +245,7 @@ ALTER TABLE `correspondencia`
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
@@ -336,20 +267,8 @@ ALTER TABLE `puesto`
 -- Filtros para la tabla `area`
 --
 ALTER TABLE `area`
-  ADD CONSTRAINT `fk_area_jefe` FOREIGN KEY (`jefe_id`) REFERENCES `funcionario` (`id`) ON DELETE SET NULL;
-
---
--- Filtros para la tabla `comision`
---
-ALTER TABLE `comision`
-  ADD CONSTRAINT `fk_comision_responsable` FOREIGN KEY (`responsable_id`) REFERENCES `funcionario` (`id`);
-
---
--- Filtros para la tabla `comision_miembro`
---
-ALTER TABLE `comision_miembro`
-  ADD CONSTRAINT `fk_cm_comision` FOREIGN KEY (`comision_id`) REFERENCES `comision` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_cm_funcionario` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionario` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_area_jefe` FOREIGN KEY (`jefe_id`) REFERENCES `funcionario` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_area_puesto` FOREIGN KEY (`jefe_puesto_id`) REFERENCES `puesto` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `correspondencia`
@@ -370,8 +289,8 @@ ALTER TABLE `derivacion`
 -- Filtros para la tabla `funcionario`
 --
 ALTER TABLE `funcionario`
-  ADD CONSTRAINT `fk_funcionario_puesto` FOREIGN KEY (`id_puesto`) REFERENCES `puesto` (`id`),
-  ADD CONSTRAINT `fk_funcionario_area` FOREIGN KEY (`id_area`) REFERENCES `area` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_funcionario_area` FOREIGN KEY (`id_area`) REFERENCES `area` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `fk_funcionario_puesto` FOREIGN KEY (`id_puesto`) REFERENCES `puesto` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
