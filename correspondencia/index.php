@@ -44,7 +44,13 @@ $siguienteNumeroHojaRuta = $totalCorrespondencia + 1;
 $anioActualHojaRuta = date('Y');
 $siguienteHojaRuta = $siguienteNumeroHojaRuta . '/' . $anioActualHojaRuta;
 
+$cargo_usuario_sesion = strtolower($_SESSION['usuario_cargo'] ?? '');
 $vista = $_GET['view'] ?? 'activas';
+
+if ($vista === 'concluidos' && $cargo_usuario_sesion === 'secretaria') {
+    $vista = 'activas'; // Redirigir a sus bandejas activas si intenta entrar por URL
+}
+
 $titulo_vista = 'Lista de Correspondencia';
 if ($vista === 'concluidos') $titulo_vista = 'Concluidos y Revisión';
 if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
@@ -102,10 +108,10 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
 
                         <!-- Pestañas (Tabs) de Filtro según el Rol -->
                         <?php 
-                        $cargo_usuario = strtolower($_SESSION['usuario_cargo'] ?? '');
+                        $cargo_usuario = $cargo_usuario_sesion;
                         
                         if ($vista === 'concluidos'): 
-                            $filtro_concluido = in_array($cargo_usuario, ['administrador', 'secretaria']) ? 'concluido' : 'concluidos';
+                            $filtro_concluido = in_array($cargo_usuario, ['administrador']) ? 'concluido' : 'concluidos';
                         ?>
                             <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                                 <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="<?= $filtro_concluido ?>" type="button"><i class="bi bi-check2-all"></i> Concluidos <span class="badge bg-secondary ms-1 count-badge" data-count="<?= $filtro_concluido ?>">0</span></button></li>

@@ -57,18 +57,14 @@ try {
             // 'todos' o null no añade filtro de estado, muestra todo
         }
     } else if ($usuario_cargo === 'Secretaria') {
+        $filtro = empty($filtro) ? 'todos_activos' : $filtro; // Forzar vista por defecto
         if ($filtro === 'no_cursadas') {
             $where_clauses[] = "c.estado = 'No cursada'";
-        } elseif ($filtro === 'concluido') {
-            $where_clauses[] = "c.estado = 'Concluido'";
         } elseif ($filtro === 'archivado') {
             $where_clauses[] = "c.estado = 'Archivado'";
-        } elseif ($filtro === 'revision') {
-            $where_clauses[] = "c.estado IN ('Revisión Archivo', 'Pendiente Archivo')";
-        } elseif ($filtro === 'todos_activos') {
-            $where_clauses[] = "c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo', 'No cursada')";
         } else {
-            $where_clauses[] = "c.estado != 'No cursada'";
+            // 'todos_activos'
+            $where_clauses[] = "c.estado NOT IN ('Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo', 'No cursada')";
         }
     } else if ($usuario_cargo === 'Archivista Central') {
         $filtro = $filtro ?? 'entrantes';
@@ -236,9 +232,7 @@ try {
         $estado_counts = $stmt_c->fetchAll(PDO::FETCH_KEY_PAIR);
         
         $counts['no_cursadas'] = $estado_counts['No cursada'] ?? 0;
-        $counts['todos'] = array_sum($estado_counts) - $counts['no_cursadas'];
-        $counts['revision'] = ($estado_counts['Revisión Archivo'] ?? 0) + ($estado_counts['Pendiente Archivo'] ?? 0);
-        $counts['todos_activos'] = $counts['todos'] - ($estado_counts['Concluido'] ?? 0) - ($estado_counts['Archivado'] ?? 0) - $counts['revision'];
+        $counts['todos_activos'] = array_sum($estado_counts) - ($estado_counts['Concluido'] ?? 0) - ($estado_counts['Archivado'] ?? 0) - ($estado_counts['Revisión Archivo'] ?? 0) - ($estado_counts['Pendiente Archivo'] ?? 0) - $counts['no_cursadas'];
     }
  
     $data = array();
