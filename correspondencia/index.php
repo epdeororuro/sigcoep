@@ -164,11 +164,10 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
                             <table id="correspondencia" class="table table-striped table-bordered align-middle text-center w-100">
                                 <thead class="table-primary text-center">
                                     <tr>
-                                        <th>Hoja de ruta</th>
+                                        <th>Hoja <br>de ruta</th>
                                         <th>Remitente</th>
                                         <th>Referencia</th>
-                                        <th>Fojas</th>
-                                        <th>Anexo</th>
+                                        <th>Fojas / Anexos</th>
                                         <th>Foto</th>
                                         <th>Fecha/Hora</th>
                                         <th>Estado</th>

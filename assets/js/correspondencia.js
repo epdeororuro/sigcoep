@@ -23,7 +23,7 @@ $(document).ready(function() {
                 text: '<i class="bi bi-file-earmark-excel"></i> Excel',
                 className: 'btn btn-success btn-sm',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas 5 (Foto) y 8 (Acciones)
+                    columns: [0, 1, 2, 3, 5, 6] // Omitimos las columnas de Foto y Acciones (nuevos índices)
                 }
             },
             {
@@ -33,7 +33,7 @@ $(document).ready(function() {
                 orientation: 'landscape',
                 pageSize: 'A4',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas de Foto y Acciones
+                    columns: [0, 1, 2, 3, 5, 6] // Omitimos las columnas de Foto y Acciones (nuevos índices)
                 }
             }
         ],
@@ -47,10 +47,9 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'hojaruta' },
-            { data: 'remitente' },
-            { data: 'referencia' },
-            { data: 'fojas' },
-            { data: 'anexo' },
+            { data: 'remitente', width: '150px', className: 'wrap-text' },
+            { data: 'referencia', width: '250px', className: 'wrap-text' },
+            { data: 'fojas_anexo' },
             { data: 'foto', orderable: false, searchable: false },
             { data: 'fecha' },
             { data: 'estado' },

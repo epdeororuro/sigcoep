@@ -21,6 +21,12 @@ table.dataTable td {
     vertical-align: middle !important;
 }
 
+/* Clases para anchos fijos: permite salto de línea y alinea a la izquierda */
+table.dataTable td.wrap-text {
+    white-space: normal !important;
+    text-align: left !important;
+}
+
 .dataTables_wrapper .dataTables_scroll {
     overflow: auto;
 }
