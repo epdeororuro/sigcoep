@@ -47,6 +47,13 @@ foreach ($derivaciones as $d) {
 // Evitar nombres de anexos duplicados si se registran repetidos
 $anexos_acumulados = array_unique($anexos_acumulados);
 $texto_anexos = implode(', ', $anexos_acumulados);
+
+// Array para traducir los meses al español
+$meses_es = [
+    'Jan' => 'Ene', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Abr',
+    'May' => 'May', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Ago',
+    'Sep' => 'Sep', 'Oct' => 'Oct', 'Nov' => 'Nov', 'Dec' => 'Dic'
+];
 ?>
 <!doctype html>
 <html lang="es">
@@ -85,9 +92,9 @@ $texto_anexos = implode(', ', $anexos_acumulados);
                     <?php foreach ($derivaciones as $index => $d): ?>
                         <div class="timeline-item">
                             <div class="time-marker">
-                                <div class="circle_blue"><?php echo date('d-M', strtotime($d['fecha_derivacion'])); ?></div>
+                                <div class="circle_blue"><?php echo strtr(date('d-M', strtotime($d['fecha_derivacion'])), $meses_es); ?></div>
                                 <?php if ($index > 0): ?>
-                                    <div class="circle_green"><?php echo date('d-M', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                    <div class="circle_green"><?php echo strtr(date('d-M', strtotime($d['fecha_entrega_derivacion'])), $meses_es); ?></div>
                                 <?php endif; ?>
                             </div>
                             <div class="card p-2">
@@ -133,12 +140,12 @@ $texto_anexos = implode(', ', $anexos_acumulados);
                     <?php foreach ($derivaciones as $d): ?>
                         <tr>
                             <td><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></td>
-                            <td><?php echo date('d-M-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></td>
+                            <td><?php echo strtr(date('d-M-Y H:i:s', strtotime($d['fecha_derivacion'])), $meses_es); ?></td>
                             <td>
                                 <?php if (!empty($d['fecha_entrega_derivacion'])): ?>
                                     <div class="d-flex flex-column align-items-center">
                                         <span>
-                                            <?php echo date('d-M-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?>
+                                            <?php echo strtr(date('d-M-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])), $meses_es); ?>
                                         </span>
                                     </div>
                                 <?php else: ?>

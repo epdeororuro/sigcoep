@@ -20,7 +20,7 @@
                                 <option value="">-- Seleccione un funcionario --</option>
                                 <?php foreach($funcionarios as $f): ?>
                                     <option value="<?= htmlspecialchars($f['id']) ?>">
-                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?>
+                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?> - <?= htmlspecialchars($f['sigla'] ?? 'S/S') ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -93,7 +93,7 @@
                                 <option value="">-- Seleccione un funcionario --</option>
                                 <?php foreach($funcionarios as $f): ?>
                                     <option value="<?= htmlspecialchars($f['id']) ?>">
-                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?>
+                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?> - <?= htmlspecialchars($f['sigla'] ?? 'S/S') ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -179,7 +179,9 @@
                                 </optgroup>-->
                                 <optgroup label="Funcionarios">
                                     <?php foreach($funcionarios as $f): ?>
-                                    <option value="f_<?= htmlspecialchars($f['id']) ?>"><?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?></option>
+                                    <option value="f_<?= htmlspecialchars($f['id']) ?>">
+                                        <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?> - <?= htmlspecialchars($f['sigla'] ?? 'S/S') ?>
+                                    </option>
                                     <?php endforeach; ?>
                                 </optgroup>
                             </select>

@@ -77,6 +77,17 @@ $(document).ready(function() {
         table.ajax.reload();
     });
 
+    // Función para renderizar la sigla en negrita dentro de Select2
+    function formatFuncionario(state) {
+        if (!state.id) { return state.text; }
+        // Buscar el patrón Nombre Completo - SIGLA
+        var match = state.text.match(/^(.*)\s*-\s*(.*?)$/);
+        if (match) {
+            return $('<span><strong>' + match[1] + '</strong> - ' + match[2] + '</span>');
+        }
+        return state.text;
+    }
+
     // Inicializar Select2 en los modales para que tengan buscador
     $('.modal').on('shown.bs.modal', function () {
         var modalInstance = $(this);
@@ -85,7 +96,9 @@ $(document).ready(function() {
                 $(this).select2({
                     theme: 'bootstrap-5',
                     dropdownParent: modalInstance,
-                    width: '100%'
+                    width: '100%',
+                    templateResult: formatFuncionario,
+                    templateSelection: formatFuncionario
                 });
             }
         });

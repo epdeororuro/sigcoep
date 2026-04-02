@@ -11,7 +11,13 @@ require '../db.php';
 
 // Obtener lista de funcionarios para el selector de destino
 try {
-    $stmtFunc = $pdo->prepare("SELECT id, nombre, paterno, materno FROM funcionario WHERE estado = 'Activo' AND LOWER(rol) NOT IN ('administrador', 'secretaria') ORDER BY nombre, paterno");
+    $stmtFunc = $pdo->prepare("
+        SELECT f.id, f.nombre, f.paterno, f.materno, p.sigla 
+        FROM funcionario f 
+        LEFT JOIN puesto p ON f.id_puesto = p.id 
+        WHERE f.estado = 'Activo' AND LOWER(f.rol) NOT IN ('administrador', 'secretaria', 'archivista central') 
+        ORDER BY f.nombre, f.paterno
+    ");
     $stmtFunc->execute();
     $funcionarios = $stmtFunc->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {

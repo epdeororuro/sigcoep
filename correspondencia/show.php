@@ -366,7 +366,6 @@ try {
                     }
                 }
                 $acciones .= $btn_historial;
-                $acciones .= $btn_imprimir;
             } else {
                 // Otros estados: conservar lógica anterior
                 if ($estado === 'Archivado') {
@@ -380,7 +379,6 @@ try {
                     $acciones .= $btn_derivar;
                 }
                 $acciones .= $btn_historial;
-                $acciones .= $btn_imprimir;
             }
         } else if ($usuario_cargo === 'Secretaria') {
             // Secretaria ve todo. Acciones: editar, eliminar, historial. Iniciar solo si es 'Registrado'.
@@ -392,7 +390,6 @@ try {
                 $acciones .= $btn_desarchivar;
             }
             $acciones .= $btn_historial;
-            $acciones .= $btn_imprimir;
         } else if ($usuario_cargo === 'Archivista Central') {
             if ($estado === 'Derivado') {
                 if ($correspondencia['idfuncionario_enturno'] == $usuario_id) {
@@ -462,6 +459,9 @@ try {
                 $acciones .= $btn_historial;
             }
         }
+
+        // Mostrar siempre el botón de imprimir para todos los roles y en cualquier estado
+        $acciones .= $btn_imprimir;
 
         // Construir la cadena de fecha/hora para mostrar en la tabla
         $fecha_display = '<span class="text-nowrap"><strong>Registro:</strong> ' . date('d-m-Y H:i:s', strtotime($correspondencia['fecha_registro'])) . '</span>';
