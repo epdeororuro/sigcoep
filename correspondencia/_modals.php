@@ -499,3 +499,80 @@
             </div>
         </div>
     </div>
+
+    <!-- ================= MODAL CONFORMAR COMISIÓN (TRABAJO EN GRUPO) ================= -->
+    <div class="modal fade" id="conformarComisionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-people-fill"></i> Conformar Grupo de Trabajo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="conformarComisionForm" action="../grupo/store.php" method="post">
+                        <input type="hidden" id="comision_id_correspondencia" name="id_correspondencia">
+                        
+                        <div class="alert alert-info py-2 small">
+                            <i class="bi bi-info-circle"></i> Primero seleccione a los integrantes y luego asigne a uno de ellos como el Responsable (Líder).
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Integrantes del Grupo:</label>
+                            <select id="comision_integrantes" name="participantes_ids[]" class="form-select border-4" multiple="multiple" required style="width: 100%;">
+                                <?php foreach($funcionarios as $f): ?>
+                                <option value="<?= htmlspecialchars($f['id']) ?>" data-nombre="<?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?> - <?= htmlspecialchars($f['sigla'] ?? '') ?>">
+                                    <?= htmlspecialchars(trim($f['nombre'] . ' ' . ($f['paterno'] ?? '') . ' ' . ($f['materno'] ?? ''))) ?> - <?= htmlspecialchars($f['sigla'] ?? '') ?>
+                                </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Responsable del Grupo (Líder):</label>
+                            <select id="comision_responsable" name="responsable_id" class="form-select border-4" required disabled style="width: 100%;">
+                                <option value="">-- Primero seleccione integrantes --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Fecha Límite para Informes:</label>
+                            <input type="datetime-local" class="form-control border-4" id="fecha_limite_grupo" name="fecha_limite" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning text-dark fw-bold" form="conformarComisionForm"><i class="bi bi-diagram-3"></i> Conformar Grupo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL SUBIR INFORME DE GRUPO ================= -->
+    <div class="modal fade" id="subirInformeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-primary">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-cloud-upload"></i> Subir Informe al Grupo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="subirInformeForm" action="../grupo/upload_report.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" id="informe_id_correspondencia" name="id_correspondencia">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Contenido / Conclusión:</label>
+                            <textarea class="form-control border-4" name="contenido" rows="3" required placeholder="Redacte un resumen, conclusión o contenido de su informe..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Archivo Adjunto (PDF o Imagen):</label>
+                            <input type="file" class="form-control border-4" name="archivo_informe" accept="image/*,.pdf" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" form="subirInformeForm"><i class="bi bi-send"></i> Enviar Informe</button>
+                </div>
+            </div>
+        </div>
+    </div>

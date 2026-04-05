@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-04-2026 a las 19:54:11
+-- Tiempo de generación: 05-04-2026 a las 07:19:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -74,7 +74,8 @@ CREATE TABLE `correspondencia` (
 --
 
 INSERT INTO `correspondencia` (`id`, `hojaruta`, `remitente_id`, `remitente_externo`, `idfuncionario_enturno`, `tipo_remitente`, `remitente`, `referencia`, `fojas`, `anexo`, `fecha_registro`, `fecha_conclusion`, `foto`, `estado`, `actualizado_en`, `eliminado_en`, `agrupado_en`) VALUES
-(1, '1/2026', 9, NULL, 14, 'interno', 'David Ticona Cabrera', 'Mantenimiento de CPU', 1, '', '2026-04-01 16:29:07', '2026-04-01 17:19:22', '2026/1-2026.png', 'Concluido', '2026-04-01 17:19:22', NULL, NULL);
+(1, '1/2026', 9, NULL, 14, 'interno', 'David Ticona Cabrera', 'Mantenimiento de CPU', 1, '', '2026-04-01 16:29:07', '2026-04-01 17:19:22', '2026/1-2026.png', 'Concluido', '2026-04-01 17:19:22', NULL, NULL),
+(2, '2/2026', NULL, 'SPIE', 2, 'externo', 'SPIE', 'Preparar Informes simultaneos de distintas areas de la EPDEOR', 2, 'Folder', '2026-04-05 05:16:18', NULL, '2026/2-2026.png', 'Iniciado', '2026-04-05 05:16:24', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -101,7 +102,8 @@ CREATE TABLE `derivacion` (
 INSERT INTO `derivacion` (`id`, `id_correspondencia`, `id_funcionario`, `fecha_derivacion`, `fecha_entrega_derivacion`, `instruccion_adicional`, `fojas`, `anexo`, `caracter`) VALUES
 (1, 1, 2, '2026-04-01 17:15:17', '2026-04-01 17:15:51', 'Para su atención', '1', NULL, 'Para conocimiento'),
 (2, 1, 14, '2026-04-01 17:15:51', '2026-04-01 17:18:55', 'Para su atencion', '0', NULL, 'Procesar'),
-(3, 1, 14, '2026-04-01 17:19:22', '2026-04-01 17:19:22', '[CONCLUIDO] Nota: Se atendió la solicitud de mantenimiento.', '0', NULL, 'Concluido');
+(3, 1, 14, '2026-04-01 17:19:22', '2026-04-01 17:19:22', '[CONCLUIDO] Nota: Se atendió la solicitud de mantenimiento.', '0', NULL, 'Concluido'),
+(4, 2, 2, '2026-04-05 05:16:24', NULL, 'Para su atención', '2', NULL, 'Para conocimiento');
 
 -- --------------------------------------------------------
 
@@ -249,13 +251,13 @@ ALTER TABLE `area`
 -- AUTO_INCREMENT de la tabla `correspondencia`
 --
 ALTER TABLE `correspondencia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `derivacion`
 --
 ALTER TABLE `derivacion`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `funcionario`
@@ -300,6 +302,94 @@ ALTER TABLE `derivacion`
 ALTER TABLE `funcionario`
   ADD CONSTRAINT `fk_funcionario_area` FOREIGN KEY (`id_area`) REFERENCES `area` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_funcionario_puesto` FOREIGN KEY (`id_puesto`) REFERENCES `puesto` (`id`);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `derivacion_grupo`
+--
+
+CREATE TABLE `derivacion_grupo` (
+  `id` int(11) NOT NULL,
+  `correspondencia_id` int(11) NOT NULL,
+  `creado_por` int(11) NOT NULL,
+  `responsable_id` int(11) NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_limite` datetime DEFAULT NULL,
+  `estado` enum('activo','en_proceso','consolidado','cerrado') DEFAULT 'activo'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `derivacion_grupo_detalle`
+--
+
+CREATE TABLE `derivacion_grupo_detalle` (
+  `id` int(11) NOT NULL,
+  `derivacion_grupo_id` int(11) NOT NULL,
+  `funcionario_id` int(11) NOT NULL,
+  `es_principal` tinyint(1) DEFAULT 0,
+  `estado` enum('pendiente','enviado','aprobado','rechazado') DEFAULT 'pendiente',
+  `fecha_respuesta` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `informes`
+--
+
+CREATE TABLE `informes` (
+  `id` int(11) NOT NULL,
+  `derivacion_grupo_detalle_id` int(11) NOT NULL,
+  `contenido` text DEFAULT NULL,
+  `archivo_adjunto` varchar(255) DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
+  `estado` enum('enviado','aprobado','rechazado') DEFAULT 'enviado',
+  `fecha` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Índices para tablas volcadas (añadidos)
+--
+ALTER TABLE `derivacion_grupo`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_grupo_correspondencia` (`correspondencia_id`),
+  ADD KEY `fk_grupo_creador` (`creado_por`),
+  ADD KEY `fk_grupo_responsable` (`responsable_id`);
+
+ALTER TABLE `derivacion_grupo_detalle`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unq_grupo_funcionario` (`derivacion_grupo_id`,`funcionario_id`),
+  ADD KEY `fk_detalle_grupo` (`derivacion_grupo_id`),
+  ADD KEY `fk_detalle_funcionario` (`funcionario_id`);
+
+ALTER TABLE `informes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_informe_detalle` (`derivacion_grupo_detalle_id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas (añadidos)
+--
+ALTER TABLE `derivacion_grupo` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `derivacion_grupo_detalle` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `informes` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas (añadidos)
+--
+ALTER TABLE `derivacion_grupo`
+  ADD CONSTRAINT `fk_grupo_correspondencia` FOREIGN KEY (`correspondencia_id`) REFERENCES `correspondencia` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_grupo_creador` FOREIGN KEY (`creado_por`) REFERENCES `funcionario` (`id`),
+  ADD CONSTRAINT `fk_grupo_responsable` FOREIGN KEY (`responsable_id`) REFERENCES `funcionario` (`id`);
+
+ALTER TABLE `derivacion_grupo_detalle`
+  ADD CONSTRAINT `fk_detalle_funcionario` FOREIGN KEY (`funcionario_id`) REFERENCES `funcionario` (`id`),
+  ADD CONSTRAINT `fk_detalle_grupo` FOREIGN KEY (`derivacion_grupo_id`) REFERENCES `derivacion_grupo` (`id`) ON DELETE CASCADE;
+
+ALTER TABLE `informes`
+  ADD CONSTRAINT `fk_informe_detalle` FOREIGN KEY (`derivacion_grupo_detalle_id`) REFERENCES `derivacion_grupo_detalle` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

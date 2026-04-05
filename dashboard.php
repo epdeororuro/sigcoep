@@ -34,15 +34,18 @@ if(!isset($_SESSION['usuario_id'])){
         </div>
         <a href="inicio.php" target="iframe_content"><i class="bi bi-house-door"></i> Inicio</a>
         <?php if(strtolower($_SESSION['usuario_cargo']) == 'administrador' || strtolower($_SESSION['usuario_cargo']) == 'secretaria') { ?>
-            <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person"></i> Funcionario</a>
+            <a href="<?= BASE_URL ?>funcionario/index.php" target="iframe_content"><i class="bi bi-person text-primary"></i> Funcionario</a>
             <!-- <a href="<?= BASE_URL ?>comision/index.php" target="iframe_content"><i class="bi bi-people"></i> Comisiones</a> -->
         <?php } ?>
-        <a href="<?= BASE_URL ?>correspondencia/index.php?view=activas" target="iframe_content"><i class="bi bi-envelope-paper"></i> Correspondencia</a>
+        <a href="<?= BASE_URL ?>correspondencia/index.php?view=activas" target="iframe_content"><i class="bi bi-envelope-paper text-success"></i> Correspondencia</a>
         <?php if(!in_array(strtolower($_SESSION['usuario_cargo']), ['archivista central', 'secretaria'])): ?>
-            <a href="<?= BASE_URL ?>correspondencia/index.php?view=concluidos" target="iframe_content"><i class="bi bi-check2-circle"></i> Concluidos y Revisión</a>
+            <a href="<?= BASE_URL ?>grupo/index.php" target="iframe_content"><i class="bi bi-diagram-3 text-info"></i> Grupos de Trabajo</a>
         <?php endif; ?>
-        <a href="<?= BASE_URL ?>correspondencia/index.php?view=archivo" target="iframe_content"><i class="bi bi-archive"></i> Archivo Central</a>
-        <a href="logout.php"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</a>
+        <?php if(!in_array(strtolower($_SESSION['usuario_cargo']), ['archivista central', 'secretaria'])): ?>
+            <a href="<?= BASE_URL ?>correspondencia/index.php?view=concluidos" target="iframe_content"><i class="bi bi-check2-circle" style="color: #6f42c1;"></i> Procesos Concluidos</a>
+        <?php endif; ?>
+        <a href="<?= BASE_URL ?>correspondencia/index.php?view=archivo" target="iframe_content"><i class="bi bi-archive text-warning"></i> Archivo Central</a>
+        <a href="logout.php"><i class="bi bi-box-arrow-right text-danger"></i> Cerrar sesión</a>
     </div>
     <!-- Navbar superior -->
     <div class="navbar-custom d-flex justify-content-between align-items-center px-4">

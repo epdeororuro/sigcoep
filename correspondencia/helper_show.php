@@ -29,7 +29,8 @@ function obtenerEstadoHtml($correspondencia, $es_retrasado, $usuario_id) {
         $prefijos = [
             'Aceptado' => 'Aceptado por ', 'Derivado' => 'Derivado a ', 'Iniciado' => 'Iniciado para ',
             'Rechazado' => 'Rechazado por ', 'Concluido' => 'Concluido por ', 'No cursada' => 'No cursada por ',                    
-            'Archivado' => 'Archivado por ', 'Revisión Archivo' => 'En revisión por ', 'Pendiente Archivo' => 'Por archivar '
+            'Archivado' => 'Archivado por ', 'Revisión Archivo' => 'En revisión por ', 'Pendiente Archivo' => 'Por archivar ',
+            'En Grupo' => 'En trabajo grupal a cargo de '
         ];
         if (isset($prefijos[$estado])) $estado_texto = $prefijos[$estado];
     }
@@ -41,8 +42,8 @@ function obtenerEstadoHtml($correspondencia, $es_retrasado, $usuario_id) {
                                : ' <span class="badge bg-success blink ms-1" title="En su poder">&bull;</span>';
     }
 
-    if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo'])) {
-        $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info', 'Revisión Archivo' => 'text-warning', 'Pendiente Archivo' => 'text-warning'];
+    if (!empty($nombre_enturno) && in_array($estado, ['Aceptado', 'Derivado', 'Iniciado', 'Rechazado', 'No cursada', 'Concluido', 'Archivado', 'Revisión Archivo', 'Pendiente Archivo', 'En Grupo'])) {
+        $colores = ['Rechazado' => 'text-danger', 'No cursada' => 'text-danger', 'Aceptado' => 'text-primary', 'Derivado' => 'text-success', 'Concluido' => 'text-secondary', 'Archivado' => 'text-dark', 'Iniciado' => 'text-info', 'Revisión Archivo' => 'text-warning', 'Pendiente Archivo' => 'text-warning', 'En Grupo' => 'text-warning'];
         $color_clase = $colores[$estado] ?? 'text-info';
         $html .= '<br><small class="' . $color_clase . ' fw-semibold">' . htmlspecialchars($nombre_enturno) . '</small>';
     }
@@ -72,6 +73,7 @@ function obtenerAccionesHtml($correspondencia, $usuario_cargo, $usuario_id, $es_
     $btn_solicitar_archivo = '<li><a class="dropdown-item" href="#" onclick="abrirSolicitarArchivo('.$id_corr.'); return false;"><i class="bi bi-archive-fill text-dark me-2"></i> Enviar a Archivo Central</a></li>';
     $btn_aprobar_archivo = '<li><a class="dropdown-item" href="#" onclick="abrirAprobarArchivo('.$id_corr.'); return false;"><i class="bi bi-check-all text-success me-2"></i> Aprobar Archivo</a></li>';
     $btn_archivar_definitivo = '<li><a class="dropdown-item" href="#" onclick="abrirArchivarDefinitivo('.$id_corr.'); return false;"><i class="bi bi-archive-fill text-dark me-2"></i> Archivar Físicamente</a></li>';
+    $btn_subir_informe = '<li><a class="dropdown-item" href="#" onclick="abrirModalSubirInforme('.$id_corr.'); return false;"><i class="bi bi-cloud-upload text-primary me-2"></i> Subir Informe / Analizar</a></li>';
 
     $acciones_list = '';
     $es_dueno = ($correspondencia['idfuncionario_enturno'] == $usuario_id);
@@ -117,7 +119,12 @@ function obtenerAccionesHtml($correspondencia, $usuario_cargo, $usuario_id, $es_
         }
     } else if (in_array($usuario_cargo, ['Gerente', 'Administrativo'])) {
         if ($estado === 'Iniciado') {
-            if ($es_dueno) $acciones_list .= $btn_derivar . (($usuario_cargo === 'Gerente') ? $btn_no_cursada : $btn_rechazar);
+            if ($es_dueno) {
+                $acciones_list .= $btn_derivar . (($usuario_cargo === 'Gerente') ? $btn_no_cursada : $btn_rechazar);
+                if ($usuario_cargo === 'Gerente') {
+                    $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="abrirModalComision('.$id_corr.'); return false;"><i class="bi bi-people-fill text-warning me-2"></i> Conformar Grupo</a></li>';
+                }
+            }
             $acciones_list .= $btn_historial;
         } elseif ($estado === 'Derivado') {
             if ($es_dueno) $acciones_list .= $btn_aceptar . $btn_devolver;
@@ -125,6 +132,9 @@ function obtenerAccionesHtml($correspondencia, $usuario_cargo, $usuario_id, $es_
         } elseif ($estado === 'Aceptado') {
             if ($es_dueno) {
                 $acciones_list .= $btn_derivar . $btn_concluir . $btn_agrupar . ($es_retrasado ? $btn_ampliacion : '');
+            if (!in_array($usuario_cargo, ['Secretaria', 'Archivista Central'])) {
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="abrirModalComision('.$id_corr.'); return false;"><i class="bi bi-people-fill text-warning me-2"></i> Conformar Grupo</a></li>';
+            }
             }
             $acciones_list .= $btn_historial;
         } elseif ($estado === 'Concluido') {

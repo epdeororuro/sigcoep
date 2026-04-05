@@ -344,3 +344,51 @@ $(document).on('show.bs.modal', '#createCorrespondenciaModal', function() {
         $('#select_remitente_interno').val('').trigger('change');
     }
 });
+
+// NUEVA FUNCIÓN: Abrir modal para Conformar Grupo (Comisión)
+function abrirModalComision(id) {
+    $('#comision_id_correspondencia').val(id);
+    $('#conformarComisionForm')[0].reset();
+    
+    // Establecer fecha mínima actual en el input datetime-local para prevenir fechas pasadas
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    $('#fecha_limite_grupo').attr('min', now.toISOString().slice(0,16));
+
+    // Limpiar y deshabilitar el selector de responsable
+    $('#comision_responsable').empty().append('<option value="">-- Primero seleccione integrantes --</option>').prop('disabled', true);
+
+    // Limpiar selector de Select2
+    if ($('#comision_integrantes').hasClass("select2-hidden-accessible")) {
+        $('#comision_integrantes').val([]).trigger('change.select2');
+    }
+    
+    $('#conformarComisionModal').modal('show');
+}
+
+// Actualizar dinámicamente el selector de Responsable según los integrantes seleccionados
+$(document).on('change', '#comision_integrantes', function() {
+    var selectedOptions = $(this).find('option:selected');
+    var responsableSelect = $('#comision_responsable');
+    var currentResponsable = responsableSelect.val();
+    responsableSelect.empty();
+    if (selectedOptions.length === 0) {
+        responsableSelect.append('<option value="">-- Primero seleccione integrantes --</option>').prop('disabled', true);
+    } else {
+        responsableSelect.append('<option value="">-- Seleccione al Responsable --</option>').prop('disabled', false);
+        selectedOptions.each(function() {
+            responsableSelect.append('<option value="' + $(this).val() + '">' + $(this).attr('data-nombre') + '</option>');
+        });
+        if (currentResponsable && responsableSelect.find('option[value="' + currentResponsable + '"]').length > 0) {
+            responsableSelect.val(currentResponsable);
+        }
+    }
+    responsableSelect.trigger('change');
+});
+
+// NUEVA FUNCIÓN: Abrir modal para Subir Informe de Grupo
+function abrirModalSubirInforme(id) {
+    $('#informe_id_correspondencia').val(id);
+    $('#subirInformeForm')[0].reset();
+    $('#subirInformeModal').modal('show');
+}

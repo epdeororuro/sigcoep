@@ -172,7 +172,7 @@ try {
             SUM(estado = 'Iniciado') as para_iniciar,
             SUM(estado = 'Concluido' AND idfuncionario_enturno = :u6) as concluidos,
             SUM(estado IN ('Revisión Archivo', 'Pendiente Archivo') AND (idfuncionario_enturno = :u7 OR remitente_id = :u8 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :u9))) as revision,
-            SUM(estado = 'Archivado' AND (idfuncionario_enturno = :u10 OR remitente_id = :u11 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :u12))) as archivo_central
+                SUM(estado = 'Archivado' AND (idfuncionario_enturno = :u10 OR remitente_id = :u11 OR EXISTS (SELECT 1 FROM derivacion d2 WHERE d2.id_correspondencia = c.id AND d2.id_funcionario = :u12))) as archivo_central
         FROM correspondencia c WHERE eliminado_en IS NULL";
         $stmt_counts = $pdo->prepare($sql_counts);
         $stmt_counts->execute([

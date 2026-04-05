@@ -80,6 +80,36 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
 
           </div>
         </div>
+        
+        <!-- SECCIÓN PROVISIONAL DE CREDENCIALES PARA DEMOSTRACIÓN -->
+        <div class="alert alert-info mt-3 shadow-sm border-info" style="font-size: 0.85rem;">
+          <h6 class="alert-heading fw-bold mb-1"><i class="bi bi-info-circle"></i> Credenciales de Prueba (Todos)</h6>
+          <div style="max-height: 200px; overflow-y: auto;" class="pe-2">
+              <ul class="mb-0 ps-3 text-dark">
+                <li><strong>Administrador:</strong> admin / 123456789</li>
+                <li><strong>Gerente (Elizabeth Martinez):</strong> emartinez / 7343846</li>
+                <li><strong>Secretaria (Ventanilla):</strong> vunica / 123456</li>
+                <li><strong>Archivista Central:</strong> acentral / 987654</li>
+                <li><strong>Admin. (Mirian Rada):</strong> mrada / 5067188</li>
+                <li><strong>Admin. (Carmen Rufino):</strong> crufino / 3544712</li>
+                <li><strong>Admin. (Maricruz Mamani):</strong> mmamani / 5778923</li>
+                <li><strong>Admin. (Belinda Perez):</strong> bperez / 4058090</li>
+                <li><strong>Admin. (Erwin Gonzales):</strong> egonzales / 7260666</li>
+                <li><strong>Admin. (Carlos Rodriguez):</strong> crodriguez / 5732101</li>
+                <li><strong>Admin. (David Ticona):</strong> dticona / 7423343</li>
+                <li><strong>Admin. (Jeanneth Chambi):</strong> jchambi / 7270861</li>
+                <li><strong>Admin. (Guadalupe Gutierrez):</strong> ggutierrez / 13857686</li>
+                <li><strong>Admin. (Marina Alegre):</strong> malegre / 5755448</li>
+                <li><strong>Admin. (Maria Colque):</strong> mcolque / 73007898</li>
+                <li><strong>Admin. (Reynaldo Flores):</strong> rflores / 7403044</li>
+                <li><strong>Admin. (Milton Torrez):</strong> mtorrez / 7292221</li>
+                <li><strong>Admin. (Marina Alejandro):</strong> malejandro / 7376273</li>
+                <li><strong>Admin. (Scarleth Encinas):</strong> s- / 4069420</li>
+                <li><strong>Admin. (Jorge Quillaguaman):</strong> jquillaguaman / 4060082</li>
+              </ul>
+          </div>
+        </div>
+        
       </div>
     </div>
 

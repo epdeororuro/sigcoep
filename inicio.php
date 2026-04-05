@@ -69,12 +69,25 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <?php endif; ?>
 
+        <!-- Grupos de Trabajo -->
+        <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['archivista central', 'secretaria'])): ?>
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card text-dark bg-info shadow hover-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-diagram-3"></i> Grupos de Trabajo</h5>
+                    <p class="card-text">Tareas y comisiones simultáneas.</p>
+                    <a href="grupo/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+
         <!-- Concluidos y Revisión -->
         <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['archivista central', 'secretaria'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card text-white bg-secondary shadow hover-card">
+            <div class="card text-white shadow hover-card" style="background-color: #6f42c1;">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-check2-circle"></i> Concluidos</h5>
+                    <h5 class="card-title"><i class="bi bi-check2-circle"></i> Procesos Concluidos</h5>
                     <p class="card-text">Trámites finalizados o en revisión.</p>
                     <a href="correspondencia/index.php?view=concluidos" class="btn btn-light btn-sm stretched-link">Ir</a>
                 </div>

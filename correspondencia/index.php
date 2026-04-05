@@ -52,7 +52,7 @@ if ($vista === 'concluidos' && $cargo_usuario_sesion === 'secretaria') {
 }
 
 $titulo_vista = 'Lista de Correspondencia';
-if ($vista === 'concluidos') $titulo_vista = 'Concluidos y Revisión';
+if ($vista === 'concluidos') $titulo_vista = 'Procesos Concluidos';
 if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
 ?> 
 <!doctype html>
@@ -89,7 +89,7 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
                             <h3 class="mb-0"><?= $titulo_vista ?></h3>
                             <div class="d-flex align-items-center flex-wrap gap-2">
                                 <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
-                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente'])): ?> <form id="formLibroEntregas" action="delivery_history.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
+                                <?php if (!in_array(strtolower($_SESSION['usuario_cargo']), ['gerente']) && $vista === 'activas'): ?> <form id="formLibroEntregas" action="delivery_history.php" method="POST" class="d-flex align-items-center bg-body-secondary border p-1 rounded">
                                     <span class="ms-1 me-2 small fw-bold text-body">Historial de Entregas:</span>
                                     <input type="date" name="fecha_inicio" class="form-control form-control-sm me-1" value="<?= date('Y-m-d') ?>" required title="Fecha de inicio">
                                     <input type="date" name="fecha_fin" class="form-control form-control-sm me-2" value="<?= date('Y-m-d') ?>" max="<?= date('Y-m-d') ?>" required title="Fecha de fin">
@@ -115,7 +115,7 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
                         ?>
                             <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                                 <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="<?= $filtro_concluido ?>" type="button"><i class="bi bi-check2-all"></i> Concluidos <span class="badge bg-secondary ms-1 count-badge" data-count="<?= $filtro_concluido ?>">0</span></button></li>
-                                <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="revision" type="button"><i class="bi bi-search"></i> En Revisión <span class="badge bg-secondary ms-1 count-badge" data-count="revision">0</span></button></li>
+                                <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="revision" type="button"><i class="bi bi-search"></i> En revisión del Archivista <span class="badge bg-secondary ms-1 count-badge" data-count="revision">0</span></button></li>
                             </ul>
                         <?php elseif ($vista === 'archivo'): 
                             $filtro_archivo = in_array($cargo_usuario, ['administrador', 'secretaria']) ? 'archivado' : 'archivo_central';
@@ -135,6 +135,7 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
                             <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                                 <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button></li>
+                                <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="en_grupo" type="button"><i class="bi bi-people"></i> En Grupo <span class="badge bg-warning text-dark ms-1 count-badge" data-count="en_grupo">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Para iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button></li>
                             </ul>
