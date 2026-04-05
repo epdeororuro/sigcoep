@@ -23,7 +23,7 @@ $(document).ready(function() {
                 text: '<i class="bi bi-file-earmark-excel"></i> Excel',
                 className: 'btn btn-success btn-sm',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas 5 (Foto) y 8 (Acciones)
+                    columns: [0, 1, 2, 3, 5, 6] // Omitimos las columnas de Foto y Acciones (nuevos índices)
                 }
             },
             {
@@ -33,7 +33,7 @@ $(document).ready(function() {
                 orientation: 'landscape',
                 pageSize: 'A4',
                 exportOptions: {
-                    columns: [0, 1, 2, 3, 4, 6, 7] // Omitimos las columnas de Foto y Acciones
+                    columns: [0, 1, 2, 3, 5, 6] // Omitimos las columnas de Foto y Acciones (nuevos índices)
                 }
             }
         ],
@@ -47,10 +47,9 @@ $(document).ready(function() {
         },
         columns: [
             { data: 'hojaruta' },
-            { data: 'remitente' },
-            { data: 'referencia' },
-            { data: 'fojas' },
-            { data: 'anexo' },
+            { data: 'remitente', width: '150px', className: 'wrap-text' },
+            { data: 'referencia', width: '250px', className: 'wrap-text' },
+            { data: 'fojas_anexo' },
             { data: 'foto', orderable: false, searchable: false },
             { data: 'fecha' },
             { data: 'estado' },
@@ -77,6 +76,17 @@ $(document).ready(function() {
         table.ajax.reload();
     });
 
+    // Función para renderizar la sigla en negrita dentro de Select2
+    function formatFuncionario(state) {
+        if (!state.id) { return state.text; }
+        // Buscar el patrón Nombre Completo - SIGLA
+        var match = state.text.match(/^(.*)\s*-\s*(.*?)$/);
+        if (match) {
+            return $('<span><strong>' + match[1] + '</strong> - ' + match[2] + '</span>');
+        }
+        return state.text;
+    }
+
     // Inicializar Select2 en los modales para que tengan buscador
     $('.modal').on('shown.bs.modal', function () {
         var modalInstance = $(this);
@@ -85,7 +95,9 @@ $(document).ready(function() {
                 $(this).select2({
                     theme: 'bootstrap-5',
                     dropdownParent: modalInstance,
-                    width: '100%'
+                    width: '100%',
+                    templateResult: formatFuncionario,
+                    templateSelection: formatFuncionario
                 });
             }
         });
@@ -185,13 +197,18 @@ function abrirAceptarCorrespondencia(id) {
     $('#aceptarCorrespondenciaModal').modal('show');
 }
 
-// Abrir modal para archivar
-function abrirArchivarCorrespondencia(id) {
-    $('#archivar_correspondencia_id').val(id);
-    // Resetear el formulario para que siempre inicie en "Archivo Personal"
-    $('#archivarCorrespondenciaForm')[0].reset();
-    $('#archivo_personal').prop('checked', true);
-    $('#archivarCorrespondenciaModal').modal('show');
+// Abrir modal para concluir
+function abrirConcluirCorrespondencia(id) {
+    $('#concluir_correspondencia_id').val(id);
+    $('#concluirCorrespondenciaForm')[0].reset();
+    $('#concluirCorrespondenciaModal').modal('show');
+}
+
+// Abrir modal para solicitar archivo
+function abrirSolicitarArchivo(id) {
+    $('#solicitar_archivo_id').val(id);
+    $('#solicitarArchivoForm')[0].reset();
+    $('#solicitarArchivoModal').modal('show');
 }
 
 // NUEVA FUNCIÓN: Abrir modal para solicitar ampliación
@@ -241,6 +258,49 @@ function abrirModalDevolucion(id) {
     $('#rechazarModalText').html('La correspondencia será devuelta al remitente anterior. Por favor, especifique el motivo:');
     $('#rechazarModalSubmitBtn').text('Devolver').removeClass('btn-warning').addClass('btn-danger');
     $('#rechazarCorrespondenciaModal').modal('show');
+}
+
+// Abrir modal para agrupar correspondencia
+function abrirModalAgrupar(id) {
+    $('#agrupar_id_hija').val(id);
+    
+    // Limpiar el select y mostrar un estado de carga mientras se obtienen los datos
+    $('#agrupar_id_madre').empty().append('<option value="">Cargando opciones...</option>').trigger('change');
+    $('#agruparCorrespondenciaModal').modal('show');
+
+    // Cargar las opciones vía AJAX excluyendo la correspondencia actual
+    $.ajax({
+        url: 'get_groupable_mothers.php',
+        type: 'GET',
+        data: { child_id: id },
+        dataType: 'json',
+        success: function(response) {
+            $('#agrupar_id_madre').empty().append('<option value="">-- Seleccione una correspondencia --</option>');
+            if (response && !response.error) {
+                $.each(response, function(index, madre) {
+                    $('#agrupar_id_madre').append('<option value="' + madre.id + '">HR: ' + madre.hojaruta + ' - ' + madre.referencia + '</option>');
+                });
+            }
+            $('#agrupar_id_madre').trigger('change'); // Refrescar el Select2
+        },
+        error: function() {
+            $('#agrupar_id_madre').empty().append('<option value="">Error al cargar opciones</option>').trigger('change');
+        }
+    });
+}
+
+// Abrir modal para aprobar archivo (Jefe)
+function abrirAprobarArchivo(id) {
+    $('#aprobar_archivo_id').val(id);
+    $('#aprobarArchivoForm')[0].reset();
+    $('#aprobarArchivoModal').modal('show');
+}
+
+// Abrir modal para archivar definitivo (Archivista Central)
+function abrirArchivarDefinitivo(id) {
+    $('#archivar_definitivo_id').val(id);
+    $('#archivarDefinitivoForm')[0].reset();
+    $('#archivarDefinitivoModal').modal('show');
 }
 
 // Manejo de Checkbox para remitente externo (Crear)

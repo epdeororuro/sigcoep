@@ -16,7 +16,7 @@ $stmt_retrasos = $pdo->prepare("
            COALESCE(
                (SELECT MAX(fecha_entrega_derivacion) FROM derivacion WHERE id_correspondencia = c.id AND id_funcionario = c.idfuncionario_enturno), 
                c.actualizado_en, 
-               c.fecha
+               c.fecha_registro
            ) as fecha_referencia
     FROM correspondencia c 
     WHERE c.estado = 'Aceptado' AND c.idfuncionario_enturno = :uid AND c.eliminado_en IS NULL
@@ -44,51 +44,56 @@ $retrasos = $stmt_retrasos->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="row mt-4">
         <!-- Registrar Usuarios -->
-        <?php if (isset($_SESSION['usuario_cargo']) && strtolower($_SESSION['usuario_cargo']) === 'administrador' ): ?>
+        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador', 'secretaria'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-primary shadow hover-card">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-person-plus"></i> Funcionarios</h5>
-                    <p class="card-text">Registrar nuevos funcionarios.</p>
+                    <h5 class="card-title"><i class="bi bi-person"></i> Funcionarios</h5>
+                    <p class="card-text">Registrar y gestionar.</p>
                         <a href="funcionario/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
                 </div>
             </div>
         </div>
-        <!-- Módulo de comisiones temporalmente deshabilitado
-        <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card text-white bg-info shadow hover-card">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-people"></i> Comisiones</h5>
-                    <p class="card-text">Gestionar equipos de trabajo.</p>
-                        <a href="comision/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
-                </div>
-            </div>
-        </div>
-        -->
         <?php endif; ?>
-         <!-- Registrar Correspondencia -->
-        <?php if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['administrador','secretaria','administrativo','gerente','archivista central'])): ?>
+
+        <!-- Correspondencia (Bandejas Activas) -->
+        <?php if (isset($_SESSION['usuario_cargo'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
             <div class="card text-white bg-success shadow hover-card">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-folder-plus"></i> Correspondencia</h5>
-                    <p class="card-text">Registrar y derivar correspondencia.</p>
-                        <a href="correspondencia/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
+                    <h5 class="card-title"><i class="bi bi-envelope-paper"></i> Correspondencia</h5>
+                    <p class="card-text">Bandejas activas y en curso.</p>
+                    <a href="correspondencia/index.php?view=activas" class="btn btn-light btn-sm stretched-link">Ir</a>
                 </div>
             </div>
         </div>
         <?php endif; ?>
-        <!-- comisiones -->
-        <?php /* if (isset($_SESSION['usuario_cargo']) && in_array(strtolower($_SESSION['usuario_cargo']), ['secretaria'])): ?>
+
+        <!-- Concluidos y Revisión -->
+        <?php if (isset($_SESSION['usuario_cargo']) && !in_array(strtolower($_SESSION['usuario_cargo']), ['archivista central', 'secretaria'])): ?>
         <div class="col-md-6 col-lg-3 mb-3">
-            <div class="card text-white bg-info shadow hover-card">
+            <div class="card text-white bg-secondary shadow hover-card">
                 <div class="card-body">
-                    <h5 class="card-title"><i class="bi bi-people"></i> Comisiones</h5>
-                    <p class="card-text">Gestionar equipos de trabajo.</p>
-                        <a href="comision/index.php" class="btn btn-light btn-sm stretched-link">Ir</a>
+                    <h5 class="card-title"><i class="bi bi-check2-circle"></i> Concluidos</h5>
+                    <p class="card-text">Trámites finalizados o en revisión.</p>
+                    <a href="correspondencia/index.php?view=concluidos" class="btn btn-light btn-sm stretched-link">Ir</a>
                 </div>
             </div>
-        <?php endif; */ ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Archivo Central -->
+        <?php if (isset($_SESSION['usuario_cargo'])): ?>
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card text-dark bg-warning shadow hover-card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-archive"></i> Archivo Central</h5>
+                    <p class="card-text">Resguardo físico definitivo.</p>
+                    <a href="correspondencia/index.php?view=archivo" class="btn btn-light btn-sm stretched-link">Ir</a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
 <?php if (count($retrasos) > 0): ?>

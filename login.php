@@ -16,6 +16,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     if($user && password_verify($password, $user['password'])){
         // Login exitoso
+        
+        session_regenerate_id(true); // Previene el secuestro de sesión (Session Fixation)
+        
         $_SESSION['usuario_id'] = $user['id'];
         $_SESSION['usuario_nombre'] = $user['nombre'];
         $_SESSION['usuario_cargo'] = $user['rol'];

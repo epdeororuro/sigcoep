@@ -96,7 +96,7 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
               <table id="tablaHojasRuta" class="table table-striped table-bordered align-middle text-center w-100">
                 <thead class="table-primary text-center">
                   <tr>
-                    <th>Hoja de ruta</th>
+                    <th>Hoja <br>de ruta</th>
                     <th>Referencia</th>
                     <th>En curso con</th>
                     <th>Estado</th>

@@ -70,6 +70,16 @@ try {
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         $tmpName = $_FILES['foto']['tmp_name'];
         $origName = basename($_FILES['foto']['name']);
+        
+        // Validar MIME type real por seguridad (evitar scripts camuflados)
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime_type_real = $finfo->file($tmpName);
+        $mimes_permitidos = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+        
+        if (!in_array($mime_type_real, $mimes_permitidos)) {
+            throw new Exception('Error de seguridad: El contenido del archivo no es válido o no está permitido.');
+        }
+        
         $ext = strtolower(pathinfo($origName, PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
 
@@ -118,7 +128,7 @@ try {
     }
 
     // Insertar la correspondencia
-    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha, foto, estado, actualizado_en, eliminado_en) 
+    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha_registro, foto, estado, actualizado_en, eliminado_en) 
             VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, :anexo, NOW(), :foto, 'Registrado', NULL, NULL)";
     
     $stmt = $pdo->prepare($sql);

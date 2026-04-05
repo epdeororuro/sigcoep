@@ -7,7 +7,7 @@ try {
     $sql = "SELECT 
                 c.hojaruta,
                 c.referencia,
-                c.fecha,
+                c.fecha_registro,
                 c.estado,
                 c.idfuncionario_enturno,
                 f.nombre,
@@ -19,7 +19,7 @@ try {
             LEFT JOIN funcionario f ON c.idfuncionario_enturno = f.id
             LEFT JOIN puesto p ON f.id_puesto = p.id
             WHERE c.eliminado_en IS NULL
-            ORDER BY c.fecha DESC";
+            ORDER BY c.fecha_registro DESC";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
@@ -60,4 +60,3 @@ try {
 } catch (PDOException $e) {
     echo json_encode(['data' => [], 'error' => $e->getMessage()]);
 }
-

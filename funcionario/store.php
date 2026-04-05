@@ -35,9 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Verificar si el usuario ya existe para evitar duplicados
         $stmtCheckUser = $pdo->prepare("SELECT id FROM funcionario WHERE usuario = :usuario");
         $stmtCheckUser->execute([':usuario' => $usuario]);
-        if ($stmtCheckUser->fetch()) {
-            // Si ya existe, añadir un número aleatorio para hacerlo único
-            $usuario = $usuario . rand(1, 99);
+        $base_usuario = $usuario;
+        $contador = 1;
+        while ($stmtCheckUser->fetch()) {
+            $usuario = $base_usuario . $contador;
+            $contador++;
+            $stmtCheckUser->execute([':usuario' => $usuario]);
         }
         
         // Verificar si el CI ya existe

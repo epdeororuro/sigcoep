@@ -8,13 +8,15 @@ SELECT
     c.nombre,
     c.descripcion,
     c.estado,
-    f.nombre AS responsable_nombre,
-    f.paterno AS responsable_paterno,
-    f.materno AS responsable_materno
+    resp.nombre AS responsable_nombre,
+    resp.paterno AS responsable_paterno,
+    resp.materno AS responsable_materno
 FROM
     comision c
-LEFT JOIN
-    funcionario f ON c.responsable_id = f.id
+LEFT JOIN 
+    puesto p ON c.responsable_puesto_id = p.id
+LEFT JOIN 
+    funcionario resp ON p.id = resp.id_puesto AND resp.estado = 'Activo'
 WHERE
     c.eliminado_en IS NULL
 ORDER BY
@@ -52,10 +54,15 @@ foreach ($comisiones as $comision) {
         $listaMiembros .= htmlspecialchars(trim($miembro['nombre'] . ' ' . ($miembro['paterno'] ?? '') . ' ' . ($miembro['materno'] ?? ''))) . '<br>';
     }
 
-    // Botones de acción (editar, eliminar)
-    $acciones = '<div class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-sm btn-warning" title="Editar" onclick="editarComision(' . $comision['id'] . ')"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminarComision(' . $comision['id'] . ')"><i class="bi bi-trash"></i></button>
+    // Botones de acción (editar, eliminar) en Menú Desplegable
+    $acciones = '<div class="dropdown text-center">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
+                        <i class="bi bi-gear"></i> Acciones
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-start" style="font-size: 0.9rem;">
+                        <li><a class="dropdown-item" href="#" onclick="editarComision(' . $comision['id'] . '); return false;"><i class="bi bi-pencil text-warning me-2"></i> Editar</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="eliminarComision(' . $comision['id'] . '); return false;"><i class="bi bi-trash text-danger me-2"></i> Eliminar</a></li>
+                    </ul>
                  </div>';
 
     $data[] = [
