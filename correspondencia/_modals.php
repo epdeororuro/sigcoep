@@ -228,8 +228,19 @@
                     <form id="printPageForm" action="report.php" method="post">
                         <input type="hidden" id="print_correspondencia_id" name="id">
                         <div class="mb-3">
-                            <label class="form-label">Número de página (1-10)</label>
-                            <input type="number" min="1" max="10" class="form-control border-4" id="print_page_number" name="page" value="1" required>
+                            <label class="form-label fw-bold">Seleccione qué página imprimir</label>
+                            <select class="form-select border-4" id="print_page_number" name="page" required>
+                                <option value="1">Página 1 (Hoja Principal y Destinatarios 1 al 4)</option>
+                                <option value="2">Página 2 (Destinatarios 5 al 7)</option>
+                                <option value="3">Página 3 (Destinatarios 8 al 10)</option>
+                                <option value="4">Página 4 (Destinatarios 11 al 13)</option>
+                                <option value="5">Página 5 (Destinatarios 14 al 16)</option>
+                                <option value="6">Página 6 (Destinatarios 17 al 19)</option>
+                                <option value="7">Página 7 (Destinatarios 20 al 22)</option>
+                                <option value="8">Página 8 (Destinatarios 23 al 25)</option>
+                                <option value="9">Página 9 (Destinatarios 26 al 28)</option>
+                                <option value="10">Página 10 (Destinatarios 29 al 31)</option>
+                            </select>
                         </div>
                     </form>
                 </div>

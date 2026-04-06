@@ -135,7 +135,6 @@ if ($vista === 'archivo') $titulo_vista = 'Archivo Central';
                             <ul class="nav nav-tabs mb-3" id="correspondenciaTabs">
                                 <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="pendientes" type="button"><i class="bi bi-clock-history"></i> Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="pendientes">0</span></button></li>
-                                <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="en_grupo" type="button"><i class="bi bi-people"></i> En Grupo <span class="badge bg-warning text-dark ms-1 count-badge" data-count="en_grupo">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="despachados" type="button"><i class="bi bi-send"></i> Derivados <span class="badge bg-secondary ms-1 count-badge" data-count="despachados">0</span></button></li>
                                 <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="para_iniciar" type="button"><i class="bi bi-play-circle"></i> Para iniciar <span class="badge bg-secondary ms-1 count-badge" data-count="para_iniciar">0</span></button></li>
                             </ul>

@@ -11,10 +11,11 @@ try {
         (SELECT COUNT(*) FROM derivacion_grupo_detalle dgd JOIN derivacion_grupo dg ON dgd.derivacion_grupo_id = dg.id WHERE dgd.funcionario_id = :u1 AND dgd.estado = 'pendiente' AND dg.estado IN ('activo', 'en_proceso')) as entrantes,
         (SELECT COUNT(*) FROM derivacion_grupo_detalle dgd JOIN derivacion_grupo dg ON dgd.derivacion_grupo_id = dg.id WHERE dgd.funcionario_id = :u2 AND dgd.estado IN ('aceptado', 'rechazado') AND dg.estado IN ('activo', 'en_proceso')) as aceptados,
         (SELECT COUNT(*) FROM derivacion_grupo_detalle dgd JOIN derivacion_grupo dg ON dgd.derivacion_grupo_id = dg.id WHERE dgd.funcionario_id = :u3 AND dgd.estado IN ('enviado', 'aprobado') AND dg.responsable_id != dgd.funcionario_id) as enviados,
-        (SELECT COUNT(*) FROM derivacion_grupo dg WHERE dg.responsable_id = :u4 AND dg.estado IN ('activo', 'en_proceso')) as supervision
+        (SELECT COUNT(*) FROM derivacion_grupo dg WHERE dg.responsable_id = :u4 AND dg.estado IN ('activo', 'en_proceso')) as supervision,
+        (SELECT COUNT(*) FROM derivacion_grupo dg WHERE dg.creado_por = :u5 AND dg.estado IN ('activo', 'en_proceso')) as monitoreo
     ";
     $stmt_counts = $pdo->prepare($sql_counts);
-    $stmt_counts->execute([':u1' => $usuario_id, ':u2' => $usuario_id, ':u3' => $usuario_id, ':u4' => $usuario_id]);
+    $stmt_counts->execute([':u1' => $usuario_id, ':u2' => $usuario_id, ':u3' => $usuario_id, ':u4' => $usuario_id, ':u5' => $usuario_id]);
     $counts = $stmt_counts->fetch(PDO::FETCH_ASSOC);
 
     // 2. Construir la consulta según la pestaña seleccionada
@@ -53,6 +54,27 @@ try {
         $params[':uid'] = $usuario_id;
     } elseif ($filtro === 'supervision') {
         // Si es el supervisor, solo debe ver UN registro por Grupo, no duplicado por participante
+        // PERO unimos su propio detalle e informe para permitirle editar su propio trabajo
+        $base_sql = "
+            SELECT 
+                c.id as correspondencia_id, c.hojaruta, c.referencia,
+                dg.id as grupo_id, dg.fecha_limite, dg.estado as estado_grupo,
+                'Líder' as estado_detalle, dgd_lider.id as detalle_id,
+                f.nombre, f.paterno, p.sigla as puesto_sigla,
+                i_lider.archivo_adjunto, i_lider.contenido, i_lider.observaciones
+            FROM derivacion_grupo dg
+            JOIN correspondencia c ON dg.correspondencia_id = c.id
+            LEFT JOIN funcionario f ON dg.creado_por = f.id
+            LEFT JOIN puesto p ON f.id_puesto = p.id
+            LEFT JOIN derivacion_grupo_detalle dgd_lider ON dg.id = dgd_lider.derivacion_grupo_id AND dgd_lider.funcionario_id = :uid_lider
+            LEFT JOIN informes i_lider ON i_lider.derivacion_grupo_detalle_id = dgd_lider.id
+        ";
+        $where[] = "dg.responsable_id = :uid";
+        $where[] = "dg.estado IN ('activo', 'en_proceso')";
+        $params[':uid'] = $usuario_id;
+        $params[':uid_lider'] = $usuario_id;
+    } elseif ($filtro === 'monitoreo') {
+        // El Gerente que lo creó monitorea quién está de responsable y su avance
         $base_sql = "
             SELECT 
                 c.id as correspondencia_id, c.hojaruta, c.referencia,
@@ -62,10 +84,10 @@ try {
                 NULL as archivo_adjunto, NULL as contenido, NULL as observaciones
             FROM derivacion_grupo dg
             JOIN correspondencia c ON dg.correspondencia_id = c.id
-            LEFT JOIN funcionario f ON dg.creado_por = f.id
+            LEFT JOIN funcionario f ON dg.responsable_id = f.id
             LEFT JOIN puesto p ON f.id_puesto = p.id
         ";
-        $where[] = "dg.responsable_id = :uid";
+        $where[] = "dg.creado_por = :uid";
         $where[] = "dg.estado IN ('activo', 'en_proceso')";
         $params[':uid'] = $usuario_id;
     }
@@ -127,8 +149,8 @@ try {
                 $icono_estado = '<i class="bi bi-x-circle-fill text-danger" title="Rechazado"></i>';
             }
 
-            // Llenado de barra de progreso: Solo cuenta APROBADOS o al propio Líder (que se autoaprueba al enviar)
-            if ($int['estado'] === 'aprobado' || ($int['es_principal'] && in_array($int['estado'], ['enviado', 'aprobado']))) {
+            // Llenado de barra de progreso: Solo cuenta APROBADOS (El responsable salta directo a este estado)
+            if ($int['estado'] === 'aprobado') {
                 $integrantes_completados++;
             }
 
@@ -154,11 +176,17 @@ try {
             }
         } elseif ($filtro === 'enviados') {
             $ruta_archivo = '../assets/informes_grupo/' . $row['archivo_adjunto'];
-            $estado = '<span class="fw-bold">Enviado al Responsable</span><br><small class="text-success fw-semibold">Finalizado</small>';
-            $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="verInforme(\''.$ruta_archivo.'\'); return false;"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Ver Mi Informe</a></li>';
             
-            $contenido_js = htmlspecialchars(json_encode($row['contenido'] ?? ''), ENT_QUOTES, 'UTF-8');
-            $acciones_list .= '<li><a class="dropdown-item" href="#" onclick=\'abrirModalEditarInforme('.$row['correspondencia_id'].', '.$contenido_js.'); return false;\'><i class="bi bi-pencil-square text-warning me-2"></i> Editar Informe</a></li>';
+            if ($row['estado_detalle'] === 'aprobado') {
+                $estado = '<span class="fw-bold text-success">Aprobado</span><br><small class="text-success fw-semibold"><i class="bi bi-check-all"></i> Revisión superada</small>';
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="verInforme(\''.$ruta_archivo.'\'); return false;"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Ver Mi Informe</a></li>';
+            } else {
+                $estado = '<span class="fw-bold">Enviado al Responsable</span><br><small class="text-secondary fw-semibold">Esperando revisión...</small>';
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="verInforme(\''.$ruta_archivo.'\'); return false;"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Ver Mi Informe</a></li>';
+                
+                $contenido_js = htmlspecialchars(json_encode($row['contenido'] ?? ''), ENT_QUOTES, 'UTF-8');
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick=\'abrirModalEditarInforme('.$row['correspondencia_id'].', '.$contenido_js.'); return false;\'><i class="bi bi-pencil-square text-warning me-2"></i> Editar Informe</a></li>';
+            }
         } elseif ($filtro === 'supervision') {
             $porcentaje = $total_integrantes > 0 ? round(($integrantes_completados / $total_integrantes) * 100) : 0;
             $color_barra = $porcentaje == 100 ? 'bg-success' : 'bg-primary';
@@ -168,18 +196,41 @@ try {
                        </div>
                        <small class="text-muted fw-semibold">' . $integrantes_completados . ' de ' . $total_integrantes . ' subidos</small>';
             $acciones_list .= '<li><a class="dropdown-item fw-bold" href="#" onclick="abrirRevisarInformes('.$row['grupo_id'].'); return false;"><i class="bi bi-list-check text-warning text-dark me-2"></i> Revisar y Consolidar</a></li>';
+            
+            // Acciones para que el Responsable pueda ver/editar su propio informe ya auto-aprobado
+            if (!empty($row['archivo_adjunto'])) {
+                $ruta_archivo = '../assets/informes_grupo/' . $row['archivo_adjunto'];
+                $acciones_list .= '<li><hr class="dropdown-divider"></li>';
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick="verInforme(\''.$ruta_archivo.'\'); return false;"><i class="bi bi-file-earmark-pdf text-danger me-2"></i> Ver Mi Informe</a></li>';
+                
+                $contenido_js = htmlspecialchars(json_encode($row['contenido'] ?? ''), ENT_QUOTES, 'UTF-8');
+                $acciones_list .= '<li><a class="dropdown-item" href="#" onclick=\'abrirModalEditarInforme('.$row['correspondencia_id'].', '.$contenido_js.'); return false;\'><i class="bi bi-pencil-square text-warning me-2"></i> Editar Mi Informe</a></li>';
+            }
+        } elseif ($filtro === 'monitoreo') {
+            $porcentaje = $total_integrantes > 0 ? round(($integrantes_completados / $total_integrantes) * 100) : 0;
+            $color_barra = $porcentaje == 100 ? 'bg-success' : 'bg-primary';
+            $estado = '<span class="fw-bold">Supervisando...</span><br>
+                       <div class="progress mt-1 mb-1 shadow" style="height: 18px; border: 2px solid #adb5bd; border-radius: 8px;" title="' . $integrantes_completados . ' de ' . $total_integrantes . ' informes subidos">
+                           <div class="progress-bar ' . $color_barra . ' progress-bar-striped progress-bar-animated text-white" role="progressbar" style="width: ' . $porcentaje . '%; font-size: 0.75rem;" aria-valuenow="' . $porcentaje . '" aria-valuemin="0" aria-valuemax="100"><strong>' . $porcentaje . '%</strong></div>
+                       </div>
+                       <small class="text-muted fw-semibold">' . $integrantes_completados . ' de ' . $total_integrantes . ' Aprobados</small>';
         }
 
-        // Renderizado del botón Dropdown idéntico al index principal
-        $acciones = '
-        <div class="dropdown text-center">
-            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
-                <i class="bi bi-gear"></i> Acciones
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-start" style="font-size: 0.9rem;">
-                ' . $acciones_list . '
-            </ul>
-        </div>';
+        if ($filtro === 'monitoreo') {
+            // Sin botón de opciones, solo lectura
+            $acciones = '<span class="text-muted fst-italic"><i class="bi bi-eye"></i> Solo Lectura</span>';
+        } else {
+            // Renderizado del botón Dropdown idéntico al index principal
+            $acciones = '
+            <div class="dropdown text-center">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Opciones">
+                    <i class="bi bi-gear"></i> Acciones
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 text-start" style="font-size: 0.9rem;">
+                    ' . $acciones_list . '
+                </ul>
+            </div>';
+        }
 
         $data[] = [
             'hojaruta' => $row['hojaruta'],

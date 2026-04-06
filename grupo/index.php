@@ -15,6 +15,7 @@ if (isset($_SESSION['mensaje'])) {
 require '../db.php';
 
 $titulo_vista = 'Mis Grupos de Trabajo';
+$cargo_usuario = strtolower($_SESSION['usuario_cargo'] ?? '');
 ?> 
 <!doctype html>
 <html lang="es">
@@ -48,10 +49,14 @@ $titulo_vista = 'Mis Grupos de Trabajo';
                         </div>
                         
                         <ul class="nav nav-tabs mb-3" id="gruposTabs">
+                            <?php if ($cargo_usuario === 'gerente'): ?>
+                            <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="monitoreo" type="button"><i class="bi bi-display"></i> Monitoreo de Grupos <span class="badge bg-secondary ms-1 count-badge" data-count="monitoreo">0</span></button></li>
+                            <?php else: ?>
                             <li class="nav-item"><button class="nav-link active filtro-tab" data-filtro="entrantes" type="button"><i class="bi bi-inbox"></i> Entrantes <span class="badge bg-secondary ms-1 count-badge" data-count="entrantes">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="aceptados" type="button"><i class="bi bi-clock-history"></i> Aceptados <span class="badge bg-secondary ms-1 count-badge" data-count="aceptados">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="enviados" type="button"><i class="bi bi-send"></i> Enviados al Responsable <span class="badge bg-secondary ms-1 count-badge" data-count="enviados">0</span></button></li>
                             <li class="nav-item"><button class="nav-link filtro-tab" data-filtro="supervision" type="button"><i class="bi bi-eye"></i> Supervisión (Responsable) <span class="badge bg-secondary ms-1 count-badge" data-count="supervision">0</span></button></li>
+                            <?php endif; ?>
                         </ul>
 
                         <div class="table-responsive">
@@ -60,7 +65,7 @@ $titulo_vista = 'Mis Grupos de Trabajo';
                                     <tr>
                                         <th>Hoja de <br>Ruta</th>
                                         <th>Referencia</th>
-                                        <th>Solicitado por</th>
+                                        <th><?= $cargo_usuario === 'gerente' ? 'Responsable Asignado' : 'Solicitado por' ?></th>
                                         <th>Integrantes</th>
                                         <th>Fecha Límite</th>
                                         <th>Estado</th>
@@ -171,7 +176,7 @@ $titulo_vista = 'Mis Grupos de Trabajo';
                         </div>
                         
                         <div class="mb-3">
-                            <a href="#" id="revisar_enlace_pdf" target="_blank" class="btn btn-outline-danger btn-sm fw-bold"><i class="bi bi-file-earmark-pdf"></i> Ver PDF Adjunto</a>
+                            <a href="#" id="revisar_enlace_pdf" target="_blank" class="btn btn-outline-success btn-sm fw-bold"><i class="bi bi-file-earmark-pdf"></i> Ver PDF Adjunto</a>
                         </div>
                         
                         <div class="mb-3 mt-4 border-top pt-3">
@@ -183,6 +188,29 @@ $titulo_vista = 'Mis Grupos de Trabajo';
                 <div class="modal-footer justify-content-between bg-light">
                     <button type="submit" name="accion" value="rechazar" class="btn btn-danger" form="revisarInformeUnicoForm" onclick="return validarObservacion()"><i class="bi bi-x-circle"></i> Observar (Rechazar)</button>
                     <button type="submit" name="accion" value="aprobar" class="btn btn-success" form="revisarInformeUnicoForm"><i class="bi bi-check-circle"></i> Aprobar Informe</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODAL CONSOLIDAR GRUPO ================= -->
+    <div class="modal fade" id="consolidarGrupoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-warning">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title"><i class="bi bi-list-check"></i> Consolidar Trabajo en Grupo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="consolidarGrupoForm" action="consolidate.php" method="post">
+                        <input type="hidden" id="consolidar_grupo_id" name="grupo_id">
+                        <p class="mb-0 fs-6">¿Confirma que desea <strong>Consolidar</strong> y dar por finalizado este trabajo en grupo?</p>
+                        <p class="text-muted small mt-2"><i class="bi bi-info-circle"></i> La correspondencia retornará a su bandeja principal de <strong>Aceptados</strong> (Correspondencia Activa), desde donde podrá derivarla al siguiente destino con todos los informes adjuntos.</p>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning text-dark fw-bold" form="consolidarGrupoForm"><i class="bi bi-check-all"></i> Sí, Consolidar Trámite</button>
                 </div>
             </div>
         </div>
@@ -315,9 +343,8 @@ $titulo_vista = 'Mis Grupos de Trabajo';
         }
 
         function abrirRevisarInformes(grupo_id) {
-            // Aquí enlazaremos la lógica para el Supervisor (Consolidación)
-            // Por ahora redirigimos o abrimos modal. Lo programaremos en el siguiente paso.
-            alert("Abriendo panel de revisión para el grupo: " + grupo_id);
+            $('#consolidar_grupo_id').val(grupo_id);
+            $('#consolidarGrupoModal').modal('show');
         }
 
         function verInforme(ruta) {

@@ -104,8 +104,6 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
                 <li><strong>Admin. (Reynaldo Flores):</strong> rflores / 7403044</li>
                 <li><strong>Admin. (Milton Torrez):</strong> mtorrez / 7292221</li>
                 <li><strong>Admin. (Marina Alejandro):</strong> malejandro / 7376273</li>
-                <li><strong>Admin. (Scarleth Encinas):</strong> s- / 4069420</li>
-                <li><strong>Admin. (Jorge Quillaguaman):</strong> jquillaguaman / 4060082</li>
               </ul>
           </div>
         </div>
@@ -159,10 +157,10 @@ $error = isset($_GET['error']) ? $_GET['error'] : '';
           url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
         },
         columns: [
-          { data: 'hojaruta' },
-          { data: 'referencia' },
-          { data: 'en_curso_con' },
-          { data: 'estado' },
+          { data: 'hojaruta', className: 'fw-bold text-primary' },
+          { data: 'referencia', width: '45%', className: 'text-start text-wrap text-break' },
+          { data: 'en_curso_con', width: '25%', className: 'text-wrap' },
+          { data: 'estado', width: '15%' }
         ]
       });
     });

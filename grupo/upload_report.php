@@ -23,7 +23,7 @@ try {
 
     // 1. Obtener el ID del detalle del grupo para este usuario y trámite
     $stmtDetalle = $pdo->prepare("
-        SELECT dgd.id, dgd.estado 
+        SELECT dgd.id, dgd.estado, dgd.es_principal 
         FROM derivacion_grupo_detalle dgd
         JOIN derivacion_grupo dg ON dgd.derivacion_grupo_id = dg.id
         WHERE dg.correspondencia_id = :id_corr 
@@ -34,7 +34,12 @@ try {
     $detalle = $stmtDetalle->fetch(PDO::FETCH_ASSOC);
 
     if (!$detalle) {
-        throw new Exception("No forma parte de un grupo activo para este trámite.");
+        throw new Exception("No forma parte de un grupo activo o el trámite ya fue consolidado.");
+    }
+
+    // Si es un integrante normal no puede editar si ya lo aprobaron. El Responsable sí puede auto-editarse.
+    if ($detalle['estado'] === 'aprobado' && !$detalle['es_principal']) {
+        throw new Exception("No puede editar el informe porque ya fue aprobado por el responsable.");
     }
 
     $detalle_id = $detalle['id'];
@@ -78,17 +83,19 @@ try {
         throw new Exception("Debe adjuntar un archivo (PDF/Imagen) para su primer informe.");
     }
 
-    // 4. Insertar o Actualizar el informe
+    // 4. Insertar o Actualizar el informe. Si es el responsable, se auto-aprueba.
+    $nuevo_estado_informe = $detalle['es_principal'] ? 'aprobado' : 'enviado';
+
     if ($informeExistente) {
-        $stmtUpdateInf = $pdo->prepare("UPDATE informes SET contenido = ?, archivo_adjunto = ?, estado = 'enviado', fecha = NOW() WHERE id = ?");
-        $stmtUpdateInf->execute([$contenido, $archivoNombre, $informeExistente['id']]);
+        $stmtUpdateInf = $pdo->prepare("UPDATE informes SET contenido = ?, archivo_adjunto = ?, estado = ?, fecha = NOW() WHERE id = ?");
+        $stmtUpdateInf->execute([$contenido, $archivoNombre, $nuevo_estado_informe, $informeExistente['id']]);
     } else {
-        $stmtInsert = $pdo->prepare("INSERT INTO informes (derivacion_grupo_detalle_id, contenido, archivo_adjunto, estado) VALUES (?, ?, ?, 'enviado')");
-        $stmtInsert->execute([$detalle_id, $contenido, $archivoNombre]);
+        $stmtInsert = $pdo->prepare("INSERT INTO informes (derivacion_grupo_detalle_id, contenido, archivo_adjunto, estado) VALUES (?, ?, ?, ?)");
+        $stmtInsert->execute([$detalle_id, $contenido, $archivoNombre, $nuevo_estado_informe]);
     }
 
-    $stmtUpdateDetalle = $pdo->prepare("UPDATE derivacion_grupo_detalle SET estado = 'enviado', fecha_respuesta = NOW() WHERE id = ?");
-    $stmtUpdateDetalle->execute([$detalle_id]);
+    $stmtUpdateDetalle = $pdo->prepare("UPDATE derivacion_grupo_detalle SET estado = ?, fecha_respuesta = NOW() WHERE id = ?");
+    $stmtUpdateDetalle->execute([$nuevo_estado_informe, $detalle_id]);
 
     $pdo->commit();
     $_SESSION['mensaje'] = 'Su informe ha sido enviado con éxito.';

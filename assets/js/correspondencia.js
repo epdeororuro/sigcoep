@@ -122,7 +122,7 @@ function editarCorrespondencia(id) {
                 var urlFoto = '../assets/fotos_correspondencia/' + data.foto;
                 var ext = data.foto.split('.').pop().toLowerCase();
                 if (ext === 'pdf') {
-                    $('#edit_foto_preview').html('<a href="' + urlFoto + '" target="_blank" class="text-danger text-decoration-none" title="Ver PDF actual"><i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem; vertical-align: middle;"></i> Ver documento PDF actual</a>');
+                    $('#edit_foto_preview').html('<a href="' + urlFoto + '" target="_blank" class="text-success text-decoration-none" title="Ver PDF actual"><i class="bi bi-file-earmark-pdf-fill" style="font-size: 2rem; vertical-align: middle;"></i> Ver documento PDF actual</a>');
                 } else {
                     $('#edit_foto_preview').html('<img src="' + urlFoto + '" alt="Foto actual" class="img-fluid rounded border">');
                 }
