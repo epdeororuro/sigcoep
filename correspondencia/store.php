@@ -112,7 +112,7 @@ try {
                     if ($ext === 'png') { imagealphablending($img, true); imagesavealpha($img, true); imagepng($img, $destino, 7); }
                     elseif ($ext === 'webp') { imagewebp($img, $destino, 75); }
                     else { imagejpeg($img, $destino, 75); } // Calidad 75 para reducir tamaño sin pérdida notable
-                    imagedestroy($img);
+                    unset($img); // Libera la memoria (reemplaza a imagedestroy obsoleto en PHP 8+)
                 } else {
                     if (!move_uploaded_file($tmpName, $destino)) {
                         throw new Exception('No se pudo guardar la foto en el servidor');
@@ -128,8 +128,8 @@ try {
     }
 
     // Insertar la correspondencia
-    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha_registro, foto, estado, actualizado_en, eliminado_en) 
-            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, :anexo, NOW(), :foto, 'Registrado', NULL, NULL)";
+    $sql = "INSERT INTO correspondencia (hojaruta, remitente_id, remitente_externo, tipo_remitente, remitente, referencia, fojas, anexo, fecha_registro, foto, estado) 
+            VALUES (:hojaruta, :remitente_id, :remitente_externo, :tipo_remitente, :remitente, :referencia, :fojas, :anexo, NOW(), :foto, 'Registrado')";
     
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
