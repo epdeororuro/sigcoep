@@ -59,6 +59,21 @@ try {
         ':caracter' => $caracter
     ]);
 
+    $id_derivacion_insertada = $pdo->lastInsertId();
+
+    // REGISTRO DE HISTORIAL DE IMPRESIONES (Para el sistema de cuadrícula)
+    // Obtenemos el último número de historial de este usuario y le sumamos 1
+    $stmtHist = $pdo->prepare("SELECT COALESCE(MAX(numero_historial), 0) + 1 FROM historial_impresiones WHERE id_funcionario = :uid");
+    $stmtHist->execute([':uid' => $_SESSION['usuario_id']]);
+    $nuevo_numero_historial = (int) $stmtHist->fetchColumn();
+
+    $stmtInsHist = $pdo->prepare("INSERT INTO historial_impresiones (id_funcionario, id_derivacion, numero_historial, fecha_creacion) VALUES (:uid, :id_deriv, :num_hist, NOW())");
+    $stmtInsHist->execute([
+        ':uid' => $_SESSION['usuario_id'],
+        ':id_deriv' => $id_derivacion_insertada,
+        ':num_hist' => $nuevo_numero_historial
+    ]);
+
     // Actualizar la fecha de entrega (recepción) de la derivación anterior si estaba pendiente
     if (isset($_SESSION['usuario_id'])) {
         $stmtUpdateDeriv = $pdo->prepare("UPDATE derivacion SET fecha_entrega_derivacion = NOW() WHERE id_correspondencia = :id_corr AND id_funcionario = :uid AND fecha_entrega_derivacion IS NULL ORDER BY fecha_derivacion DESC LIMIT 1");

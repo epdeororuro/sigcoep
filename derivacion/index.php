@@ -19,9 +19,10 @@ if (!$cor) {
 }
 
 // Obtener historial de derivaciones
-$sql = "SELECT d.*, f.nombre, f.paterno, f.materno
+$sql = "SELECT d.*, f.nombre, f.paterno, f.materno, hi.numero_historial, hi.id_funcionario AS owner_historial
         FROM derivacion d
         LEFT JOIN funcionario f ON f.id = d.id_funcionario
+        LEFT JOIN historial_impresiones hi ON hi.id_derivacion = d.id
         WHERE d.id_correspondencia = :id
         ORDER BY d.fecha_derivacion ASC";
 $stmt2 = $pdo->prepare($sql);
@@ -106,6 +107,14 @@ $meses_es = [
                                     <?php endif; ?>
                                     <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></p>
                                     <div class="small text-muted mt-1">Fojas: <?php echo htmlspecialchars($d['fojas']); ?> — Carácter: <?php echo htmlspecialchars($d['caracter']); ?></div>
+                                    
+                                    <?php if(isset($_SESSION['usuario_id']) && $_SESSION['usuario_id'] == $d['owner_historial'] && !empty($d['numero_historial'])): ?>
+                                        <div class="mt-2 text-end">
+                                            <a href="print_receipt.php?id=<?= $d['id'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Imprimir Comprobante #<?= $d['numero_historial'] ?>">
+                                                <i class="bi bi-printer"></i> Imprimir (Hoja <?= ceil($d['numero_historial'] / 10) ?>)
+                                            </a>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -133,6 +142,7 @@ $meses_es = [
                     <th>Instrucción</th>
                     <th>Fojas</th>
                     <th>Anexo</th>
+                    <th>Imprimir</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -155,10 +165,17 @@ $meses_es = [
                             <td><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></td>
                             <td><?php echo htmlspecialchars($d['fojas']); ?></td>
                             <td><?php echo htmlspecialchars($d['anexos'] ?? $d['anexo'] ?? ''); ?></td>
+                            <td>
+                                <?php if(isset($_SESSION['usuario_id']) && $_SESSION['usuario_id'] == $d['owner_historial'] && !empty($d['numero_historial'])): ?>
+                                    <a href="print_receipt.php?id=<?= $d['id'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary" title="Imprimir Comprobante #<?= $d['numero_historial'] ?> (Hoja <?= ceil($d['numero_historial'] / 10) ?>)">
+                                        <i class="bi bi-printer"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="6">Sin registros</td></tr>
+                    <tr><td colspan="7">Sin registros</td></tr>
                 <?php endif; ?>
                 </tbody>
             </table>
