@@ -392,3 +392,47 @@ function abrirModalSubirInforme(id) {
     $('#subirInformeForm')[0].reset();
     $('#subirInformeModal').modal('show');
 }
+
+// =================================================================
+// PREVENCIÓN DE DOBLE ENVÍO (DOUBLE-CLICK) EN FORMULARIOS
+// =================================================================
+$(document).on('submit', 'form', function(e) {
+    var form = $(this);
+    var action = form.attr('action') || '';
+    
+    // Excluir formularios de actualización (edits) según lo solicitado
+    if (action.indexOf('update.php') === -1) {
+        
+        // CANDADO LÓGICO INFALIBLE: Si ya se está enviando, abortar inmediatamente el segundo clic
+        if (form.data('enviando')) {
+            e.preventDefault();
+            return false;
+        }
+        // Cerrar el candado
+        form.data('enviando', true);
+        
+        var formId = form.attr('id');
+        var submitBtn = form.find('button[type="submit"], input[type="submit"]');
+        
+        if (submitBtn.length === 0 && formId) {
+            submitBtn = $('button[form="' + formId + '"]');
+        }
+        
+        if (submitBtn.length > 0) {
+            var originalClass = submitBtn.attr('class');
+            var originalHtml = submitBtn.html();
+            
+            // Cambiar a color plomo y poner texto
+            submitBtn.removeClass().addClass('btn btn-secondary').html('Espere...');
+            
+            // Deshabilitar 10ms después para asegurar que el navegador procese el envío nativo
+            setTimeout(function() { submitBtn.prop('disabled', true); }, 10);
+
+            // Restaurar todo a la normalidad después de 1.5 segundos (por si falla el internet o algo)
+            setTimeout(function() {
+                submitBtn.removeClass().addClass(originalClass).prop('disabled', false).html(originalHtml);
+                form.data('enviando', false); // Abrir candado
+            }, 1500);
+        }
+    }
+});

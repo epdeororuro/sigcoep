@@ -21,8 +21,8 @@ $sql = "SELECT d.*, c.hojaruta, c.referencia,
         INNER JOIN correspondencia c ON d.id_correspondencia = c.id
         LEFT JOIN funcionario f_dest ON d.id_funcionario = f_dest.id
         INNER JOIN historial_impresiones hi ON d.id = hi.id_derivacion
-        INNER JOIN funcionario f_sender ON hi.id_funcionario = f_sender.id
-        WHERE d.id = :id AND f_sender.id = :uid";
+        LEFT JOIN funcionario f_sender ON hi.id_funcionario = f_sender.id
+        WHERE d.id = :id AND hi.id_funcionario = :uid";
         
 $stmt = $pdo->prepare($sql);
 $stmt->execute([
@@ -48,7 +48,7 @@ $hoja_actual = ceil($numero_historial / 10);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Comprobante #<?= $numero_historial ?> - <?= htmlspecialchars($derivacion['referencia']) ?></title>
+    <title>Comprobante #<?= $numero_historial ?> - <?= htmlspecialchars($derivacion['referencia'] ?? '') ?></title>
     <style>
         body, html { margin: 0; padding: 0; background-color: #525659; font-family: Arial, sans-serif; }
         
@@ -177,18 +177,18 @@ $hoja_actual = ceil($numero_historial / 10);
                         <div class="contenido-ticket">
                             <div class="ticket-col-1">
                                 <div class="ticket-date"><?= date('d/m/Y H:i', strtotime($derivacion['fecha_derivacion'])) ?></div>
-                                <div class="ticket-hr"><?= htmlspecialchars($derivacion['hojaruta']) ?></div>
+                                <div class="ticket-hr"><?= htmlspecialchars($derivacion['hojaruta'] ?? '') ?></div>
                             </div>
                             <div class="ticket-col-2">
                                 <div class="ticket-row"><strong>DE:</strong> <?= htmlspecialchars($sender_fullname) ?></div>
                                 <div class="ticket-row"><strong>A:</strong> <?= htmlspecialchars($dest_fullname) ?></div>
                                 
-                                <div class="ticket-row"><strong>REF INICIAL:</strong> <?= htmlspecialchars(substr($derivacion['referencia'], 0, 100)) ?><?= strlen($derivacion['referencia']) > 100 ? '...' : '' ?></div>
-                                <div class="ticket-row"><strong>PROV.:</strong> <?= htmlspecialchars(substr($derivacion['instruccion_adicional'], 0, 100)) ?><?= strlen($derivacion['instruccion_adicional']) > 100 ? '...' : '' ?></div>
+                                <div class="ticket-row"><strong>REF INICIAL:</strong> <?= htmlspecialchars(substr($derivacion['referencia'] ?? '', 0, 100)) ?><?= strlen($derivacion['referencia'] ?? '') > 100 ? '...' : '' ?></div>
+                                <div class="ticket-row"><strong>PROV.:</strong> <?= htmlspecialchars(substr($derivacion['instruccion_adicional'] ?? '', 0, 100)) ?><?= strlen($derivacion['instruccion_adicional'] ?? '') > 100 ? '...' : '' ?></div>
                                 
                                 <div class="ticket-footer-row">
-                                    <span><strong>FOJAS:</strong> <?= htmlspecialchars($derivacion['fojas']) ?></span>
-                                    <span><strong>TIPO:</strong> <?= htmlspecialchars(substr($derivacion['caracter'], 0, 15)) ?></span>
+                                    <span><strong>FOJAS:</strong> <?= htmlspecialchars($derivacion['fojas'] ?? '0') ?></span>
+                                    <span><strong>TIPO:</strong> <?= htmlspecialchars(substr($derivacion['caracter'] ?? '', 0, 15)) ?></span>
                                 </div>
                             </div>
                             <div class="ticket-col-3">

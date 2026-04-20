@@ -95,7 +95,7 @@ $meses_es = [
                             <div class="time-marker">
                                 <div class="circle_blue"><?php echo strtr(date('d-M', strtotime($d['fecha_derivacion'])), $meses_es); ?></div>
                                 <?php if ($index > 0): ?>
-                                    <div class="circle_green"><?php echo strtr(date('d-M', strtotime($d['fecha_entrega_derivacion'])), $meses_es); ?></div>
+                                    <div class="circle_green"><?php echo !empty($d['fecha_entrega_derivacion']) ? strtr(date('d-M', strtotime($d['fecha_entrega_derivacion'])), $meses_es) : 'Pend.'; ?></div>
                                 <?php endif; ?>
                             </div>
                             <div class="card p-2">
@@ -103,7 +103,7 @@ $meses_es = [
                                     <strong><?php echo htmlspecialchars(trim(($d['nombre'] ?? '') . ' ' . ($d['paterno'] ?? '') . ' ' . ($d['materno'] ?? ''))); ?></strong>
                                     <div class="text-info small">Fecha Derivación: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_derivacion'])); ?></div>
                                     <?php if ($index > 0): ?>
-                                        <div class="text-success small">Fecha Entrega: <?php echo date('d-m-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])); ?></div>
+                                        <div class="text-success small">Fecha Entrega: <?php echo !empty($d['fecha_entrega_derivacion']) ? date('d-m-Y H:i:s', strtotime($d['fecha_entrega_derivacion'])) : '<span class="text-danger">Sin fecha de entrega</span>'; ?></div>
                                     <?php endif; ?>
                                     <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($d['instruccion_adicional'] ?? '')); ?></p>
                                     <div class="small text-muted mt-1">Fojas: <?php echo htmlspecialchars($d['fojas']); ?> — Carácter: <?php echo htmlspecialchars($d['caracter']); ?></div>
